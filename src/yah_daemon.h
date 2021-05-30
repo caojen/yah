@@ -53,4 +53,10 @@ int check_is_root(void);
  */
 int get_running_daemon_pid(void);
 
+/**
+ * if current process is daemon, exit.
+ * if not, nothing happens.
+ */
+void daemon_exit(void);
+
 #endif

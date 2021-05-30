@@ -13,6 +13,13 @@
 #include <signal.h>
 
 /**
+ * register all signal handlers
+ * return the number(>=0) of handlers that have been registerd.
+ * return -1 if error.
+ */
+int signal_handler_register(void);
+
+/**
  * handle SIGHUP
  */
 void sighup_handler(int signo);
@@ -26,5 +33,10 @@ void sigterm_handler(int signo);
  * send signal to pid
  */
 #define send_signal(pid, signo) kill(pid, signo)
+
+/**
+ * send signal to self
+ */
+#define send_signal_to_current(signo) raise(signo)
 
 #endif
