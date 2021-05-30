@@ -1,3 +1,6 @@
+#ifndef YAH_DAEMON_H
+#define YAH_DAEMON_H
+
 /**
  * Daemonize current process.
  * 
@@ -8,3 +11,5 @@
  * because it may call log_error or LOG_ERROR
  */
 int yah_daemonize();
+
+#endif
