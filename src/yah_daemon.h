@@ -10,6 +10,25 @@
  * Sometimes, this function may not return but call exit
  * because it may call log_error or LOG_ERROR
  */
-int yah_daemonize();
+int yah_daemonize(void);
+
+/**
+ * check if there is a daemon running
+ * if so, return YAH_DAEMON_RUNNING
+ * else, return YAH_DAEMON_NOTRUNNING
+ * 
+ * If there is no any daemon is running,
+ * the current process' pid will be written
+ * into YAH_LOCKFILE.
+ */
+int check_daemon_running(void);
+
+/**
+ * try locking the file with file descriptor fd
+ * 
+ * @{param} fd file descriptor. The file should open
+ *  with rw, and with YAH_LOCKMODE mode
+ */
+int lockfile(int);
 
 #endif

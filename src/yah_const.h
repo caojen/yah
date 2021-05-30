@@ -23,4 +23,9 @@
 
 #define YAH_MAXLINE 1024
 
+// used in daemon
+#define YAH_DAEMON_RUNNING 1
+#define YAH_DAEMON_NOTRUNNING 0
+#define YAH_DAEMON_ERROR_ING 1      // ignore error when log_error
+
 #endif
