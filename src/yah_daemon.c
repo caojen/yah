@@ -8,12 +8,13 @@
 #include "yah_const.h"
 #include "yah_log.h"
 #include "yah_daemon.h"
+#include "yah_error.h"
 
 int
 yah_daemonize(void) {
     int isrunning = check_daemon_running();
     if(isrunning == YAH_DAEMON_RUNNING) {
-        yah_error("lockfile failed. deamon is running.");
+        YAH_ERROR(YAH_E_ALREADY_RUNNINT);
         exit(1);
     }
 
