@@ -34,18 +34,18 @@ main(int argc, char** argv) {
         if(strcmp(argv[i], "start") == 0) {
             /* start as daemon */
             yah_daemonize();
-            break;
+            exit(0);
         } else if(strcmp(argv[i], "reload") == 0) {
             /* reload config */
             /* send SIGHUP to daemon */
             unimplemented();
-            break;
+            exit(0);
         } else if(strcmp(argv[i], "set") == 0) {
             /* set a key */
             /* set the key to config */
             /* then send SIGHUP to daemon */
             unimplemented();
-            break;
+            exit(0);
         } else {
             yah_usage();
             exit(EINVAL);
