@@ -63,7 +63,8 @@ yah_reload_config() {
     return 0;
 }
 
-int yah_set_config(const char* key, int value) {
+int
+yah_set_config(const char* key, int value) {
     pthread_mutex_lock(&yah_config_mutex);
 
     int ret = yah_set_config_without_mutex(key, value);
@@ -73,7 +74,8 @@ int yah_set_config(const char* key, int value) {
     return ret;
 }
 
-int yah_set_config_without_mutex(const char* key, int value) {
+int
+yah_set_config_without_mutex(const char* key, int value) {
     int ret = -1;
 
     if(strcmp(key, "log_level")) {
