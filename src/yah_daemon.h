@@ -1,0 +1,1 @@
+int yah_daemonize();
