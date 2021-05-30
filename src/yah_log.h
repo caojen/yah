@@ -27,6 +27,12 @@ void yah_log(const char* fmt, ...);
 void yah_warn(const char* fmt, ...);
 void yah_error(const char* fmt, ...);
 
+#include <stdlib.h>
+#define yah_quit(...) do {              \
+    yah_error(__VA_ARGS__);             \
+    exit(1);                            \
+} while(0)
+
 /**
  * This function means something is not implemented.
  * It is an error, and stop the process with exit code 1.

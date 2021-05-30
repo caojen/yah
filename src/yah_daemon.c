@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
+#include <signal.h>
 
 #include "yah_const.h"
 #include "yah_log.h"
@@ -41,8 +42,7 @@ yah_daemonize(void) {
      */
     struct rlimit rl;
     if(getrlimit(RLIMIT_NOFILE, &rl) < 0) {
-        yah_error("cannot get the maximun number of file descriptors");
-        exit(1);
+        yah_quit("cannot get the maximun number of file descriptors");
     }
 
     /**
@@ -53,8 +53,7 @@ yah_daemonize(void) {
     pid_t pid;
     pid = fork();
     if(pid < 0) {
-        yah_error("cannot fork a new subprocess");
-        exit(1);
+        yah_quit("cannot fork a new subprocess");
     } else if(pid == 0) { /* parent process */
         yah_log("parent process exit...");
         exit(0);
@@ -63,7 +62,26 @@ yah_daemonize(void) {
 
     /* child process */
     setsid();
+    /* ignore SIG_IGN */
+    struct sigaction sa;
+    sa.sa_handler = SIG_IGN;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    if(sigaction(SIGHUP, &sa, NULL) < 0) {
+        yah_quit("cannot ignore SIG_IGN");
+    }
+    if((pid = fork()) < 0) {
+        yah_quit("cannot fork a new subprocess");
+    } else if(pid == 0) { /* parent process */
+        yah_log("parent process exit...");
+        exit(0);
+    }
 
+    /* child process */
+    /* change the dir to '/' */
+    if(chdir('/') < 0) {
+        yah_quit("cannot fork a new subprocess");
+    }
 
     return 0;
 }
