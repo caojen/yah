@@ -11,6 +11,7 @@
 #include "yah_daemon.h"
 #include "yah_error.h"
 #include "yah_config.h"
+#include "yah_signal.h"
 
 int
 yah_daemonize(void) {
@@ -121,6 +122,12 @@ yah_daemonize(void) {
         yah_quit("cannot fork a new subprocess");
     }
 
+    int handlers;
+    if((handlers = signal_handler_register()) < 0) {
+        yah_quit("Some signal handler registered failed");
+    }
+    yah_log("register signal success: %d", handlers);
+
     yah_log("done. daemon started");
     return 0;
 }
@@ -185,5 +192,56 @@ check_is_root(void) {
         return YAH_RUNNING_AS_ROOT;
     } else {
         return ~YAH_RUNNING_AS_ROOT;
+    }
+}
+
+long
+get_running_daemon_pid(void) {
+    // test if lockfile exists:
+    if(access(YAH_LOCKFILE, R_OK) != 0) {
+        // no such file
+        YAH_ERROR(YAH_E_NO_SUCH_FILE);
+        return -1;
+    }
+    // open this file:
+    int fd = open(YAH_LOCKFILE, O_RDWR, YAH_LOCKMODE);
+    if(fd < 0) {
+        yah_error("cannot open %s: %s", YAH_LOCKFILE, strerror(errno));
+    }
+
+    // test if a F_WRLCK can be apply to YAH_LOCKFILE
+    struct flock fl;
+    fl.l_type = F_WRLCK;
+    fl.l_start = 0;
+    fl.l_whence = SEEK_SET;
+    fl.l_len = 0;
+    int ret = fcntl(fd, F_GETLK, &fl);
+
+    if(ret == -1) {
+        // daemon is running
+        // read fd to get the pid(a string)
+        char pid[YAH_MAXLINE];
+        if(read(fd, pid, YAH_MAXLINE) < 0) {
+            yah_error("cannot read from %s: %s", YAH_LOCKFILE, stderr(errno));
+        }
+        return atoi(pid);
+    } else {
+        return -1;
+    }
+}
+
+void
+daemon_exit(void) {
+    long daemon_id = get_running_daemon_pid();
+    if(daemon_id == 0) {
+        yah_error("No daemon is running.");
+    } else if(daemon_id == -1) {
+        yah_error("Get running daemon pid error");
+    } else {
+        long pid = getpid();
+        if(daemon_id == pid) {
+            // Todo: stop all jobs
+            exit(SIGTERM);
+        }
     }
 }
