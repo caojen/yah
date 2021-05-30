@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "yah_const.h"
 #include "yah_log.h"
@@ -10,7 +11,13 @@
 
 int
 yah_daemonize(void) {
+    int isrunning = check_daemon_running();
+    if(isrunning == YAH_DAEMON_RUNNING) {
+        yah_error("lockfile failed. deamon is running.");
+        exit(1);
+    }
 
+    return 0;
 }
 
 int
@@ -27,6 +34,7 @@ check_daemon_running(void) {
             return YAH_DAEMON_RUNNING;
         } else {
             yah_error("cannot lock %s: %s", YAH_LOCKFILE, strerror(errno));
+            exit(1);
         }
     }
 
@@ -36,7 +44,8 @@ check_daemon_running(void) {
     char buf[16];
     sprintf(buf, "%ld", pid);
     write(fd, buf, strlen(buf) + 1);
-    yah_log("lockfile: ok");
+    yah_log("lockfile: ok. pid = %ld", pid);
+    sleep(19);
     return YAH_DAEMON_RUNNING;
 }
 

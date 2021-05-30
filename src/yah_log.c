@@ -11,13 +11,14 @@ yah_log_doit(FILE* fp, const char* fmt, va_list ap) {
     char buf[YAH_MAXLINE];
     int length = vsnprintf(buf, YAH_MAXLINE - 2, fmt, ap);
     buf[length] = '\n';
+    buf[length + 1] = 0;
 
     fputs(buf, fp);
 }
 
 void
 yah_log(const char* fmt, ...) {
-    if(log_level >= YAH_LOG_LEVEL_LOG) {
+    if(log_level <= YAH_LOG_LEVEL_LOG) {
         va_list ap;
 
         va_start(ap, fmt);
@@ -27,7 +28,7 @@ yah_log(const char* fmt, ...) {
 
 void
 yah_warn(const char* fmt, ...) {
-    if(log_level >= YAH_LOG_LEVEL_WARN) {
+    if(log_level <= YAH_LOG_LEVEL_WARN) {
         va_list ap;
 
         va_start(ap, fmt);
@@ -37,7 +38,7 @@ yah_warn(const char* fmt, ...) {
 
 void
 yah_error(const char* fmt, ...) {
-    if(log_level >= YAH_LOG_LEVEL_ERROR) {
+    if(log_level <= YAH_LOG_LEVEL_ERROR) {
         va_list ap;
 
         va_start(ap, fmt);
@@ -50,6 +51,6 @@ yah_error(const char* fmt, ...) {
 
 void
 unimplemented() {
-    sprintf(stderr, "Unimplemented!");
+    fprintf(stderr, "Unimplemented!\n");
     exit(1);
 }
