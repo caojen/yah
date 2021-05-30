@@ -33,7 +33,9 @@ yah_warn(const char* fmt, ...) {
         va_list ap;
 
         va_start(ap, fmt);
-        yah_log_doit(stdout, fmt, ap);
+        char buf[YAH_MAXLINE];
+        sprintf(buf, "warn: %s", fmt);
+        yah_log_doit(stdout, buf, ap);
     }
 }
 
