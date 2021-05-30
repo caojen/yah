@@ -15,6 +15,6 @@ typedef const char* yah_error_type;
 #define YAH_E_NO_SUCH_FILE ((yah_error_type)("no such file"))
 #define YAH_E_AIRODUMP_NOT_FOUND ((yah_error_type)("airodump not found"))
 
-#define YAH_ERROR(x) yah_error(x);
+#define YAH_ERROR(x) yah_error((const char*)(x))
 
 #endif
