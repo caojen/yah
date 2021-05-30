@@ -16,7 +16,7 @@ yah_log_doit(FILE* fp, const char* fmt, va_list ap) {
         buf[length + 1] = 0;
 
         fputs(buf, fp);
-        fflush(buf);
+        fflush(fp);
     }
 }
 

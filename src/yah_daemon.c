@@ -49,7 +49,7 @@ yah_daemonize(void) {
     pid = fork();
     if(pid < 0) {
         yah_quit("cannot fork a new subprocess");
-    } else if(pid == 0) { /* parent process */
+    } else if(pid > 0) { /* parent process */
         yah_log("parent process exit...");
         exit(0);
     }
@@ -66,7 +66,7 @@ yah_daemonize(void) {
     }
     if((pid = fork()) < 0) {
         yah_quit("cannot fork a new subprocess");
-    } else if(pid == 0) { /* parent process */
+    } else if(pid > 0) { /* parent process */
         yah_log("parent process exit...");
         yah_log("see:");
         yah_log("\t%s", YAH_LOGFILE_LOG);
@@ -76,7 +76,13 @@ yah_daemonize(void) {
         exit(0);
     }
 
-    /* child process */
+    /* final child process */
+
+    int isrunning = check_daemon_running();
+    if(isrunning == YAH_DAEMON_RUNNING) {
+        YAH_ERROR(YAH_E_ALREADY_RUNNINT);
+        exit(1);
+    }
 
     /* close all file descriptors */
     if(rl.rlim_max == RLIM_INFINITY) {
@@ -110,20 +116,17 @@ yah_daemonize(void) {
         exit(EPIPE);
     }
 
-    int isrunning = check_daemon_running();
-    if(isrunning == YAH_DAEMON_RUNNING) {
-        YAH_ERROR(YAH_E_ALREADY_RUNNINT);
-        exit(1);
-    }
-
     /* change the dir to '/' */
     if(chdir("/") < 0) {
         yah_quit("cannot fork a new subprocess");
     }
 
     yah_log("done. daemon started");
-    sleep(100);
-    
+    for(int i = 0; i < 1000000; i++) {
+        for(int j = 0; j < 1000000; j++) {
+            int t = i * j;
+        }
+    }
     return 0;
 }
 

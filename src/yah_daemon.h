@@ -26,10 +26,10 @@ int check_daemon_running(void);
 /**
  * try locking the file with file descriptor fd
  * 
- * @{param} fd file descriptor. The file should open
+ * @param{fd} file descriptor. The file should open
  *  with rw, and with YAH_LOCKMODE mode
  */
-int lockfile(int);
+int lockfile(int fd);
 
 
 /**
