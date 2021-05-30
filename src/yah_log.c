@@ -23,7 +23,7 @@ yah_log(const char* fmt, ...) {
         va_list ap;
 
         va_start(ap, fmt);
-        yah_log_doit(stdout, fmt, ap);
+        yah_log_doit(YAH_FILENO_LOG, fmt, ap);
     }
 }
 
@@ -35,7 +35,7 @@ yah_warn(const char* fmt, ...) {
         va_start(ap, fmt);
         char buf[YAH_MAXLINE];
         sprintf(buf, "warn: %s", fmt);
-        yah_log_doit(stdout, buf, ap);
+        yah_log_doit(YAH_FILENO_WARN, buf, ap);
     }
 }
 
@@ -47,7 +47,7 @@ yah_error(const char* fmt, ...) {
         va_start(ap, fmt);
         char buf[YAH_MAXLINE];
         sprintf(buf, "fatal: %s", fmt);
-        yah_log_doit(stderr, buf, ap);
+        yah_log_doit(YAH_FILENO_ERROR, buf, ap);
     }
     if(!YAH_DAEMON_ERROR_ING) {
         exit(1);

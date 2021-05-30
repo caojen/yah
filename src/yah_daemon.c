@@ -10,6 +10,7 @@
 #include "yah_log.h"
 #include "yah_daemon.h"
 #include "yah_error.h"
+#include "yah_config.h"
 
 int
 yah_daemonize(void) {
@@ -23,12 +24,6 @@ yah_daemonize(void) {
         } else {
             yah_warn("you are not root. some steps may fail.");
         }
-    }
-
-    int isrunning = check_daemon_running();
-    if(isrunning == YAH_DAEMON_RUNNING) {
-        YAH_ERROR(YAH_E_ALREADY_RUNNINT);
-        exit(1);
     }
 
     // int has_airodump = check_airodump_exists();
@@ -78,11 +73,51 @@ yah_daemonize(void) {
     }
 
     /* child process */
-    /* change the dir to '/' */
-    if(chdir('/') < 0) {
-        yah_quit("cannot fork a new subprocess");
+
+    /* close all file descriptors */
+    if(rl.rlim_max == RLIM_INFINITY) {
+        rl.rlim_max = 1024;
+    }
+    for(int i = 0; i < rl.rlim_max; i++) {
+        close(i);
+    }
+    /* attach file descriptors 0, 1, 2 */
+    /* 0 -> /dev/null */
+    /* 1 -> /dev/null */
+    /* 2 -> /dev/null */
+    int fd0 = open("/dev/null", O_RDWR);
+    int fd1 = dup(fd0);
+    int fd2 = dup(fd0);
+    /**
+     * to test if fd0~fd2 is 0~2
+     * the stdout, stderr is closed, so just exit(EPIPE)
+     */
+    if(fd0 != 0 || fd1 != 1 || fd2 != 2) {
+        exit(EPIPE);
+    }
+    
+    /* init FILE* for logs */
+    YAH_FILENO_LOG = fopen(YAH_LOGFILE_LOG, "w");
+    YAH_FILENO_WARN = fopen(YAH_LOGFILE_WARN, "w");
+    YAH_FILENO_ERROR = fopen(YAH_LOGFILE_ERROR, "w");
+
+    // if one of them is NULL, exit with EPIPE error
+    if(!YAH_FILENO_LOG || !YAH_FILENO_WARN || !YAH_FILENO_ERROR) {
+        exit(EPIPE);
     }
 
+    int isrunning = check_daemon_running();
+    if(isrunning == YAH_DAEMON_RUNNING) {
+        YAH_ERROR(YAH_E_ALREADY_RUNNINT);
+        exit(1);
+    }
+
+    /* change the dir to '/' */
+    if(chdir("/") < 0) {
+        yah_quit("cannot fork a new subprocess");
+    }
+    sleep(100);
+    
     return 0;
 }
 

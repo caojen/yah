@@ -15,6 +15,8 @@
 
 int
 main(int argc, char** argv) {
+    yah_init_stdpipe();
+    
     if(argc <= 1) {
         /* no argument supplied. print usage. */
         yah_usage();
@@ -60,4 +62,11 @@ yah_usage(void) {
     printf(" reload: reload settings from config file: %s\n", YAH_CONFFILE);
     printf(" set <key> <value>: set setting. It will update config file.\n");
     printf("   'set' and 'reload' try to change the daemon. It the daemon is not started, error.\n");
+}
+
+void
+yah_init_stdpipe(void) {
+    YAH_FILENO_LOG = stdout;
+    YAH_FILENO_WARN = stdout;
+    YAH_FILENO_ERROR = stderr;
 }

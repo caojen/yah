@@ -13,8 +13,8 @@
 
 #if DEBUG
 
-#define YAH_LOCKFILE "yah.pid"
-#define YAH_CONFFILE "yah.conf"
+#define YAH_LOCKFILE "/Users/caojen/Documents/youarehere2/yah/yah.pid"
+#define YAH_CONFFILE "/Users/caojen/Documents/youarehere2/yah/yah.conf"
 
 #else
 

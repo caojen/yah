@@ -7,6 +7,9 @@
 #include "yah_config.h"
 
 int log_level = YAH_LOG_LEVEL_LOG;
+FILE* YAH_FILENO_LOG = 0;
+FILE* YAH_FILENO_WARN = 0;
+FILE* YAH_FILENO_ERROR = 0;
 
 // A mutex is used for reloading config file.
 // The thread that want to `modify` config should try to get the mutex.
