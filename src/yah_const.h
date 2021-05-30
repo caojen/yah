@@ -35,6 +35,7 @@
 // used in checking airodump
 #define YAH_AIRODUMP "/bin/airodump"
 #define YAH_AIRODUMP_EXISTS 1       // the airodump can be found
+#define YAH_CHECK_AIRODUMP 0
 
 // log file path
 #if DEBUG

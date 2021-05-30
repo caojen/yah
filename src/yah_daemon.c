@@ -26,12 +26,13 @@ yah_daemonize(void) {
             yah_warn("you are not root. some steps may fail.");
         }
     }
-
-    // int has_airodump = check_airodump_exists();
-    // if(has_airodump != YAH_AIRODUMP_EXISTS) {
-    //     YAH_ERROR(YAH_E_AIRODUMP_NOT_FOUND);
-    //     exit(1);
-    // }
+#if YAH_CHECK_AIRODUMP
+    int has_airodump = check_airodump_exists();
+    if(has_airodump != YAH_AIRODUMP_EXISTS) {
+        YAH_ERROR(YAH_E_AIRODUMP_NOT_FOUND);
+        exit(1);
+    }
+#endif
 
     /**
      * Get maximunm number of file descriptors
