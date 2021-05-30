@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include "yah_log.h"
 #include "yah_const.h"
@@ -42,7 +43,9 @@ yah_error(const char* fmt, ...) {
         va_list ap;
 
         va_start(ap, fmt);
-        yah_log_doit(stderr, fmt, ap);
+        char buf[YAH_MAXLINE];
+        sprintf(buf, "fatal: %s", fmt);
+        yah_log_doit(stderr, buf, ap);
     }
     if(!YAH_DAEMON_ERROR_ING) {
         exit(1);
