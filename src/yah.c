@@ -18,7 +18,16 @@ main(int argc, char* argv) {
 
     /* test all arguments. */
     for(int i = 1; i < argc; i++) {
-
+        if(strcmp(argv[i], "start") == 0) {
+            /* start as daemon */
+        } else if(strcmp(argv[i], "reload") == 0) {
+            /* reload config */
+            /* send SIGHUP to daemon */
+        } else if(strcmp(argv[i], "reset") == 0) {
+            /* reset a key */
+            /* set the key to config */
+            /* then send SIGHUP to daemon */
+        }
     }
 }
 
