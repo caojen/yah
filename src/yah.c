@@ -9,6 +9,7 @@
 
 #include "yah.h"
 #include "yah_const.h"
+#include "yah_log.h"
 
 int
 main(int argc, char** argv) {
@@ -22,13 +23,16 @@ main(int argc, char** argv) {
     for(int i = 1; i < argc; i++) {
         if(strcmp(argv[i], "start") == 0) {
             /* start as daemon */
+            unimplemented();
         } else if(strcmp(argv[i], "reload") == 0) {
             /* reload config */
             /* send SIGHUP to daemon */
+            unimplemented();
         } else if(strcmp(argv[i], "set") == 0) {
             /* set a key */
             /* set the key to config */
             /* then send SIGHUP to daemon */
+            unimplemented();
         } else {
             yah_usage();
             exit(EINVAL);
