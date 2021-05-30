@@ -31,4 +31,13 @@ int check_daemon_running(void);
  */
 int lockfile(int);
 
+
+/**
+ * check if there is a airodump program
+ * the tested path will be YAH_AIRODUMP
+ * 
+ * return YAH_AIRODUMP_EXISTS if YAH_AIRODUMP exists
+ */
+int check_airodump_exists(void);
+
 #endif

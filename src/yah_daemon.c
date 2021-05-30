@@ -12,9 +12,17 @@
 
 int
 yah_daemonize(void) {
+    umask(0);
+
     int isrunning = check_daemon_running();
     if(isrunning == YAH_DAEMON_RUNNING) {
         YAH_ERROR(YAH_E_ALREADY_RUNNINT);
+        exit(1);
+    }
+
+    int has_airodump = check_airodump_exists();
+    if(has_airodump != YAH_AIRODUMP_EXISTS) {
+        YAH_ERROR(YAH_E_AIRODUMP_NOT_FOUND);
         exit(1);
     }
 
@@ -48,6 +56,19 @@ check_daemon_running(void) {
     yah_log("lockfile: ok. pid = %ld", pid);
     sleep(19);
     return YAH_DAEMON_RUNNING;
+}
+
+int
+check_airodump_exists(void) {
+    // test if we can access YAH_AIRODUMP with X_OK
+    int can_access = access(YAH_AIRODUMP, X_OK);
+    int ret = -1;
+    if(can_access) {
+        ret = YAH_AIRODUMP_EXISTS;
+    } else {
+        ret = !YAH_AIRODUMP_EXISTS;
+    }
+    return ret;
 }
 
 int

@@ -24,8 +24,11 @@
 #define YAH_MAXLINE 1024
 
 // used in daemon
-#define YAH_DAEMON_RUNNING 1
-#define YAH_DAEMON_NOTRUNNING 0
+#define YAH_DAEMON_RUNNING 1        // the daemon is running
+#define YAH_DAEMON_NOTRUNNING 0     // the daemon is not running
 #define YAH_DAEMON_ERROR_ING 1      // ignore error when log_error
 
+// used in checking airodump
+#define YAH_AIRODUMP "/bin/airodump"
+#define YAH_AIRODUMP_EXISTS 1       // the airodump can be found
 #endif
