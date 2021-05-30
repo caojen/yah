@@ -40,4 +40,11 @@ int lockfile(int);
  */
 int check_airodump_exists(void);
 
+
+/**
+ * check if the current user is 'root'
+ * if not, and YAH_ROOT_REQUIRED, then abort()/exit(3)
+ */
+int check_is_root(void);
+
 #endif

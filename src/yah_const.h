@@ -12,11 +12,15 @@
 #define DEBUG 1
 
 #if DEBUG
-    #define YAH_LOCKFILE "yah.pid"
-    #define YAH_CONFFILE "yah.conf"
+
+#define YAH_LOCKFILE "yah.pid"
+#define YAH_CONFFILE "yah.conf"
+
 #else
-    #define YAH_LOCKFILE "/var/run/yah.pid"
-    #define YAH_CONFFILE "/etc/yah.conf"
+
+#define YAH_LOCKFILE "/var/run/yah.pid"
+#define YAH_CONFFILE "/etc/yah.conf"
+
 #endif
 
 #define YAH_LOCKMODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
@@ -31,4 +35,18 @@
 // used in checking airodump
 #define YAH_AIRODUMP "/bin/airodump"
 #define YAH_AIRODUMP_EXISTS 1       // the airodump can be found
+
+// log file path
+#if DEBUG
+    #define YAH_LOGFILE_LOG "yah.log"
+    #define YAH_LOGFILE_WARN "yah.warn"
+    #define YAH_LOGFILE_ERROR "yah.error"
 #endif
+    #define YAH_LOGFILE_LOG "yah.log"
+    #define YAH_LOGFILE_WARN "yah.warn"
+    #define YAH_LOGFILE_ERROR "yah.error"
+#endif
+
+// for root testing
+#define YAH_RUNNING_AS_ROOT 1
+#define YAH_ROOT_REQUIRED 0

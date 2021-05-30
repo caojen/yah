@@ -49,6 +49,7 @@ main(int argc, char** argv) {
             exit(EINVAL);
         }
     }
+    exit(0);
 }
 
 void

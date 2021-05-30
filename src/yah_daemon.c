@@ -14,17 +14,55 @@ int
 yah_daemonize(void) {
     umask(0);
 
+    int isroot = check_is_root();
+    if(isroot == ~YAH_RUNNING_AS_ROOT) {
+        if(YAH_ROOT_REQUIRED) {
+            YAH_ERROR(YAH_E_SHOULD_BE_ROOT);
+            exit(3);
+        } else {
+            yah_warn("you are not root. some steps may fail.");
+        }
+    }
+
     int isrunning = check_daemon_running();
     if(isrunning == YAH_DAEMON_RUNNING) {
         YAH_ERROR(YAH_E_ALREADY_RUNNINT);
         exit(1);
     }
 
-    int has_airodump = check_airodump_exists();
-    if(has_airodump != YAH_AIRODUMP_EXISTS) {
-        YAH_ERROR(YAH_E_AIRODUMP_NOT_FOUND);
+    // int has_airodump = check_airodump_exists();
+    // if(has_airodump != YAH_AIRODUMP_EXISTS) {
+    //     YAH_ERROR(YAH_E_AIRODUMP_NOT_FOUND);
+    //     exit(1);
+    // }
+
+    /**
+     * Get maximunm number of file descriptors
+     */
+    struct rlimit rl;
+    if(getrlimit(RLIMIT_NOFILE, &rl) < 0) {
+        yah_error("cannot get the maximun number of file descriptors");
         exit(1);
     }
+
+    /**
+     * fork and use setsid()
+     * In this way, the new process will become a session leader,
+     *  and no tty will connect to it.
+     */
+    // pid_t pid;
+    // pid = fork();
+    // if(pid < 0) {
+    //     yah_error("cannot fork a new subprocess");
+    //     exit(1);
+    // } else if(pid == 0) { /* parent process */
+    //     exit(0);
+    // }
+    // exit(0);
+
+    /* child process */
+    // setsid();
+
 
     return 0;
 }
@@ -65,7 +103,7 @@ check_airodump_exists(void) {
     if(can_access == 0) {
         ret = YAH_AIRODUMP_EXISTS;
     } else {
-        ret = !YAH_AIRODUMP_EXISTS;
+        ret = ~YAH_AIRODUMP_EXISTS;
     }
     return ret;
 }
@@ -80,4 +118,14 @@ lockfile(int fd) {
     int ret = fcntl(fd, F_SETLK, &fl);
 
     return ret;
+}
+
+int
+check_is_root(void) {
+    uid_t id = getuid();
+    if(id == 0) {
+        return YAH_RUNNING_AS_ROOT;
+    } else {
+        return ~YAH_RUNNING_AS_ROOT;
+    }
 }
