@@ -38,10 +38,10 @@
 
 // log file path
 #if DEBUG
-    #define YAH_LOGFILE_LOG "yah.log"
-    #define YAH_LOGFILE_WARN "yah.warn"
-    #define YAH_LOGFILE_ERROR "yah.error"
-#endif
+    #define YAH_LOGFILE_LOG "/Users/caojen/Documents/youarehere2/yah/yah.log"
+    #define YAH_LOGFILE_WARN "/Users/caojen/Documents/youarehere2/yah/yah.warn"
+    #define YAH_LOGFILE_ERROR "/Users/caojen/Documents/youarehere2/yah/yah.error"
+#else
     #define YAH_LOGFILE_LOG "yah.log"
     #define YAH_LOGFILE_WARN "yah.warn"
     #define YAH_LOGFILE_ERROR "yah.error"
@@ -50,3 +50,5 @@
 // for root testing
 #define YAH_RUNNING_AS_ROOT 1
 #define YAH_ROOT_REQUIRED 0
+
+#endif

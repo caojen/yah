@@ -53,7 +53,6 @@ yah_daemonize(void) {
         yah_log("parent process exit...");
         exit(0);
     }
-    exit(0);
 
     /* child process */
     setsid();
@@ -116,7 +115,8 @@ yah_daemonize(void) {
     if(chdir("/") < 0) {
         yah_quit("cannot fork a new subprocess");
     }
-    sleep(100);
+
+    yah_log("done. daemon started");
     
     return 0;
 }

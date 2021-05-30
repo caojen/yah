@@ -3,3 +3,6 @@
 **/*.o
 bin/*
 **/*.pid
+**/*.error
+**/*.log
+**/*.warn
