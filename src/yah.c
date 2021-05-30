@@ -60,7 +60,7 @@ yah_usage(void) {
     printf(" Usage: Yah [start | reload | set] <...>\n\n");
     printf(" start: start daemon. If the daemon is started, error.\n");
     printf(" reload: reload settings from config file: %s\n", YAH_CONFFILE);
-    printf(" set <key> <value>: set setting. It will update config file.\n");
+    printf(" set <key> <value>: set setting. It willn't update config file.\n");
     printf("   'set' and 'reload' try to change the daemon. It the daemon is not started, error.\n");
 }
 
