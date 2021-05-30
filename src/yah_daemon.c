@@ -68,6 +68,11 @@ yah_daemonize(void) {
         yah_quit("cannot fork a new subprocess");
     } else if(pid == 0) { /* parent process */
         yah_log("parent process exit...");
+        yah_log("see:");
+        yah_log("\t%s", YAH_LOGFILE_LOG);
+        yah_log("\t%s", YAH_LOGFILE_WARN);
+        yah_log("\t%s", YAH_LOGFILE_ERROR);
+        yah_log(" for more starting status");
         exit(0);
     }
 
@@ -117,6 +122,7 @@ yah_daemonize(void) {
     }
 
     yah_log("done. daemon started");
+    sleep(100);
     
     return 0;
 }

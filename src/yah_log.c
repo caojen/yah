@@ -9,12 +9,15 @@
 
 void
 yah_log_doit(FILE* fp, const char* fmt, va_list ap) {
-    char buf[YAH_MAXLINE];
-    int length = vsnprintf(buf, YAH_MAXLINE - 2, fmt, ap);
-    buf[length] = '\n';
-    buf[length + 1] = 0;
+    if(fp != NULL) {
+        char buf[YAH_MAXLINE];
+        int length = vsnprintf(buf, YAH_MAXLINE - 2, fmt, ap);
+        buf[length] = '\n';
+        buf[length + 1] = 0;
 
-    fputs(buf, fp);
+        fputs(buf, fp);
+        fflush(buf);
+    }
 }
 
 void
