@@ -222,7 +222,7 @@ get_running_daemon_pid(void) {
         // read fd to get the pid(a string)
         char pid[YAH_MAXLINE];
         if(read(fd, pid, YAH_MAXLINE) < 0) {
-            yah_error("cannot read from %s: %s", YAH_LOCKFILE, stderr(errno));
+            yah_error("cannot read from %s: %s", YAH_LOCKFILE, strerror(errno));
         }
         return atoi(pid);
     } else {
