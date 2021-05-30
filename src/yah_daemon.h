@@ -47,4 +47,10 @@ int check_airodump_exists(void);
  */
 int check_is_root(void);
 
+/**
+ * to get current daemon's pid
+ * if no daemon is running, return 0
+ */
+int get_running_daemon_pid(void);
+
 #endif
