@@ -11,6 +11,7 @@
 #include "yah_const.h"
 #include "yah_log.h"
 #include "yah_daemon.h"
+#include "yah_config.h"
 
 int
 main(int argc, char** argv) {
@@ -18,6 +19,12 @@ main(int argc, char** argv) {
         /* no argument supplied. print usage. */
         yah_usage();
         exit(EINVAL);
+    }
+
+    // load config file when the program start
+    if(yah_reload_config() != 0) {
+        yah_error("cannot load config");
+        exit(1);
     }
 
     /* test all arguments. */
