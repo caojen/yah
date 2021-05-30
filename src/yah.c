@@ -27,6 +27,9 @@ main(int argc, char* argv) {
             /* reset a key */
             /* set the key to config */
             /* then send SIGHUP to daemon */
+        } else {
+            yah_usage();
+            exit(EINVAL);
         }
     }
 }
