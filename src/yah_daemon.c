@@ -36,7 +36,7 @@ check_daemon_running(void) {
     char buf[16];
     sprintf(buf, "%ld", pid);
     write(fd, buf, strlen(buf) + 1);
-
+    yah_log("lockfile: ok");
     return YAH_DAEMON_RUNNING;
 }
 
