@@ -33,7 +33,7 @@
 #define YAH_DAEMON_ERROR_ING 1      // ignore error when log_error
 
 // used in checking airodump
-#define YAH_AIRODUMP "/bin/airodump"
+#define YAH_AIRODUMP "/usr/bin/airodump"
 #define YAH_AIRODUMP_EXISTS 1       // the airodump can be found
 #define YAH_CHECK_AIRODUMP 0
 
