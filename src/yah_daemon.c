@@ -122,11 +122,6 @@ yah_daemonize(void) {
     }
 
     yah_log("done. daemon started");
-    for(int i = 0; i < 1000000; i++) {
-        for(int j = 0; j < 1000000; j++) {
-            int t = i * j;
-        }
-    }
     return 0;
 }
 

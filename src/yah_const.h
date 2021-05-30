@@ -25,7 +25,7 @@
 
 #define YAH_LOCKMODE (S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 
-#define YAH_MAXLINE 1024
+#define YAH_MAXLINE 2048
 
 // used in daemon
 #define YAH_DAEMON_RUNNING 1        // the daemon is running

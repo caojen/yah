@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <time.h>
 
 #include "yah_log.h"
 #include "yah_const.h"
@@ -10,11 +11,18 @@
 void
 yah_log_doit(FILE* fp, const char* fmt, va_list ap) {
     if(fp != NULL) {
+        
+        time_t t = time(NULL);
+        struct tm* local = localtime(&t);
+
+        char time_str[YAH_MAXLINE];
+        strftime(time_str, YAH_MAXLINE, "[%c] ", local);
+
         char buf[YAH_MAXLINE];
         int length = vsnprintf(buf, YAH_MAXLINE - 2, fmt, ap);
         buf[length] = '\n';
         buf[length + 1] = 0;
-
+        fputs(time_str, fp);
         fputs(buf, fp);
         fflush(fp);
     }
