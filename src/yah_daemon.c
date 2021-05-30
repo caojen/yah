@@ -54,7 +54,6 @@ check_daemon_running(void) {
     sprintf(buf, "%ld", pid);
     write(fd, buf, strlen(buf) + 1);
     yah_log("lockfile: ok. pid = %ld", pid);
-    sleep(19);
     return YAH_DAEMON_RUNNING;
 }
 
