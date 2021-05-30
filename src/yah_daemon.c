@@ -50,18 +50,19 @@ yah_daemonize(void) {
      * In this way, the new process will become a session leader,
      *  and no tty will connect to it.
      */
-    // pid_t pid;
-    // pid = fork();
-    // if(pid < 0) {
-    //     yah_error("cannot fork a new subprocess");
-    //     exit(1);
-    // } else if(pid == 0) { /* parent process */
-    //     exit(0);
-    // }
-    // exit(0);
+    pid_t pid;
+    pid = fork();
+    if(pid < 0) {
+        yah_error("cannot fork a new subprocess");
+        exit(1);
+    } else if(pid == 0) { /* parent process */
+        yah_log("parent process exit...");
+        exit(0);
+    }
+    exit(0);
 
     /* child process */
-    // setsid();
+    setsid();
 
 
     return 0;
