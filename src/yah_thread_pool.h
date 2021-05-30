@@ -21,4 +21,6 @@
 #ifndef YAH_THREAD_POOL_H
 #define YAH_THREAD_POOL_H
 
+#include "yah_thread_pool_job.h"
+
 #endif
