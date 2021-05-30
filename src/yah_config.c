@@ -35,11 +35,11 @@ yah_reload_config() {
             ++ptr;
         }
         if(*ptr == '\n') {
-            // empty line:
+            // empty line
             continue;
         }
         if(*ptr == '#') {
-            // try skiping to next line:
+            // try skiping to next line
             int length = strlen(line);
             if(length >= YAH_MAXLINE - 1) {
                 char ch;
