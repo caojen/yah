@@ -76,7 +76,7 @@ int
 yah_set_config_without_mutex(const char* key, int value) {
     int ret = -1;
 
-    if(strcmp(key, "log_level")) {
+    if(strcmp(key, "log_level") == 0) {
         log_level = value;
         ret = 0;
     }
