@@ -14,8 +14,6 @@ pthread_mutex_t yah_config_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int
 yah_reload_config() {
-    // const char* conf = YAH_CONFFILE;
-
     if(pthread_mutex_lock(&yah_config_mutex) != 0) {
         perror("open config file");
         return -1;
