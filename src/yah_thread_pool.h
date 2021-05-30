@@ -1,6 +1,6 @@
 /**
  * Yah use thread pool to
- *  1. fetch stdout from coprocess `airodump`, which is `job`
+ *  1. fetch stdout from coprocess `airodump`, which is `job`(many thread convert the stdout to job)
  *  2. the job will be stored into database by one thread
  *  3. after stored, the job will be thrown into thread_pool's job queue by that thread
  *  4. multi-thread will fetch all jobs, and use network to send data in that job.
