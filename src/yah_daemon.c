@@ -54,7 +54,7 @@ check_daemon_running(void) {
     sprintf(buf, "%ld", pid);
     write(fd, buf, strlen(buf) + 1);
     yah_log("lockfile: ok. pid = %ld", pid);
-    return YAH_DAEMON_RUNNING;
+    return YAH_DAEMON_NOTRUNNING;
 }
 
 int
@@ -62,7 +62,7 @@ check_airodump_exists(void) {
     // test if we can access YAH_AIRODUMP with X_OK
     int can_access = access(YAH_AIRODUMP, X_OK);
     int ret = -1;
-    if(can_access) {
+    if(can_access == 0) {
         ret = YAH_AIRODUMP_EXISTS;
     } else {
         ret = !YAH_AIRODUMP_EXISTS;
