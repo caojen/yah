@@ -11,7 +11,7 @@
 #include "yah_const.h"
 
 int
-main(int argc, char* argv) {
+main(int argc, char** argv) {
     if(argc <= 1) {
         /* no argument supplied. print usage. */
         yah_usage();
