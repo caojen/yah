@@ -10,6 +10,10 @@
 
 #include <pthread.h>
 
+#include "yah_thread_pool_manager.h"
+
+struct yah_manager;
+
 struct yah_worker {
     // the worker's pthread_id
     pthread_t pthread_id;
@@ -21,6 +25,9 @@ struct yah_worker {
     struct yah_worker* next;
     // prev worker
     struct yah_worker* prev;
+
+    // the manager that the worker can access
+    struct yah_manager* manager;
 };
 
 // init a worker
