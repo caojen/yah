@@ -9,9 +9,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#define DEBUG 1
-
-#if DEBUG
+#ifdef DEBUG
 
 #define YAH_LOCKFILE "/Users/caojen/Documents/youarehere2/yah/yah.pid"
 #define YAH_CONFFILE "/Users/caojen/Documents/youarehere2/yah/yah.conf"
@@ -44,9 +42,9 @@
     #define YAH_LOGFILE_WARN "/Users/caojen/Documents/youarehere2/yah/yah.warn"
     #define YAH_LOGFILE_ERROR "/Users/caojen/Documents/youarehere2/yah/yah.error"
 #else
-    #define YAH_LOGFILE_LOG "yah.log"
-    #define YAH_LOGFILE_WARN "yah.warn"
-    #define YAH_LOGFILE_ERROR "yah.error"
+    #define YAH_LOGFILE_LOG "~/yah.log"
+    #define YAH_LOGFILE_WARN "~/yah.warn"
+    #define YAH_LOGFILE_ERROR "~/yah.error"
 #endif
 
 // for root testing
