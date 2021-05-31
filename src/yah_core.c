@@ -75,6 +75,6 @@ void yah_core_start() {
      * these job is adding by main thread
      */
 
-    // Fetch-Push pool
+    // Format-Push pool
     yah_thread_pool* fp_pool = yah_thread_pool_init(fpworkers, fpworker_main_func);
 }
