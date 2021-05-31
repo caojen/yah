@@ -49,7 +49,7 @@ main(int argc, char** argv) {
             } else if(daemon_pid == 0) {
                 yah_quit("no daemon is running");
             } else {
-                yah_log("sending SIGTERM to pid %ld", daemon_pid);
+                yah_log("sending SIGHUP to pid %ld", daemon_pid);
                 send_signal(daemon_pid, SIGHUP);
                 yah_log("done");
             }
@@ -60,6 +60,17 @@ main(int argc, char** argv) {
             /* then send SIGHUP to daemon */
             unimplemented();
             exit(0);
+        } else if(strcmp(argv[i], "stop") == 0) {
+            long daemon_pid = get_running_daemon_pid();
+            if(daemon_pid == -1) {
+                yah_quit("cannot get the current running daemon pid");
+            } else if(daemon_pid == 0) {
+                yah_quit("no daemon is running");
+            } else {
+                yah_log("sending SIGTERM to pid %ld", daemon_pid);
+                send_signal(daemon_pid, SIGTERM);
+                yah_log("done");
+            }
         } else {
             yah_usage();
             exit(EINVAL);

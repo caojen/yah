@@ -36,17 +36,6 @@ yah_thread_pool_init(unsigned int wnum, void* (*func)(void*)) {
         return NULL;
     }
 
-    // add wnum workers into workers list
-    for(unsigned i = 0; i < wnum; i++) {
-        struct yah_worker* worker = YAH_WORKER_INITIALIZER;
-        int c = pthread_create(&worker->pthread_id, NULL, func, (void*)worker);
-        if(c != 0) {
-            yah_error("thread_pool_manager init worker at %d failed, %s", i + 1, strerror(c));
-            return NULL;
-        }
-        yah_worker_list_add_worker(ret->workers, worker);
-    }
-
     // init mutex
     if(pthread_mutex_init(&ret->job_mutex, NULL) != 0) {
         yah_error("thread_pool_manager init job queue mutex error");
@@ -57,6 +46,18 @@ yah_thread_pool_init(unsigned int wnum, void* (*func)(void*)) {
     if(pthread_cond_init(&ret->worker_cond, NULL) != 0) {
         yah_error("thread_pool_manager init worker cond error");
         return NULL;
+    }
+
+    // add wnum workers into workers list
+    for(unsigned i = 0; i < wnum; i++) {
+        struct yah_worker* worker = YAH_WORKER_INITIALIZER;
+        worker->manager = ret;
+        int c = pthread_create(&worker->pthread_id, NULL, func, (void*)worker);
+        if(c != 0) {
+            yah_error("thread_pool_manager init worker at %d failed, %s", i + 1, strerror(c));
+            return NULL;
+        }
+        yah_worker_list_add_worker(ret->workers, worker);
     }
 
     return ret;

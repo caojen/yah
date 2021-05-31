@@ -69,11 +69,6 @@ yah_pty_fork(int* ptrfdm, char* slave_name, int slave_namesz,
         yah_quit("cannot fork in pty_fork");
     } else if(pid == 0) {
         yah_log("blocking the subprocess");
-        for(int i = 0; i <100000;i++) {
-            for(int j = 0; j < 100000000;j ++) {
-                int t = i * j;
-            }
-        }
         /* child process */
         if(setsid() < 0) {
             yah_quit("pty_fork.child: setsid error");

@@ -47,27 +47,22 @@ void yah_core_start() {
     }
 
     //   1.2 init a pseudo terminal
-    int airodump_fd;
-    char slave_name[MAX_PTYNAME];
-    struct winsize wsize;
-    wsize.ws_row = 2048;
-    wsize.ws_col = 2048;
-    if((airodump_pid = yah_pty_fork(&airodump_fd, slave_name, MAX_PTYNAME, NULL, &wsize)) < 0) {
-        yah_quit("cannot run pty_fork");
-    } else if(airodump_pid == 0) {
-        /* child process */
-        // system call exec
-        yah_log("core pty_child will call execl");
-        // for(int i = 0; i <100000;i++) {
-        //     for(int j = 0; j < 100000000;j ++) {
-        //         int t = i * j;
-        //     }
-        // }
-        if(execl(YAH_AIRODUMP, YAH_AIRODUMP_NAME, "-C", "2412-2472,5180-5825", "-f", "10", "--berlin", "3", NULL) == -1) {
-            yah_error("core: system call exec return -1 error");
-        }
-        exit(127);
-    }
+    // int airodump_fd;
+    // char slave_name[MAX_PTYNAME];
+    // struct winsize wsize;
+    // wsize.ws_row = 2048;
+    // wsize.ws_col = 2048;
+    // if((airodump_pid = yah_pty_fork(&airodump_fd, slave_name, MAX_PTYNAME, NULL, &wsize)) < 0) {
+    //     yah_quit("cannot run pty_fork");
+    // } else if(airodump_pid == 0) {
+    //     /* child process */
+    //     // system call exec
+    //     yah_log("core pty_child will call execl");
+    //     if(execl(YAH_AIRODUMP, YAH_AIRODUMP_NAME, "-C", "2412-2472,5180-5825", "-f", "10", "--berlin", "3", NULL) == -1) {
+    //         yah_error("core: system call exec return -1 error");
+    //     }
+    //     exit(127);
+    // }
 
     yah_log("core: pty_fork done, with airodump.pid = %d.", airodump_pid);
     // for(int i = 0; i <100000;i++) {
@@ -98,19 +93,22 @@ void yah_core_start() {
      */
 
     // Format-Push pool
-    yah_thread_pool* fp_pool = yah_thread_pool_init(fpworkers, fpworker_main_func);
+    // yah_thread_pool* fp_pool = yah_thread_pool_init(fpworkers, fpworker_main_func);
     yah_log("fp_pool init done");
 
     /**
      * 2. capture all outputs from fd
      */
-    char buf[YAH_CAPTURE_LINE];
-    yah_log("will call fdopen");
-    FILE* fp = fdopen(airodump_fd, "r");
-    // get line by line
-    yah_log("====getting from fd = %d, fp = %d", airodump_fd, fp);
-    while(fgets(buf, YAH_CAPTURE_LINE, fp) != NULL) {
-        yah_log(buf);
+    // char buf[YAH_CAPTURE_LINE];
+    // yah_log("will call fdopen");
+    // FILE* fp = fdopen(airodump_fd, "r");
+    // // get line by line
+    // yah_log("====getting from fd = %d, fp = %d", airodump_fd, fp);
+    // while(fgets(buf, YAH_CAPTURE_LINE, fp) != NULL) {
+    //     yah_log(buf);
+    // }
+    while(1) {
+        yah_log("main process running...");
     }
 
     // use block I/O read to receive
