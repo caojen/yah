@@ -30,5 +30,7 @@ void yah_core_start() {
     char device_name[YAH_MAX_DEVICE_NAME];
     if(get_airodump_device_name(device_name) != 0) {
         yah_quit("cannot get device name. abort.");
+    } else {
+        yah_log("get device name = %s", device_name);
     }
 }
