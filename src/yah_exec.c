@@ -33,7 +33,7 @@ yah_exec_shell(const char* command, char* output, int outputsz) {
         // snprintf(__command, YAH_MAXLINE + 2, "\"%s\"", command);
         // yah_log("generate command: %s", __command);
         // execl(YAH_SEHLL_PATH, YAH_SHELL, "-c", __command);
-        execl(YAH_SEHLL_PATH, YAH_SHELL, "-c", command);
+        execl(YAH_SEHLL_PATH, YAH_SHELL, "-c", command, NULL);
         exit(127);
     } else {
         /* parent process */

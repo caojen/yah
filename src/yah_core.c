@@ -53,7 +53,7 @@ void yah_core_start() {
         /* child process */
         // system call exec
         yah_log("core: pty_fork done. will system call exec");
-        execl(YAH_AIRODUMP, YAH_AIRODUMP_NAME, "-C", "2412-2472,5180-5825", "-f", "10", "--berlin", "3");
+        execl(YAH_AIRODUMP, YAH_AIRODUMP_NAME, "-C", "2412-2472,5180-5825", "-f", "10", "--berlin", "3", NULL);
         exit(127);
     }
 
