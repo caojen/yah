@@ -56,7 +56,6 @@ long get_running_daemon_pid(void);
 
 /**
  * if current process is daemon, exit.
- * if not, nothing happens.
  */
 void daemon_exit(void);
 

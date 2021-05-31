@@ -13,6 +13,7 @@
 #include "yah_daemon.h"
 #include "yah_config.h"
 #include "yah_core.h"
+#include "yah_signal.h"
 
 int
 main(int argc, char** argv) {
@@ -41,7 +42,17 @@ main(int argc, char** argv) {
         } else if(strcmp(argv[i], "reload") == 0) {
             /* reload config */
             /* send SIGHUP to daemon */
-            unimplemented();
+            // get pid of the current daemon
+            long daemon_pid = get_running_daemon_pid();
+            if(daemon_pid == -1) {
+                yah_quit("cannot get the current running daemon pid");
+            } else if(daemon_pid == 0) {
+                yah_quit("no daemon is running");
+            } else {
+                yah_log("sending SIGTERM to pid %ld", daemon_pid);
+                send_signal(daemon_pid, SIGHUP);
+                yah_log("done");
+            }
             exit(0);
         } else if(strcmp(argv[i], "set") == 0) {
             /* set a key */
