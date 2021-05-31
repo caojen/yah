@@ -12,6 +12,7 @@
 #include "yah_log.h"
 #include "yah_daemon.h"
 #include "yah_config.h"
+#include "yah_core.h"
 
 int
 main(int argc, char** argv) {
@@ -34,6 +35,7 @@ main(int argc, char** argv) {
         if(strcmp(argv[i], "start") == 0) {
             /* start as daemon */
             yah_daemonize();
+            yah_core_start();
             exit(0);
         } else if(strcmp(argv[i], "reload") == 0) {
             /* reload config */
