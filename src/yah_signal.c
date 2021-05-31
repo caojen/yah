@@ -9,14 +9,14 @@ signal_handler_register(void) {
     struct sigaction sa;
 
     int signals[] = { SIGHUP, SIGTERM };
-    void (*handlers[])(int) = {
+    void (*handlers[])(int, siginfo_t*, void*) = {
         sighup_handler, sigterm_handler
     };
     int ret = sizeof(signals) / sizeof(signals[0]);
 
     for(int i = 0; i < ret; i++) {
-        sa.sa_handler = handlers[i];
-        sa.sa_flags = 0;
+        sa.sa_sigaction = handlers[i];
+        sa.sa_flags = SA_SIGINFO;
         sigemptyset(&sa.sa_mask);
         sigaddset(&sa.sa_mask, signals[i]);
         if(sigaction(signals[i], &sa, NULL) < 0) {
@@ -27,13 +27,13 @@ signal_handler_register(void) {
 }
 
 void
-sighup_handler(int signo) {
+sighup_handler(int signo, siginfo_t* info, void* context) {
     /**
      * SIGHUP received. reload config.
      */
 
     if(signo == SIGHUP) {
-        yah_log("SIGHUP received. Reloading config file");
+        yah_log("SIGHUP received from pid = %ld. Reloading config file", info->si_pid);
         yah_log("config file:, %s", YAH_CONFFILE);
         int res = yah_reload_config();
         if(res != 0) {
@@ -47,7 +47,7 @@ sighup_handler(int signo) {
 }
 
 void
-sigterm_handler(int signo) {
+sigterm_handler(int signo, siginfo_t* info, void* context) {
     /**
      * SIGTERM received; exiting
      */

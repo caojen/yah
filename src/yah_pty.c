@@ -68,20 +68,26 @@ yah_pty_fork(int* ptrfdm, char* slave_name, int slave_namesz,
     if((pid = fork()) < 0) {
         yah_quit("cannot fork in pty_fork");
     } else if(pid == 0) {
+        yah_log("blocking the subprocess");
+        
         /* child process */
         if(setsid() < 0) {
             yah_quit("pty_fork.child: setsid error");
         }
+
         if((fds = yah_ptys_open(pts_name)) < 0) {
             yah_quit("pty_fork.child: cannot open ptys");
         }
+        
         yah_log("pty_fork.child: open success with fds=%d, %s", fds, pts_name);
-        close(fdm);
+        // close(fdm);
+       
         if(slave_termios != NULL) {
             if(tcsetattr(fds, TCSANOW, slave_termios) < 0) {
                 yah_error("pty_fork.child: error when setting termios");
             }
         }
+        
         if(slave_winsize != NULL) {
             if(ioctl(fds, TIOCSWINSZ, slave_winsize) < 0) {
                 yah_error("pty_fork.child: error when setting winsize");

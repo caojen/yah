@@ -22,12 +22,12 @@ int signal_handler_register(void);
 /**
  * handle SIGHUP
  */
-void sighup_handler(int signo);
+void sighup_handler(int signo, siginfo_t* info, void* context);
 
 /**
  * handle SIGTERM
  */
-void sigterm_handler(int signo);
+void sigterm_handler(int signo, siginfo_t* info, void* context);
 
 /**
  * send signal to pid

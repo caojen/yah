@@ -20,8 +20,6 @@ yah_thread_pool_init(unsigned int wnum, void* (*func)(void*)) {
     }
     memset(ret, 0, sizeof(yah_thread_pool));
 
-    yah_log("1");
-
     // init pool's job queue, remain empty
     ret->jobs = (struct yah_job_queue*) malloc (sizeof(struct yah_job_queue));
     if(yah_job_queue_init(ret->jobs) != 0) {
@@ -29,8 +27,6 @@ yah_thread_pool_init(unsigned int wnum, void* (*func)(void*)) {
         yah_error("thread_pool_manager init job queue return NULL");
         return NULL;
     }
-
-    yah_log("2");
 
     // init pool's workers
     ret->workers = (struct yah_worker_list*) malloc (sizeof(struct yah_worker_list));
@@ -40,22 +36,16 @@ yah_thread_pool_init(unsigned int wnum, void* (*func)(void*)) {
         return NULL;
     }
 
-    yah_log("3");
-
     // add wnum workers into workers list
     for(unsigned i = 0; i < wnum; i++) {
-        yah_log("before add worker %d", i + 1);
         struct yah_worker* worker = YAH_WORKER_INITIALIZER;
         int c = pthread_create(&worker->pthread_id, NULL, func, (void*)worker);
         if(c != 0) {
             yah_error("thread_pool_manager init worker at %d failed, %s", i + 1, strerror(c));
             return NULL;
         }
-        yah_log("add worker done %d", i + 1);
         yah_worker_list_add_worker(ret->workers, worker);
     }
-
-    yah_log("4");
 
     // init mutex
     if(pthread_mutex_init(&ret->job_mutex, NULL) != 0) {
