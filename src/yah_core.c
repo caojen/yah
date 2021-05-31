@@ -23,5 +23,7 @@
 void yah_core_start() {
     yah_log("core is started...");
 
-    // 1 make airodump running
+    // 1. make airodump running.
+    //   1.1 airodump-ng require a device name(like wlan0), firstly, get it.
+    
 }
