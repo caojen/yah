@@ -30,7 +30,8 @@ int yah_ptys_open(char* pts_name);
 // return:
 //   the pid of subprocess for the parent process
 //   0 for the child process
-pid_t yah_pty_fork(int* ptrfdm, char* slave_name, char* slave_namesz,
-                    const struct termios* slave_termios, const struct winsize* slave_winsize);
+pid_t yah_pty_fork(int* ptrfdm, char* slave_name, int slave_namesz,
+                    const struct termios* slave_termios,
+                    const struct winsize* slave_winsize);
 
 #endif
