@@ -1,6 +1,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdio.h>
+#include <sys/wait.h>
 
 #include "yah_exec.h"
 #include "yah_log.h"
