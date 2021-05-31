@@ -22,4 +22,6 @@
  */
 void yah_core_start() {
     yah_log("core is started...");
+
+    // 1 make airodump running
 }
