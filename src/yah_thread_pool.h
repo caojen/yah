@@ -22,5 +22,11 @@
 #define YAH_THREAD_POOL_H
 
 #include "yah_thread_pool_job.h"
+#include "yah_thread_pool_worker.h"
+#include "yah_thread_pool_manager.h"
+
+// the callback function for workers
+// worker is the worker itself
+void* yah_thread_pool_callback(void* __worker);
 
 #endif
