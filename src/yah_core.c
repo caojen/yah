@@ -17,6 +17,8 @@
  *    a new job, as the input of another thread pool(see step 4.)
  * 4. create a thread pool to `receive all formatted data` and `push that data
  *    to remote storage(using network)`. pool's job is one data, using thread to push
+ * 5. create some other threads, these threads is for special functions.
+ *    e.g, testing network, testing system status
  */
 void yah_core_start() {
     yah_log("core is started...");
