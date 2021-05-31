@@ -13,14 +13,22 @@ struct yah_job {
     void* arg;
     // the way to destory arg:
     void (*arg_destory)(void* arg);
-    // the way to destory this job:
-    void (*destory)(struct yah_job* job);
 
     // next job
     struct yah_job* next;
     // prev job
     struct yah_job* prev;
 };
+
+// init a job
+// return that job if success
+// return NULL if failed
+inline struct yah_job* yah_job_init(void);
+
+// destory a job
+// will destory job->arg, if arg isn't null and arg_destory isn't null
+// return 0 if success
+inline int yah_job_destory(struct yah_job* job);
 
 struct yah_job_queue {
     // the job at the front of queue

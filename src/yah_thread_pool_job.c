@@ -3,6 +3,27 @@
 
 #include "yah_thread_pool_job.h"
 
+struct yah_job*
+yah_job_init() {
+    struct yah_job* ret = 
+        (struct yah_job*) malloc(sizeof(struct yah_job));
+    if(ret != NULL) {
+        memset(ret, 0, sizeof(struct yah_job));
+    }
+    return ret;
+}
+
+int
+yah_job_destory(struct yah_job* job) {
+    if(job->arg != NULL && job->arg_destory != NULL) {
+        job->arg_destory(job->arg);
+    }
+
+    free(job);
+
+    return 0;
+}
+
 int
 yah_job_queue_init(struct yah_job_queue* queue) {
     memset(queue, 0, sizeof(struct yah_job_queue));
@@ -58,12 +79,7 @@ yah_job_queue_destory(struct yah_job_queue* queue) {
     struct yah_job* next;
     while(job != NULL) {
         next = job->next;
-        if(job->arg_destory != NULL && job->arg != NULL) {
-            job->arg_destory(job->arg);
-        }
-        if(job->destory != NULL) {
-            job->destory(job);
-        }
+        yah_job_destory(job);
         job = next;
     }
     return yah_job_queue_init(queue);
