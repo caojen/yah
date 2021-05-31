@@ -225,5 +225,6 @@ get_running_daemon_pid(void) {
 
 void
 daemon_exit(void) {
+    // TODO: do everything before exiting with SIGTERM
     exit(SIGTERM);
 }
