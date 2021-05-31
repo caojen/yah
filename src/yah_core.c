@@ -2,6 +2,7 @@
 
 #include "yah_core.h"
 #include "yah_log.h"
+#include "yah_exec.h"
 
 /**
  * What should core do?
@@ -25,5 +26,4 @@ void yah_core_start() {
 
     // 1. make airodump running.
     //   1.1 airodump-ng require a device name(like wlan0), firstly, get it.
-    
 }

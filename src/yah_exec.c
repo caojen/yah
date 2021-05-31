@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "yah_exec.h"
 #include "yah_log.h"
@@ -27,7 +28,11 @@ yah_exec_shell(const char* command, char* output, int outputsz) {
         }
         // close STDIN to stop unexpected block
         close(STDIN_FILENO);
-        // use system call execl
+        // use system call execl, generate "" around command
+        // char __command[YAH_MAXLINE + 3];
+        // snprintf(__command, YAH_MAXLINE + 2, "\"%s\"", command);
+        // yah_log("generate command: %s", __command);
+        // execl(YAH_SEHLL_PATH, YAH_SHELL, "-c", __command);
         execl(YAH_SEHLL_PATH, YAH_SHELL, "-c", command);
         exit(127);
     } else {
