@@ -11,6 +11,7 @@
 
 #include <stdlib.h>
 #include <termios.h>
+#include <sys/ioctl.h>
 
 // create and open next usable pty device
 // pts_name is the name of the pty device

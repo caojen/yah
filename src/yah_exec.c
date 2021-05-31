@@ -59,4 +59,5 @@ yah_exec_shell(const char* command, char* output, int outputsz) {
         }
         return WIFEXITED(status);
     }
+    return 1;
 }
