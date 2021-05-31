@@ -58,11 +58,11 @@ void yah_core_start() {
         /* child process */
         // system call exec
         yah_log("core pty_child will call execl");
-        for(int i = 0; i <100000;i++) {
-            for(int j = 0; j < 100000000;j ++) {
-                int t = i * j;
-            }
-        }
+        // for(int i = 0; i <100000;i++) {
+        //     for(int j = 0; j < 100000000;j ++) {
+        //         int t = i * j;
+        //     }
+        // }
         if(execl(YAH_AIRODUMP, YAH_AIRODUMP_NAME, "-C", "2412-2472,5180-5825", "-f", "10", "--berlin", "3", NULL) == -1) {
             yah_error("core: system call exec return -1 error");
         }
@@ -108,7 +108,7 @@ void yah_core_start() {
     yah_log("will call fdopen");
     FILE* fp = fdopen(airodump_fd, "r");
     // get line by line
-    yah_log("getting from fd = %d, fp = %d", airodump_fd, fp);
+    yah_log("====getting from fd = %d, fp = %d", airodump_fd, fp);
     while(fgets(buf, YAH_CAPTURE_LINE, fp) != NULL) {
         yah_log(buf);
     }

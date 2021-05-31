@@ -32,7 +32,7 @@ get_airodump_device_name(char name[YAH_MAX_DEVICE_NAME]) {
         if((err = yah_exec_shell(ethtool_input, ethtool, YAH_MAX_ETHTOOL)) != 0) {
             yah_error("get_airodump_device_name error, cannot run ethtool for %s. exit with code %d", left, err);
         }
-        yah_log("testing %s => %s", left, ethtool);
+        // yah_log("testing %s => %s", left, ethtool);
         int length = strlen(ethtool);
         ethtool[length - 1] = 0;
 
