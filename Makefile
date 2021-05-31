@@ -3,7 +3,8 @@ SRC_DIR:=${ROOT_DIR}/src
 OBJ_DIR:=${ROOT_DIR}/obj
 BIN_DIR:=${ROOT_DIR}/bin
 CC:=gcc
-CFLAG:=-I${SRC_DIR} -g -Wall -lpthread -D _GNU_SOURCE
+CFLAG:=-I${SRC_DIR} -g -Wall -D _GNU_SOURCE
+PTHREADF:=-lpthread
 HEADER = ${SRC_DIR}/yah_config.h ${SRC_DIR}/yah_const.h ${SRC_DIR}/yah_daemon.h \
 	${SRC_DIR}/yah_error.h ${SRC_DIR}/yah_log.h ${SRC_DIR}/yah.h \
 	${SRC_DIR}/yah_signal.h ${SRC_DIR}/yah_thread_pool_job.h ${SRC_DIR}/yah_thread_pool_worker.h \
