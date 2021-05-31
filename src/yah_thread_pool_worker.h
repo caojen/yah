@@ -34,11 +34,11 @@ struct yah_worker {
 // all attr set to 0
 // return the worker if success
 // return NULL if failed
-inline struct yah_worker* yah_worker_init();
+struct yah_worker* yah_worker_init();
 
 // destory a worker
 // return 0 if success
-inline int yah_worker_destory(struct yah_worker* worker);
+int yah_worker_destory(struct yah_worker* worker);
 
 // define initializer
 #define YAH_WORKER_INITIALIZER (yah_worker_init())
@@ -55,14 +55,14 @@ struct yah_worker_list {
 // init a list with empty (no job)
 // list should be allocated
 // return 0, if success
-inline int yah_worker_list_init(struct yah_worker_list* list);
+int yah_worker_list_init(struct yah_worker_list* list);
 
 // add a worker into list
 // return 0, if success
 int yah_worker_list_add_worker(struct yah_worker_list* list, struct yah_worker* worker);
 
 // return the number of worker in this list
-inline unsigned int yah_worker_list_count(struct yah_worker_list* list);
+unsigned int yah_worker_list_count(struct yah_worker_list* list);
 
 // destory the list
 // free this list, and free all workers in this list

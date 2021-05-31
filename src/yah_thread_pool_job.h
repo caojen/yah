@@ -23,12 +23,12 @@ struct yah_job {
 // init a job
 // return that job if success
 // return NULL if failed
-inline struct yah_job* yah_job_init(void);
+struct yah_job* yah_job_init(void);
 
 // destory a job
 // will destory job->arg, if arg isn't null and arg_destory isn't null
 // return 0 if success
-inline int yah_job_destory(struct yah_job* job);
+int yah_job_destory(struct yah_job* job);
 
 // define initializer
 #define YAH_JOB_INITIALIZER (yah_job_init())
@@ -45,7 +45,7 @@ struct yah_job_queue {
 // init a queue with empty (no job).
 // queue should be allocated.
 // if success, return 0
-inline int yah_job_queue_init(struct yah_job_queue* queue);
+int yah_job_queue_init(struct yah_job_queue* queue);
 
 // add a new job into queue
 // if job is NULL, nothing happened
@@ -57,7 +57,7 @@ int yah_job_queue_add_job(struct yah_job_queue* queue, struct yah_job* job);
 struct yah_job* yah_job_queue_pop_job(struct yah_job_queue* queue);
 
 // count how many job are here in this queue
-inline unsigned int yah_job_queue_count(struct yah_job_queue* queue);
+unsigned int yah_job_queue_count(struct yah_job_queue* queue);
 
 // destory this queue.
 // free this queue, and free all jobs still in this queue.
