@@ -33,4 +33,5 @@ void yah_core_start() {
     } else {
         yah_log("get device name = %s", device_name);
     }
+    //   1.2 init a pseudo terminal
 }
