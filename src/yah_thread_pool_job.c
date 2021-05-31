@@ -15,6 +15,10 @@ yah_job_init() {
 
 int
 yah_job_destory(struct yah_job* job) {
+    if(job == NULL) {
+        return 1;
+    }
+    
     if(job->arg != NULL && job->arg_destory != NULL) {
         job->arg_destory(job->arg);
     }
