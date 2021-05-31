@@ -46,7 +46,9 @@ main(int argc, char** argv) {
             } else if(daemon_pid == 0) {
                 yah_quit("no daemon is running");
             } else {
+                yah_log("sending SIGTERM to pid %ld", daemon_pid);
                 send_signal(daemon_pid, SIGHUP);
+                yah_log("done");
             }
             exit(0);
         } else if(strcmp(argv[i], "set") == 0) {

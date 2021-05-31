@@ -80,12 +80,6 @@ yah_daemonize(void) {
 
     /* final child process */
 
-    int isrunning = check_daemon_running();
-    if(isrunning == YAH_DAEMON_RUNNING) {
-        YAH_ERROR(YAH_E_ALREADY_RUNNINT);
-        exit(1);
-    }
-
     /* close all file descriptors */
     if(rl.rlim_max == RLIM_INFINITY) {
         rl.rlim_max = 1024;
@@ -118,6 +112,12 @@ yah_daemonize(void) {
         exit(EPIPE);
     }
 
+    int isrunning = check_daemon_running();
+    if(isrunning == YAH_DAEMON_RUNNING) {
+        YAH_ERROR(YAH_E_ALREADY_RUNNINT);
+        exit(1);
+    }
+
     /* change the dir to '/' */
     if(chdir("/") < 0) {
         yah_quit("cannot fork a new subprocess");
@@ -142,8 +142,8 @@ check_daemon_running(void) {
     }
 
     if(lockfile(fd) < 0) {
-        close(fd);
-        if(errno == EAGAIN) {
+        if(errno == EAGAIN || errno == EACCES) {
+            close(fd);
             return YAH_DAEMON_RUNNING;
         } else {
             yah_error("cannot lock %s: %s", YAH_LOCKFILE, strerror(errno));
@@ -204,45 +204,26 @@ get_running_daemon_pid(void) {
         YAH_ERROR(YAH_E_NO_SUCH_FILE);
         return -1;
     }
+    if(check_daemon_running() == YAH_DAEMON_NOTRUNNING) {
+        return 0;
+    }
     // open this file:
-    int fd = open(YAH_LOCKFILE, O_RDWR, YAH_LOCKMODE);
+    int fd = open(YAH_LOCKFILE, O_RDONLY);
     if(fd < 0) {
         yah_error("cannot open %s: %s", YAH_LOCKFILE, strerror(errno));
     }
 
-    // test if a F_WRLCK can be apply to YAH_LOCKFILE
-    struct flock fl;
-    fl.l_type = F_WRLCK;
-    fl.l_start = 0;
-    fl.l_whence = SEEK_SET;
-    fl.l_len = 0;
-    int ret = fcntl(fd, F_GETLK, &fl);
-
-    if(ret == -1) {
-        // daemon is running
-        // read fd to get the pid(a string)
-        char pid[YAH_MAXLINE];
-        if(read(fd, pid, YAH_MAXLINE) < 0) {
-            yah_error("cannot read from %s: %s", YAH_LOCKFILE, strerror(errno));
-        }
-        return atoi(pid);
-    } else {
-        return -1;
+    // daemon is running
+    // read fd to get the pid(a string)
+    char pid[YAH_MAXLINE];
+    if(read(fd, pid, YAH_MAXLINE) < 0) {
+        yah_error("cannot read from %s: %s", YAH_LOCKFILE, strerror(errno));
     }
+    yah_log("get current running daemon pid = %s", pid);
+    return atoi(pid);
 }
 
 void
 daemon_exit(void) {
-    long daemon_id = get_running_daemon_pid();
-    if(daemon_id == 0) {
-        yah_error("No daemon is running.");
-    } else if(daemon_id == -1) {
-        yah_error("Get running daemon pid error");
-    } else {
-        long pid = getpid();
-        if(daemon_id == pid) {
-            // Todo: stop all jobs
-            exit(SIGTERM);
-        }
-    }
+    exit(SIGTERM);
 }
