@@ -39,7 +39,8 @@ yah_exec_shell(const char* command, char* output, int outputsz) {
         /* parent process */
         close(fd[1]);
         // wait for child stop
-        waitpid(pid, NULL, 0);
+        int status;
+        waitpid(pid, &status, 0);
         // child.fd[1] has been closed.
         // read until read return 0
         int n;
@@ -56,6 +57,6 @@ yah_exec_shell(const char* command, char* output, int outputsz) {
 
             size += copysz;
         }
+        return WIFEXITED(status);
     }
-    return 0;
 }

@@ -3,6 +3,7 @@
 #include "yah_core.h"
 #include "yah_log.h"
 #include "yah_exec.h"
+#include "yah_airodump.h"
 
 /**
  * What should core do?
@@ -26,4 +27,8 @@ void yah_core_start() {
 
     // 1. make airodump running.
     //   1.1 airodump-ng require a device name(like wlan0), firstly, get it.
+    char device_name[YAH_MAX_DEVICE_NAME];
+    if(get_airodump_device_name(device_name) != 0) {
+        yah_quit("cannot get device name. abort.");
+    }
 }
