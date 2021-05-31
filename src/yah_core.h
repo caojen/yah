@@ -16,4 +16,6 @@ void yah_core_start();
 #define rpworker_main_func yah_thread_pool_callback
 #define fpworker_main_func yah_thread_pool_callback
 
+#define YAH_CAPTURE_LINE 4096
+
 #endif

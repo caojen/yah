@@ -52,6 +52,7 @@ void yah_core_start() {
     } else if(airodump_pid == 0) {
         /* child process */
         // system call exec
+        yah_log("core: pty_fork done. will system call exec");
         execl(YAH_AIRODUMP, YAH_AIRODUMP_NAME, "-C", "2412-2472,5180-5825", "-f", "10", "--berlin", "3");
         exit(127);
     }
@@ -67,6 +68,7 @@ void yah_core_start() {
 
     // Receive-Post pool
     yah_thread_pool* rp_pool = yah_thread_pool_init(rpworkers, rpworker_main_func);
+    yah_log("rp_pool init done");
 
     /**
      * 3. format each line into formatted data
@@ -77,4 +79,17 @@ void yah_core_start() {
 
     // Format-Push pool
     yah_thread_pool* fp_pool = yah_thread_pool_init(fpworkers, fpworker_main_func);
+    yah_log("fp_pool init done");
+
+    /**
+     * 2. capture all outputs from fd
+     */
+    char buf[YAH_CAPTURE_LINE];
+    FILE* fp = fdopen(airodump_fd, "r");
+    // get line by line
+    while(fgets(buf, YAH_CAPTURE_LINE, fp) != NULL) {
+        yah_log(buf);
+    }
+
+    unimplemented();
 }
