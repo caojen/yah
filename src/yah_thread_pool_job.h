@@ -30,6 +30,9 @@ inline struct yah_job* yah_job_init(void);
 // return 0 if success
 inline int yah_job_destory(struct yah_job* job);
 
+// define initializer
+#define YAH_JOB_INITIALIZER (yah_job_init())
+
 struct yah_job_queue {
     // the job at the front of queue
     struct yah_job* head;
