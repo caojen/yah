@@ -7,12 +7,13 @@ CFLAG:=-I${SRC_DIR} -g -Wall -lpthread
 HEADER = ${SRC_DIR}/yah_config.h ${SRC_DIR}/yah_const.h ${SRC_DIR}/yah_daemon.h \
 	${SRC_DIR}/yah_error.h ${SRC_DIR}/yah_log.h ${SRC_DIR}/yah.h \
 	${SRC_DIR}/yah_signal.h ${SRC_DIR}/yah_thread_pool_job.h ${SRC_DIR}/yah_thread_pool_worker.h \
-	${SRC_DIR}/yah_thread_pool_manager.h ${SRC_DIR}/yah_thread_pool.h ${SRC_DIR}/yah_core.h
+	${SRC_DIR}/yah_thread_pool_manager.h ${SRC_DIR}/yah_thread_pool.h ${SRC_DIR}/yah_core.h \
+	${SRC_DIR}/yah_pty.h
 
 OBJS:=${OBJ_DIR}/yah.o ${OBJ_DIR}/yah_log.o ${OBJ_DIR}/yah_config.o \
 	${OBJ_DIR}/yah_daemon.o ${OBJ_DIR}/yah_signal.o ${OBJ_DIR}/yah_thread_pool_job.o \
 	${OBJ_DIR}/yah_thread_pool_worker.o ${OBJ_DIR}/yah_thread_pool_manager.o \
-	${OBJ_DIR}/yah_thread_pool.o ${OBJ_DIR}/yah_core.o
+	${OBJ_DIR}/yah_thread_pool.o ${OBJ_DIR}/yah_core.o ${OBJ_DIR}/yah_pty.o
 
 yah: ${BIN_DIR}/yah
 	@echo \> build succeed
@@ -48,6 +49,9 @@ ${OBJ_DIR}/yah_thread_pool.o: src/yah_thread_pool.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
 ${OBJ_DIR}/yah_core.o: src/yah_core.c ${HEADER}
+	$(CC) $(CFLAG) -o $@ -c $<
+
+${OBJ_DIR}/yah_pty.o: src/yah_pty.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
 clean:
