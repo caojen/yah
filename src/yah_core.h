@@ -11,4 +11,9 @@
 // do everything that the process should do
 void yah_core_start();
 
+// the main function for worker
+// void* rpworker_main_func(void* worker);
+#define rpworker_main_func yah_thread_pool_callback
+#define fpworker_main_func yah_thread_pool_callback
+
 #endif

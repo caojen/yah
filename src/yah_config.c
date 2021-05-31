@@ -7,6 +7,9 @@
 #include "yah_config.h"
 
 int log_level = YAH_LOG_LEVEL_LOG;
+int rpworkers = 1;
+int fpworkers = 1;
+
 FILE* YAH_FILENO_LOG = 0;
 FILE* YAH_FILENO_WARN = 0;
 FILE* YAH_FILENO_ERROR = 0;
@@ -81,6 +84,12 @@ yah_set_config_without_mutex(const char* key, int value) {
 
     if(strcmp(key, "log_level") == 0) {
         log_level = value;
+        ret = 0;
+    } else if(strcmp(key, "rpworker") == 0) {
+        rpworkers = value;
+        ret = 0;
+    } else if(strcmp(key, "fpworkers") == 0) {
+        fpworkers = value;
         ret = 0;
     }
 

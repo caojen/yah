@@ -34,6 +34,7 @@
 
 // used in checking airodump
 #define YAH_AIRODUMP "/usr/bin/airodump-ng"
+#define YAH_AIRODUMP_NAME "airodump-ng"
 #define YAH_AIRODUMP_EXISTS 1       // the airodump can be found
 #define YAH_CHECK_AIRODUMP 0
 

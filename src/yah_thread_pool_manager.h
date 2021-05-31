@@ -29,7 +29,11 @@ typedef struct yah_manager yah_thread_pool;
 // init a thread pool
 // wnum is the number of workers
 // func is the worker's function, it receive the worker itself as the only argument
+// a finished func is defined in yah_thread_pool.h
 // return the thread pool. return NULL if failed.
+// after this function called, the workers are started.
+// just use `yah_thread_pool_push_job` and the worker will
+// fetch jobs and run jobs->func(jobs->args)
 yah_thread_pool* yah_thread_pool_init(unsigned int wnum, void* (*func)(void*));
 
 // destory the thread pool

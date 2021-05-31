@@ -10,6 +10,9 @@
 #include <stdio.h>
 
 extern int log_level;
+extern int rpworkers;
+extern int fpworkers;
+
 extern FILE* YAH_FILENO_LOG;
 extern FILE* YAH_FILENO_WARN;
 extern FILE* YAH_FILENO_ERROR;
