@@ -70,21 +70,22 @@ void yah_core_start() {
     }
 
     yah_log("core: pty_fork done, with airodump.pid = %d.", airodump_pid);
-    for(int i = 0; i <100000;i++) {
-        for(int j = 0; j < 100000000;j ++) {
-            int t = i * j;
-        }
-    }
+    // for(int i = 0; i <100000;i++) {
+    //     for(int j = 0; j < 100000000;j ++) {
+    //         int t = i * j;
+    //     }
+    // }
 
     /* parent process */
     /* continue */
+    yah_log("parent process continue");
 
     /**
      * 4. create a pool to receive all formatted data
      * and try to post them
      * these job is adding by another pool
      */
-
+    yah_log("before init rp_pool");
     // Receive-Post pool
     yah_thread_pool* rp_pool = yah_thread_pool_init(rpworkers, rpworker_main_func);
     yah_log("rp_pool init done");
@@ -104,11 +105,15 @@ void yah_core_start() {
      * 2. capture all outputs from fd
      */
     char buf[YAH_CAPTURE_LINE];
+    yah_log("will call fdopen");
     FILE* fp = fdopen(airodump_fd, "r");
     // get line by line
+    yah_log("getting from fd = %d, fp = %d", airodump_fd, fp);
     while(fgets(buf, YAH_CAPTURE_LINE, fp) != NULL) {
         yah_log(buf);
     }
+
+    // use block I/O read to receive
 
     unimplemented();
 }

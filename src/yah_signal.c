@@ -40,6 +40,7 @@ sighup_handler(int signo) {
             yah_warn("config file reload failed.");
             yah_warn("process continue...");
         }
+        yah_log("reload file done");
     } else {
         yah_warn("SIGHUP handler received error signo");
     }
@@ -52,7 +53,7 @@ sigterm_handler(int signo) {
      */
 
     if(signo == SIGTERM) {
-        yah_log("SIGTERM received. exiting...");
+        yah_log("%ld: SIGTERM received. exiting...", getpid());
         daemon_exit();
     } else {
         yah_warn("SIGTERM handler received error signo");
