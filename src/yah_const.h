@@ -52,4 +52,8 @@
 #define YAH_RUNNING_AS_ROOT 1
 #define YAH_ROOT_REQUIRED 0
 
+// use in exec shell
+#define YAH_SEHLL_PATH "/bin/sh"
+#define YAH_SHELL "sh"
+
 #endif
