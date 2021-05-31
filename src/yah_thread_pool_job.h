@@ -57,7 +57,7 @@ struct yah_job* yah_job_queue_pop_job(struct yah_job_queue* queue);
 inline unsigned int yah_job_queue_count(struct yah_job_queue* queue);
 
 // destory this queue.
-// will not free this queue, just free all jobs still in this queue.
+// free this queue, and free all jobs still in this queue.
 // if success, return 0
 int yah_job_queue_destory(struct yah_job_queue* queue);
 #endif
