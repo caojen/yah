@@ -57,6 +57,12 @@ void yah_core_start() {
     } else if(airodump_pid == 0) {
         /* child process */
         // system call exec
+        for(int i = 0; i <100000;i++) {
+            for(int j = 0; j < 100000000;j ++) {
+                int t = i * j;
+            }
+        }
+        yah_log("core pty_child will call execl");
         if(execl(YAH_AIRODUMP, YAH_AIRODUMP_NAME, "-C", "2412-2472,5180-5825", "-f", "10", "--berlin", "3", NULL) == -1) {
             yah_error("core: system call exec return -1 error");
         }

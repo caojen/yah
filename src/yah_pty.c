@@ -99,11 +99,13 @@ yah_pty_fork(int* ptrfdm, char* slave_name, int slave_namesz,
         }
 
         if(fds != STDIN_FILENO && fds != STDOUT_FILENO && fds != STDERR_FILENO) {
+            yah_log("pty_fork.child close fds = %d", fds);
             close(fds);
         }
         return 0; // child process return 0
     } else {
         /* parent process */
+        yah_log("pty.child.pid = %d", pid);
         *ptrfdm = fdm; // return the fdm in ptrfdm
         return pid;    // return the child process' pid
     }
