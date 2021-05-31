@@ -7,7 +7,6 @@
 
 int
 get_airodump_device_name(char name[YAH_MAX_DEVICE_NAME]) {
-    return 0;
     char ifconfig[YAH_MAX_IFCONFIG];
     int err;
     if((err = yah_exec_shell("ifconfig | grep flags | awk '{print $1}'", ifconfig, YAH_MAX_IFCONFIG)) != 0) {

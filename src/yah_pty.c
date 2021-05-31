@@ -79,7 +79,7 @@ yah_pty_fork(int* ptrfdm, char* slave_name, int slave_namesz,
         }
         
         yah_log("pty_fork.child: open success with fds=%d, %s", fds, pts_name);
-        // close(fdm);
+        close(fdm);
        
         if(slave_termios != NULL) {
             if(tcsetattr(fds, TCSANOW, slave_termios) < 0) {
