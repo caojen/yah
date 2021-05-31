@@ -15,6 +15,7 @@ OBJS:=${OBJ_DIR}/yah.o ${OBJ_DIR}/yah_log.o ${OBJ_DIR}/yah_config.o \
 	${OBJ_DIR}/yah_thread_pool.o ${OBJ_DIR}/yah_core.o
 
 yah: ${BIN_DIR}/yah
+	@echo \> build succeed
 
 ${BIN_DIR}/yah: ${OBJS}
 	$(CC) $(CFLAG) $^ -o $@
