@@ -36,6 +36,7 @@ main(int argc, char** argv) {
             /* start as daemon */
             yah_daemonize();
             yah_core_start();
+            yah_log("exit from main");
             exit(0);
         } else if(strcmp(argv[i], "reload") == 0) {
             /* reload config */
