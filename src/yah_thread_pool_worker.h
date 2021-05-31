@@ -31,6 +31,7 @@ struct yah_worker {
 };
 
 // init a worker
+// all attr set to 0
 // return the worker if success
 // return NULL if failed
 inline struct yah_worker* yah_worker_init();
