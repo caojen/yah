@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <sys/resource.h>
 
 #include "yah_const.h"
 #include "yah_log.h"
