@@ -13,8 +13,8 @@
 
 #if DEBUG
 
-#define YAH_LOCKFILE "/Users/caojen/Documents/youarehere2/yah/yah.pid"
-#define YAH_CONFFILE "/Users/caojen/Documents/youarehere2/yah/yah.conf"
+#define YAH_LOCKFILE "/home/pi/yah/yah.pid"
+#define YAH_CONFFILE "/home/pi/yah/yah.conf"
 
 #else
 
@@ -40,9 +40,9 @@
 
 // log file path
 #if DEBUG
-    #define YAH_LOGFILE_LOG "/Users/caojen/Documents/youarehere2/yah/yah.log"
-    #define YAH_LOGFILE_WARN "/Users/caojen/Documents/youarehere2/yah/yah.warn"
-    #define YAH_LOGFILE_ERROR "/Users/caojen/Documents/youarehere2/yah/yah.error"
+    #define YAH_LOGFILE_LOG "/home/pi/yah/yah.log"
+    #define YAH_LOGFILE_WARN "/home/pi/yah/yah.warn"
+    #define YAH_LOGFILE_ERROR "/home/pi/yah/yah.error"
 #else
     #define YAH_LOGFILE_LOG "yah.log"
     #define YAH_LOGFILE_WARN "yah.warn"
@@ -51,7 +51,7 @@
 
 // for root testing
 #define YAH_RUNNING_AS_ROOT 1
-#define YAH_ROOT_REQUIRED 0
+#define YAH_ROOT_REQUIRED 1
 
 // use in exec shell
 #define YAH_SEHLL_PATH "/bin/sh"

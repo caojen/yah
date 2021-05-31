@@ -85,7 +85,7 @@ yah_set_config_without_mutex(const char* key, int value) {
     if(strcmp(key, "log_level") == 0) {
         log_level = value;
         ret = 0;
-    } else if(strcmp(key, "rpworker") == 0) {
+    } else if(strcmp(key, "rpworkers") == 0) {
         rpworkers = value;
         ret = 0;
     } else if(strcmp(key, "fpworkers") == 0) {

@@ -18,4 +18,6 @@ void yah_core_start();
 
 #define YAH_CAPTURE_LINE 4096
 
+extern pid_t airodump_pid;
+
 #endif

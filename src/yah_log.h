@@ -28,12 +28,14 @@ void yah_warn(const char* fmt, ...);
 void yah_error(const char* fmt, ...);
 
 #include <stdlib.h>
-#define yah_quit(...) do {                      \
-    yah_error(__VA_ARGS__);                     \
-    yah_error("yah_quit called, exit...");      \
-    yah_log("yah_quit called, exit...");      \
-    yah_warn("yah_quit called, exit...");      \
-    exit(1);                                    \
+#include "yah_daemon.h"
+
+#define yah_quit(...) do {                          \
+    yah_error(__VA_ARGS__);                         \
+    yah_error("yah_quit called, exit...");          \
+    yah_log("yah_quit called, exit...");            \
+    yah_warn("yah_quit called, exit...");           \
+    daemon_exit();                                  \
 } while(0)
 
 /**

@@ -58,7 +58,7 @@ yah_exec_shell(const char* command, char* output, int outputsz) {
 
             size += copysz;
         }
-        return WIFEXITED(status);
+        return !WIFEXITED(status);
     }
     return 1;
 }

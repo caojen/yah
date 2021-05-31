@@ -58,6 +58,7 @@ yah_pty_fork(int* ptrfdm, char* slave_name, int slave_namesz,
     if((fdm = yah_ptym_open(pts_name, sizeof(pts_name))) < 0) {
         yah_quit("cannot open master pty: %s, error %d: %s", pts_name, fdm, strerror(errno));
     }
+    yah_log("pty_fork done. fdm=%d, pts_name=%s", fdm, pts_name);
 
     if(slave_name != NULL) {
         strncpy(slave_name, pts_name, slave_namesz);
@@ -74,6 +75,7 @@ yah_pty_fork(int* ptrfdm, char* slave_name, int slave_namesz,
         if((fds = yah_ptys_open(pts_name)) < 0) {
             yah_quit("pty_fork.child: cannot open ptys");
         }
+        yah_log("pty_fork.child: open success with fds=%d, %s", fds, pts_name);
         close(fdm);
         if(slave_termios != NULL) {
             if(tcsetattr(fds, TCSANOW, slave_termios) < 0) {
@@ -105,4 +107,5 @@ yah_pty_fork(int* ptrfdm, char* slave_name, int slave_namesz,
         *ptrfdm = fdm; // return the fdm in ptrfdm
         return pid;    // return the child process' pid
     }
+    return 1;
 }

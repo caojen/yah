@@ -11,6 +11,12 @@
 #include "yah_config.h"
 
 /**
+ * make airodump_pid as global variable
+ * so the signal can access and send signal if needed
+ */
+pid_t airodump_pid = 0;
+
+/**
  * What should core do?
  * 1. make 'airodump' running. make it a coprocess 
  *    and run it in a pseudo terminal, named that terminal 'yah_airodump'
@@ -41,7 +47,6 @@ void yah_core_start() {
     }
 
     //   1.2 init a pseudo terminal
-    pid_t airodump_pid;
     int airodump_fd;
     char slave_name[MAX_PTYNAME];
     struct winsize wsize;
@@ -52,9 +57,17 @@ void yah_core_start() {
     } else if(airodump_pid == 0) {
         /* child process */
         // system call exec
-        yah_log("core: pty_fork done. will system call exec");
-        execl(YAH_AIRODUMP, YAH_AIRODUMP_NAME, "-C", "2412-2472,5180-5825", "-f", "10", "--berlin", "3", NULL);
+        if(execl(YAH_AIRODUMP, YAH_AIRODUMP_NAME, "-C", "2412-2472,5180-5825", "-f", "10", "--berlin", "3", NULL) == -1) {
+            yah_error("core: system call exec return -1 error");
+        }
         exit(127);
+    }
+
+    yah_log("core: pty_fork done, with airodump.pid = %d.", airodump_pid);
+    for(int i = 0; i <100000;i++) {
+        for(int j = 0; j < 100000000;j ++) {
+            int t = i * j;
+        }
     }
 
     /* parent process */

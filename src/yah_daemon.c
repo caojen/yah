@@ -13,6 +13,7 @@
 #include "yah_error.h"
 #include "yah_config.h"
 #include "yah_signal.h"
+#include "yah_core.h"
 
 int
 yah_daemonize(void) {
@@ -227,5 +228,9 @@ get_running_daemon_pid(void) {
 void
 daemon_exit(void) {
     // TODO: do everything before exiting with SIGTERM
+    if(airodump_pid != 0) {
+        yah_log("sending SIGKILL to airodump.pid = %d", airodump_pid);
+        send_signal(airodump_pid, SIGKILL);
+    }
     exit(SIGTERM);
 }
