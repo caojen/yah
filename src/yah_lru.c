@@ -92,17 +92,19 @@ int yah_cache_update(struct yah_cache* cache, void* value, unsigned size) {
                         // check the time
                         time_t now = time(NULL);
                         if(now - ptr->time >= cache->odtime) {
-                            yah_log("lru: out of time, now = %lu, ptr->time = %lu, odtime = %d", now, ptr->time, cache->odtime);
+                            yah_log("lru: %s out of time, key = %lu", value, key);
                             // out of date
                             // treat that the node is not exists
                             // update the time, reorder the node at the head of cache->list
                             ptr->time = now;
                             if(node != list->head) {
                                 if(node == list->tail) {
+                                    list->tail = node->prev;
                                     node->prev->next = NULL;
                                     node->prev = NULL;
                                     node->next = list->head;
-                                    list->head->prev = list->head;
+                                    list->head->prev = node;
+                                    list->head = node;
                                 } else {
                                     struct yah_cache_node* prev = node->prev;
                                     struct yah_cache_node* next = node->next;

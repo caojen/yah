@@ -211,46 +211,45 @@ yah_fp_pool_job_func(void* __arg) {
     yah_string_get_next_part(newline, &first_part_begin, &first_part_end);
     yah_string_get_next_part(first_part_end, &second_part_begin, &second_part_end);
     
-    *first_part_end = 0;
+    *first_part_end = 0;    // first part is the bssid
     *second_part_end = 0;
+    int first_part_length = first_part_end - first_part_begin;
+    int second_part_length = second_part_end - second_part_begin;
 
-    struct yah_airodump_data* data = 
-        (struct yah_airodump_data*) malloc (sizeof(struct yah_airodump_data));
-    memset(data, 0, sizeof(struct yah_airodump_data));
-    if(strlen(second_part_begin) > 10) {
-        data->type = apstation;
-        strcpy(data->data.apstation.bssid, first_part_begin);
-        strcpy(data->bssid, first_part_begin);
-        strcpy(data->data.apstation.station, second_part_begin);
-        *first_part_end = ' ';
-        *second_part_end = ' ';
-        strcpy(data->data.apstation.comment, newline);
-        data->data.apstation.create_time = arg->create_time;
+    struct yah_airodump_data* data = NULL;
+    if(second_part_length > 10) {
+        enum yah_airodump_type type = apstation;
+        int incache = yah_cache_update(apstation_cache, first_part_begin, first_part_length + 1);
+        if(incache == YAH_CACHE_NODE_NOTEXISTS) {
+            yah_log("push type = %d, bssid = %s", type, first_part_begin);
+            data = (struct yah_airodump_data*) malloc (sizeof(struct yah_airodump_data));
+            memset(data, 0, sizeof(struct yah_airodump_data));
+            data->type = apstation;
+            strcpy(data->data.apstation.bssid, first_part_begin);
+            strcpy(data->bssid, first_part_begin);
+            strcpy(data->data.apstation.station, second_part_begin);
+            *first_part_end = ' ';
+            *second_part_end = ' ';
+            strcpy(data->data.apstation.comment, newline);
+            data->data.apstation.create_time = arg->create_time;
+        }
     } else {
-        data->type = ap;
-        strcpy(data->data.ap.bssid, first_part_begin);
-        strcpy(data->bssid, first_part_begin);
-        *first_part_end = ' ';
-        *second_part_end = ' ';
-        strcpy(data->data.ap.comment, newline);
-        data->data.ap.create_time = arg->create_time;
+        enum yah_airodump_type type = ap;
+        int incache = yah_cache_update(ap_cache, first_part_begin, first_part_length + 1);
+        if(incache == YAH_CACHE_NODE_NOTEXISTS) {
+            yah_log("push type = %d, bssid = %s", type, first_part_begin);
+            data = (struct yah_airodump_data*) malloc (sizeof(struct yah_airodump_data));
+            memset(data, 0, sizeof(struct yah_airodump_data));
+            data->type = ap;
+            strcpy(data->data.ap.bssid, first_part_begin);
+            strcpy(data->bssid, first_part_begin);
+            *first_part_end = ' ';
+            *second_part_end = ' ';
+            strcpy(data->data.ap.comment, newline);
+            data->data.ap.create_time = arg->create_time;
+        }
     }
+    if(data != NULL) {
 
-    // check in cache pool
-    yah_log("checking type = %d, bssid = %s", data->type, data->bssid);
-    if(data->type == apstation) {
-        int incache = yah_cache_update(apstation_cache, data->bssid, strlen(data->bssid) + 1);
-        if(incache == YAH_CACHE_NODE_NOTEXISTS) {
-            yah_log("push type = %d, bssid = %s", data->type, data->bssid);
-        } else {
-            // yah_log("type = %d, bssid = %s exists, ignore...", data->type, data->bssid);
-        }
-    } else {
-        int incache = yah_cache_update(ap_cache, data->bssid, strlen(data->bssid) + 1);
-        if(incache == YAH_CACHE_NODE_NOTEXISTS) {
-            yah_log("push type = %d, bssid = %s", data->type, data->bssid);
-        } else {
-            // yah_log("type = %d, bssid = %s exists, ignore...", data->type, data->bssid);
-        }
     }
 }
