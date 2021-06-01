@@ -62,7 +62,7 @@ struct yah_cache {
 };
 
 // init a cache with max
-// the default max = 32 if max = 0
+// the default max = 32 if max <= 10
 // provide the cmp and destory to init the cache
 struct yah_cache* yah_cache_init(unsigned int max,
     int (*cmp)(void* v1, unsigned int s1, void* v2, unsigned int s2),
