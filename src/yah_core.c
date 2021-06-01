@@ -201,7 +201,7 @@ yah_fp_pool_job_func(void* __arg) {
         // ignore it
         return;
     }
-    yah_log("%s", newline);
+    // yah_log("%s", newline);
     char* first_part_begin;
     char* first_part_end;
 
@@ -219,22 +219,22 @@ yah_fp_pool_job_func(void* __arg) {
     memset(data, 0, sizeof(struct yah_airodump_data));
     if(strlen(second_part_begin) > 10) {
         data->type = apstation;
-        strcpy(&data->data.apstation.bssid, first_part_begin);
-        strcpy(&data->bssid, first_part_begin);
-        strcpy(&data->data.apstation.station, second_part_begin);
+        strcpy(data->data.apstation.bssid, first_part_begin);
+        strcpy(data->bssid, first_part_begin);
+        strcpy(data->data.apstation.station, second_part_begin);
         *first_part_end = ' ';
         *second_part_end = ' ';
-        strcpy(&data->data.apstation.comment, newline);
+        strcpy(data->data.apstation.comment, newline);
         data->data.apstation.create_time = arg->create_time;
     } else {
         data->type = ap;
-        strcpy(&data->data.ap.bssid, first_part_begin);
-        strcpy(&data->bssid, first_part_begin);
+        strcpy(data->data.ap.bssid, first_part_begin);
+        strcpy(data->bssid, first_part_begin);
         *first_part_end = ' ';
         *second_part_end = ' ';
-        strcpy(&data->data.ap.comment, newline);
+        strcpy(data->data.ap.comment, newline);
         data->data.ap.create_time = arg->create_time;
     }
-
-    // TODO: throw data to rp_pool;
+    yah_log("data generated, type = %d, bssid = %s", data->type, data->bssid);
+    free(data);
 }
