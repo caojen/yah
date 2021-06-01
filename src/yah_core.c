@@ -54,8 +54,8 @@ void yah_core_start() {
     int airodump_fd;
     char slave_name[MAX_PTYNAME];
     struct winsize wsize;
-    wsize.ws_row = 2048;
-    wsize.ws_col = 2048;
+    wsize.ws_row = YAH_PTY_ROWS;
+    wsize.ws_col = YAH_PTY_COLS;
     if((airodump_pid = yah_pty_fork(&airodump_fd, slave_name, MAX_PTYNAME, NULL, &wsize)) < 0) {
         yah_quit("cannot run pty_fork");
     } else if(airodump_pid == 0) {
@@ -132,6 +132,55 @@ yah_fp_pool_job_func(void* __arg) {
     struct yah_fp_pool_job_arg* arg =
         (struct yah_fp_pool_job_arg*) __arg;
 
-    yah_log("fp_job_func: receive arg at time = %ld\n", arg->create_time);
-    yah_log("fp_job_func: receive arg with line.length = %d", strlen(arg->line));
+    char* line = arg->line;
+    char* ptr = line;
+    // get the first \n, trunc it
+    while(*ptr) {
+        if(*ptr == '\n') {
+            *ptr = 0;
+            break;
+        }
+        ++ptr;
+    }
+    ptr = line;
+    // remove all invisiable charactor in arg->line
+    // remove heading or tailing blank
+    // remain multi blanks
+    // move the line into newline
+    char newline[YAH_CAPTURE_LINE + 1] = { 0 };
+    char* nptr = newline;
+    ptr = line;
+    int heading = 1;
+    while(*ptr) {
+        if(*ptr == ESC) {
+            while(*ptr && *ptr != ' ') {
+                ++ptr;
+            }
+        }
+        if(*ptr == 0) {
+            break;
+        }
+        while(*ptr && heading && *ptr == ' ') {
+            ++ptr;
+        }
+        heading = 0;
+        *nptr = *ptr;
+        ++nptr;
+        ++ptr;
+    }
+    int length = strlen(newline);
+    nptr = newline + length - 1;
+    while(nptr > newline && *nptr == ' ') {
+        --nptr;
+        --length;
+    }
+    *(nptr + 1) = 0;
+    // if the line is too short, ignore it.
+    yah_log("fp_job_func: receive arg with line.length = %d", length);
+    if(length < YAH_CAPTURE_MIN_LINE) {
+        // ignore this line
+        return;
+    }
+    yah_log_string_hex(newline);
+    yah_log("%s", newline);
 }

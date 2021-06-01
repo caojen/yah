@@ -26,8 +26,11 @@
 void yah_log(const char* fmt, ...);
 void yah_warn(const char* fmt, ...);
 void yah_error(const char* fmt, ...);
+void yah_log_hex(const char* bytes, unsigned bysz);
 
 #include <stdlib.h>
+#define yah_log_string_hex(bytes) yah_log_hex((bytes), strlen((bytes)));
+
 #include "yah_daemon.h"
 
 #define yah_quit(...) do {                          \

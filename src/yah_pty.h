@@ -13,6 +13,9 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 
+#define YAH_PTY_COLS 1024
+#define YAH_PTY_ROWS 4096
+
 // create and open next usable pty device
 // pts_name is the name of the pty device
 // pts_namesz is the max size of pts_name

@@ -55,4 +55,6 @@
 #define YAH_SEHLL_PATH "/bin/sh"
 #define YAH_SHELL "sh"
 
+// define unix special charactors
+#define ESC (27)
 #endif

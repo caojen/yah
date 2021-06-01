@@ -7,6 +7,8 @@
 #ifndef YAH_CORE_H
 #define YAH_CORE_H
 
+#include "yah_pty.h"
+
 // start in daemon mode
 // do everything that the process should do
 void yah_core_start();
@@ -16,7 +18,11 @@ void yah_core_start();
 #define rpworker_main_func yah_thread_pool_callback
 #define fpworker_main_func yah_thread_pool_callback
 
-#define YAH_CAPTURE_LINE 4096
+#define YAH_CAPTURE_LINE YAH_PTY_COLS
+
+// the min-limit of each capture line
+// if strlen(line) < min-limit, ignore this line
+#define YAH_CAPTURE_MIN_LINE 20
 
 extern pid_t airodump_pid;
 

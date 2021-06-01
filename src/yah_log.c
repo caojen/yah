@@ -66,6 +66,16 @@ yah_error(const char* fmt, ...) {
 }
 
 void
+yah_log_hex(const char* bytes, unsigned bysz) {
+    if(log_level <= YAH_LOG_LEVEL_LOG) {
+        for(int i = 0; i < bysz; i++) {
+            fprintf(YAH_FILENO_LOG, "%x ", bytes[i]);
+        }
+        fprintf(YAH_FILENO_LOG, "\n");
+    }
+}
+
+void
 unimplemented() {
     fprintf(stderr, "Unimplemented!\n");
     daemon_exit();
