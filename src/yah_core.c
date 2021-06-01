@@ -250,6 +250,6 @@ yah_fp_pool_job_func(void* __arg) {
         }
     }
     if(data != NULL) {
-
+        // generate that job, and push to rp_pool's job queue
     }
 }
