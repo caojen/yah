@@ -79,23 +79,32 @@ int yah_cache_update(struct yah_cache* cache, void* value, unsigned size) {
 
     // get the hash key
     yah_hash_key key = hash(value, size);
+    yah_log("lru: hash result = %lu", key);
     // get the mutex:
     pthread_mutex_lock(&cache->mutex);
-    yah_log("lru: mutex got.");
+    yah_log("lru: mutex got. current size = %u", cache->list->count);
     // find if there is a key exists
     struct yah_cache_list* list = cache->list;
     struct yah_cache_node* node = list->head;
+    yah_log("lru: 1");
     while(node) {
+        yah_log("current key = %lu", node->key);
         if(node->key == key) {
+            yah_log("key is same");
             // find the key. test its value:
             struct yah_cache_node* ptr = node;
+            yah_log("checking ptrs");
             while(ptr) {
-                if(ptr->cmp(ptr, ptr->size, value, size) == 0) {
+                yah_log("checkint ptr->key = %lu value if is equaled", ptr->key);
+                if(ptr->cmp(ptr->value, ptr->size, value, size) == 0) {
+                    yah_log("ok. it is equal");
                     // find the same value
                     if(cache->odtime != 0) {
+                        yah_log("lru: checking key if out-of-time");
                         // check the time
                         time_t now = time(NULL);
                         if(now - ptr->time >= cache->odtime) {
+                            yah_log("lru: out of time, now = %lu, ptr->time = %lu, odtime = %d", now, ptr->time, cache->odtime);
                             // out of date
                             // treat that the node is not exists
                             // update the time, reorder the node at the head of cache->list
@@ -117,12 +126,16 @@ int yah_cache_update(struct yah_cache* cache, void* value, unsigned size) {
                                     list->head = node;
                                 }
                             }
+                            yah_log("lru: key out-of-time and update, finish");
                             // finish:
                             goto finish;
                         }
                     }
+                    yah_log("lru: key found");
                     ret = YAH_CACHE_NODE_EXISTS;
                     goto findend;
+                } else {
+                    yah_log("lru: config. cmp return false");
                 }
                 ptr = ptr->next_same;
             }
@@ -167,6 +180,9 @@ findend:
         newnode->key = key;
         newnode->value = newvalue;
         newnode->size = size;
+        newnode->cmp = cache->cmp;
+        newnode->destory = cache->destory;
+        newnode->time = time(NULL);
 
         if(list->head == NULL) {
             yah_log("lru: the list is empty , just insert into head");
@@ -197,11 +213,14 @@ findend:
                 yah_log("lru: exceed, remove tail");
                 // remove the tail
                 // decrease count
+                yah_log("tail at: %p", list->tail);
                 struct yah_cache_node* tail = list->tail;
+                yah_log("prev of tail at %p", list->tail->prev);
                 struct yah_cache_node* prev = tail->prev;
                 prev->next = NULL;
 
                 struct yah_cache_node* next;
+                yah_log("lru: removing all links");
                 while(tail) {
                     next = tail->next_same;
                     tail->destory(tail->value, tail->size);
@@ -221,6 +240,12 @@ findend:
     }
 finish:
     yah_log("unlock mutex, final size = %d", list->count);
+    yah_log("keylist:");
+    struct yah_cache_node* j = cache->list->head;
+    while(j) {
+        yah_log("%lu", j->key);
+        j = j->next;
+    }
     pthread_mutex_unlock(&cache->mutex);
     return ret;
 }

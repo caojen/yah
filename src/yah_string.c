@@ -41,14 +41,22 @@ yah_string_prefix(const char* a, const char* b) {
     }
 }
 
-int yah_string_cmp(char* a, unsigned as, char* b, unsigned bs) {
+int yah_string_cmp(void* __a, unsigned as, void* __b, unsigned bs) {
+    yah_log("compare as = %d, bs = %d", as, bs);
     if(as != bs) {
         return 1;
     }
 
+    char* a = (char*) __a;
+    char* b = (char*) __b;
+
+    yah_log_hex(a, as);
+    yah_log_hex(b, bs);
+
     for(int i = 0; i < as ;i++) {
         if(a[i] != b[i]) {
             // just return, secure is not concerned.
+            yah_log("first diff at : %d", i);
             return 1;
         }
     }

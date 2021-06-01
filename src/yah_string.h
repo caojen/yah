@@ -18,7 +18,7 @@ int yah_string_prefix(const char* a, const char* b);
 
 // compare two string, as, bs is the bytes that the string take('\0' included)
 // if the string is equaled, return 0
-int yah_string_cmp(char* a, unsigned as, char* b, unsigned bs);
+int yah_string_cmp(void* a, unsigned as, void* b, unsigned bs);
 
 // destory a string init with malloc
 void yah_string_destory(void* a, unsigned as);

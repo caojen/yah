@@ -235,6 +235,22 @@ yah_fp_pool_job_func(void* __arg) {
         strcpy(data->data.ap.comment, newline);
         data->data.ap.create_time = arg->create_time;
     }
-    yah_log("data generated, type = %d, bssid = %s", data->type, data->bssid);
-    free(data);
+
+    // check in cache pool
+    yah_log("checking type = %d, bssid = %s", data->type, data->bssid);
+    if(data->type == apstation) {
+        int incache = yah_cache_update(apstation_cache, data->bssid, strlen(data->bssid) + 1);
+        if(incache == YAH_CACHE_NODE_NOTEXISTS) {
+            yah_log("push type = %d, bssid = %s", data->type, data->bssid);
+        } else {
+            // yah_log("type = %d, bssid = %s exists, ignore...", data->type, data->bssid);
+        }
+    } else {
+        int incache = yah_cache_update(ap_cache, data->bssid, strlen(data->bssid) + 1);
+        if(incache == YAH_CACHE_NODE_NOTEXISTS) {
+            yah_log("push type = %d, bssid = %s", data->type, data->bssid);
+        } else {
+            // yah_log("type = %d, bssid = %s exists, ignore...", data->type, data->bssid);
+        }
+    }
 }
