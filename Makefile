@@ -23,43 +23,43 @@ yah: ${BIN_DIR}/yah
 ${BIN_DIR}/yah: ${OBJS}
 	$(CC) $(CFLAG) $^ -o $@
 
-${OBJ_DIR}/yah.o: src/yah.c ${HEADER}
+${OBJ_DIR}/yah.o: ${SRC_DIR}/yah.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
-${OBJ_DIR}/yah_log.o: src/yah_log.c ${HEADER}
+${OBJ_DIR}/yah_log.o: ${SRC_DIR}/yah_log.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
-${OBJ_DIR}/yah_config.o: src/yah_config.c ${HEADER}
+${OBJ_DIR}/yah_config.o: ${SRC_DIR}/yah_config.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
-${OBJ_DIR}/yah_daemon.o: src/yah_daemon.c ${HEADER}
+${OBJ_DIR}/yah_daemon.o: ${SRC_DIR}/yah_daemon.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
-${OBJ_DIR}/yah_signal.o: src/yah_signal.c ${HEADER}
+${OBJ_DIR}/yah_signal.o: ${SRC_DIR}/yah_signal.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
-${OBJ_DIR}/yah_thread_pool_job.o: src/yah_thread_pool_job.c ${HEADER}
+${OBJ_DIR}/yah_thread_pool_job.o: ${SRC_DIR}/yah_thread_pool_job.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
-${OBJ_DIR}/yah_thread_pool_worker.o: src/yah_thread_pool_worker.c ${HEADER}
+${OBJ_DIR}/yah_thread_pool_worker.o: ${SRC_DIR}/yah_thread_pool_worker.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
-${OBJ_DIR}/yah_thread_pool_manager.o: src/yah_thread_pool_manager.c ${HEADER}
+${OBJ_DIR}/yah_thread_pool_manager.o: ${SRC_DIR}/yah_thread_pool_manager.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
-${OBJ_DIR}/yah_thread_pool.o: src/yah_thread_pool.c ${HEADER}
+${OBJ_DIR}/yah_thread_pool.o: ${SRC_DIR}/yah_thread_pool.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
-${OBJ_DIR}/yah_core.o: src/yah_core.c ${HEADER}
+${OBJ_DIR}/yah_core.o: ${SRC_DIR}/yah_core.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
-${OBJ_DIR}/yah_pty.o: src/yah_pty.c ${HEADER}
+${OBJ_DIR}/yah_pty.o: ${SRC_DIR}/yah_pty.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
-${OBJ_DIR}/yah_exec.o: src/yah_exec.c ${HEADER}
+${OBJ_DIR}/yah_exec.o: ${SRC_DIR}/yah_exec.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
-${OBJ_DIR}/yah_airodump.o: src/yah_airodump.c ${HEADER}
+${OBJ_DIR}/yah_airodump.o: ${SRC_DIR}/yah_airodump.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
 clean:
