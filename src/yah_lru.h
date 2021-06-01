@@ -25,6 +25,8 @@ struct yah_cache_node {
     void* value;
     unsigned int size;      // specify the size that value takes
 
+    time_t time;      // the time that create or update this node
+
     // cmp function for value
     // like strcmp, return 0 if equal
     int (*cmp)(void* v1, unsigned int s1, void* v2, unsigned int s2);
@@ -59,12 +61,14 @@ struct yah_cache {
     void* (*copy)(void* old, unsigned sz);
     // mutex to access the list
     pthread_mutex_t mutex;
+    // out-of-date second count. 0 means never out-of-data
+    unsigned odtime;
 };
 
 // init a cache with max
 // the default max = 32 if max <= 10
 // provide the cmp and destory to init the cache
-struct yah_cache* yah_cache_init(unsigned int max,
+struct yah_cache* yah_cache_init(unsigned int max, unsigned odtime,
     int (*cmp)(void* v1, unsigned int s1, void* v2, unsigned int s2),
     void (*destory)(void* value, unsigned int size),
     void* (*copy)(void* old, unsigned sz));

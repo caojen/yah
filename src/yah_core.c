@@ -21,7 +21,8 @@
 pid_t airodump_pid = 0;
 yah_thread_pool* rp_pool = NULL;
 yah_thread_pool* fp_pool = NULL;
-struct yah_cache* cache = NULL;
+struct yah_cache* ap_cache = NULL;
+struct yah_cache* apstation_cache = NULL;
 
 /**
  * What should core do?
@@ -81,7 +82,8 @@ void yah_core_start() {
      * init the lru cache
      */
     yah_log("core: trying to init lru cache");
-    cache = yah_cache_init(64, yah_string_cmp, yah_string_destory, yah_string_copy);
+    ap_cache = yah_cache_init(64, 24 * 60 * 60, yah_string_cmp, yah_string_destory, yah_string_copy);
+    apstation_cache = yah_cache_init(64, 10 * 60, yah_string_cmp, yah_string_destory, yah_string_copy);
     yah_log("core: cache init done");
 
     /**
@@ -218,6 +220,7 @@ yah_fp_pool_job_func(void* __arg) {
     if(strlen(second_part_begin) > 10) {
         data->type = apstation;
         strcpy(&data->data.apstation.bssid, first_part_begin);
+        strcpy(&data->bssid, first_part_begin);
         strcpy(&data->data.apstation.station, second_part_begin);
         *first_part_end = ' ';
         *second_part_end = ' ';
@@ -226,11 +229,12 @@ yah_fp_pool_job_func(void* __arg) {
     } else {
         data->type = ap;
         strcpy(&data->data.ap.bssid, first_part_begin);
+        strcpy(&data->bssid, first_part_begin);
         *first_part_end = ' ';
         *second_part_end = ' ';
         strcpy(&data->data.ap.comment, newline);
         data->data.ap.create_time = arg->create_time;
     }
 
-    yah_log("lru: for test.");
+    // TODO: throw data to rp_pool;
 }

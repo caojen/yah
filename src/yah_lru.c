@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "yah_lru.h"
 #include "yah_log.h"
@@ -15,7 +16,7 @@ hash(void* bytes, unsigned int bysz) {
 }
 
 struct yah_cache*
-yah_cache_init(unsigned int max,
+yah_cache_init(unsigned int max, unsigned odtime,
     int (*cmp)(void* v1, unsigned int s1, void* v2, unsigned int s2),
     void (*destory)(void* value, unsigned int size),
     void* (*copy)(void* old, unsigned sz)) {
@@ -30,6 +31,7 @@ yah_cache_init(unsigned int max,
     cache->destory = destory;
     cache->copy = copy;
     cache->max = max;
+    cache->odtime = odtime;
 
     // init the mutex
     if(pthread_mutex_init(&cache->mutex, NULL) != 0) {
@@ -90,6 +92,35 @@ int yah_cache_update(struct yah_cache* cache, void* value, unsigned size) {
             while(ptr) {
                 if(ptr->cmp(ptr, ptr->size, value, size) == 0) {
                     // find the same value
+                    if(cache->odtime != 0) {
+                        // check the time
+                        time_t now = time(NULL);
+                        if(now - ptr->time >= cache->odtime) {
+                            // out of date
+                            // treat that the node is not exists
+                            // update the time, reorder the node at the head of cache->list
+                            ptr->time = now;
+                            if(node != list->head) {
+                                if(node == list->tail) {
+                                    node->prev->next = NULL;
+                                    node->prev = NULL;
+                                    node->next = list->head;
+                                    list->head->prev = list->head;
+                                } else {
+                                    struct yah_cache_node* prev = node->prev;
+                                    struct yah_cache_node* next = node->next;
+                                    prev->next = next;
+                                    next->prev = prev;
+                                    node->next = list->head;
+                                    node->prev = NULL;
+                                    list->head->prev = node;
+                                    list->head = node;
+                                }
+                            }
+                            // finish:
+                            goto finish;
+                        }
+                    }
                     ret = YAH_CACHE_NODE_EXISTS;
                     goto findend;
                 }
@@ -188,6 +219,7 @@ findend:
             }
         }
     }
+finish:
     yah_log("unlock mutex, final size = %d", list->count);
     pthread_mutex_unlock(&cache->mutex);
     return ret;

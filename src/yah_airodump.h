@@ -44,6 +44,7 @@ enum yah_airodump_type {
 
 struct yah_airodump_data {
     enum yah_airodump_type type;
+    char bssid[20];
     union {
         struct yah_airodump_apstation apstation;
         struct yah_airodump_ap ap;
