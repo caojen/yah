@@ -10,7 +10,7 @@ yah_thread_pool_init(unsigned int wnum, void* (*func)(void*)) {
     if(wnum <= 1) {
         wnum = 1;
     }
-    yah_log("pool will init with num = %d", wnum);
+    // yah_log("pool will init with num = %d", wnum);
     // init pool
     yah_thread_pool* ret =
         (yah_thread_pool*) malloc(sizeof(yah_thread_pool));

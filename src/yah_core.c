@@ -68,17 +68,17 @@ void yah_core_start() {
 
     /* parent process */
     /* continue */
-    yah_log("parent process continue");
+    yah_log("core: parent process continue");
 
     /**
      * 4. create a pool to receive all formatted data
      * and try to post them
      * these job is adding by another pool
      */
-    yah_log("before init rp_pool");
+    yah_log("core: trying to init thread pool...");
     // Receive-Post pool
     yah_thread_pool* rp_pool = yah_thread_pool_init(rpworkers, rpworker_main_func);
-    yah_log("rp_pool init done");
+    yah_log("core: rp_pool init done");
 
     /**
      * 3. format each line into formatted data
@@ -89,16 +89,15 @@ void yah_core_start() {
 
     // Format-Push pool
     yah_thread_pool* fp_pool = yah_thread_pool_init(fpworkers, fpworker_main_func);
-    yah_log("fp_pool init done");
+    yah_log("core: fp_pool init done");
 
     /**
      * 2. capture all outputs from fd
      */
     char buf[YAH_CAPTURE_LINE];
-    yah_log("will call fdopen");
+    yah_log("core: will call fdopen");
     FILE* fp = fdopen(airodump_fd, "r");
     // get line by line
-    yah_log("====getting from fd = %d, fp = %ld", airodump_fd, fp);
     while(fgets(buf, YAH_CAPTURE_LINE, fp) != NULL) {
         yah_log(buf);
     }
