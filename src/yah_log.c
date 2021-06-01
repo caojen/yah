@@ -68,5 +68,13 @@ yah_error(const char* fmt, ...) {
 void
 unimplemented() {
     fprintf(stderr, "Unimplemented!\n");
+    daemon_exit();
+    exit(1);
+}
+
+void
+unreachable() {
+    fprintf(stderr, "thread has reached unreachable code!\n");
+    daemon_exit();
     exit(1);
 }

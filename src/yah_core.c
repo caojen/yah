@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "yah_core.h"
 #include "yah_log.h"
@@ -9,12 +10,15 @@
 #include "yah_const.h"
 #include "yah_thread_pool.h"
 #include "yah_config.h"
+#include "yah_mem.h"
 
 /**
  * make airodump_pid as global variable
  * so the signal can access and send signal if needed
  */
 pid_t airodump_pid = 0;
+yah_thread_pool* rp_pool = NULL;
+yah_thread_pool* fp_pool = NULL;
 
 /**
  * What should core do?
@@ -77,7 +81,7 @@ void yah_core_start() {
      */
     yah_log("core: trying to init thread pool...");
     // Receive-Post pool
-    yah_thread_pool* rp_pool = yah_thread_pool_init(rpworkers, rpworker_main_func);
+    rp_pool = yah_thread_pool_init(rpworkers, rpworker_main_func);
     yah_log("core: rp_pool init done");
 
     /**
@@ -88,7 +92,7 @@ void yah_core_start() {
      */
 
     // Format-Push pool
-    yah_thread_pool* fp_pool = yah_thread_pool_init(fpworkers, fpworker_main_func);
+    fp_pool = yah_thread_pool_init(fpworkers, fpworker_main_func);
     yah_log("core: fp_pool init done");
 
     /**
@@ -99,8 +103,24 @@ void yah_core_start() {
     FILE* fp = fdopen(airodump_fd, "r");
     // get line by line
     while(fgets(buf, YAH_CAPTURE_LINE, fp) != NULL) {
-        yah_log(buf);
+        int length = strlen(buf);
+        yah_log("main: receive length: %d", length);
+        yah_log("main: fp_job genereating...");
+        char* arg = yah_mem_alloc(length + 1);
+        memcpy(arg, buf, length * sizeof(char));
+        // genereate fp_pool_job
+        struct yah_job* job = YAH_JOB_INITIALIZER;
+        job->arg = arg;
+        job->arg_destory = yah_mem_free;
+        job->func = yah_fp_pool_job_func;
+        yah_thread_pool_push_job(fp_pool, job);
+        yah_log("main: fp_job push to fp_pool done...");
     }
 
-    unimplemented();
+    unreachable();
+}
+
+void
+yah_fp_pool_job_func(void* __arg) {
+    
 }

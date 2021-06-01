@@ -44,4 +44,10 @@ void yah_error(const char* fmt, ...);
  */
 void unimplemented();
 
+/**
+ * This function means threads reaches unexpected code.
+ * It is an error, stop the process with exit code 1.
+ */
+void unreachable();
+
 #endif

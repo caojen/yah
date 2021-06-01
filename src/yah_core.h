@@ -20,4 +20,13 @@ void yah_core_start();
 
 extern pid_t airodump_pid;
 
+#include "yah_thread_pool.h"
+extern yah_thread_pool* rp_pool;
+extern yah_thread_pool* fp_pool;
+
+// the main func that formatted-push pool's job do
+// __arg: a char* end with \n\0
+// formattedn arg, then, push to rp_pool
+void yah_fp_pool_job_func(void* __arg);
+
 #endif
