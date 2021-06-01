@@ -194,9 +194,43 @@ yah_fp_pool_job_func(void* __arg) {
 
     // continue
     // if newline begin with "BSSID" / "FREQ", ignore
-    if(yah_string_prefix(newline, "BSSID") || yah_string_prefix(newline, "Freq")) {
+    if(yah_string_prefix(newline, "BSSID") || yah_string_prefix(newline, "Freq") ||
+        yah_string_prefix(newline, "(not associated)") || yah_string_prefix(newline, "available")) {
         // ignore it
         return;
     }
     yah_log("%s", newline);
+    char* first_part_begin;
+    char* first_part_end;
+
+    char* second_part_begin;
+    char* second_part_end;
+
+    yah_string_get_next_part(newline, &first_part_begin, &first_part_end);
+    yah_string_get_next_part(first_part_end, &second_part_begin, &second_part_end);
+    
+    *first_part_end = 0;
+    *second_part_end = 0;
+
+    struct yah_airodump_data* data = 
+        (struct yah_airodump_data*) malloc (sizeof(struct yah_airodump_data));
+    memset(data, 0, sizeof(struct yah_airodump_data));
+    if(strlen(second_part_begin) > 10) {
+        data->type = apstation;
+        strcpy(&data->data.apstation.bssid, first_part_begin);
+        strcpy(&data->data.apstation.station, second_part_begin);
+        *first_part_end = ' ';
+        *second_part_end = ' ';
+        strcpy(&data->data.apstation.comment, newline);
+        data->data.apstation.create_time = arg->create_time;
+    } else {
+        data->type = ap;
+        strcpy(&data->data.ap.bssid, first_part_begin);
+        *first_part_end = ' ';
+        *second_part_end = ' ';
+        strcpy(&data->data.ap.comment, newline);
+        data->data.ap.create_time = arg->create_time;
+    }
+
+    yah_log("lru: for test.");
 }

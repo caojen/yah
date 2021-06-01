@@ -99,8 +99,10 @@ int yah_cache_update(struct yah_cache* cache, void* value, unsigned size) {
         }
         node = node->next;
     }
+    yah_log("lru: find ret = %d", ret);
 findend:
     if(ret == YAH_CACHE_NODE_EXISTS) {
+        yah_log("lru: reorder node into head");
         if(node != list->head) {
             // move the node at the head of list
             if(node == list->tail) {
@@ -124,6 +126,7 @@ findend:
             }
         }
     } else {
+        yah_log("lru: insert into list");
         // the value is not exists. add to cache
         // get the new copy of value
         void* newvalue = cache->copy(value, size);
@@ -135,12 +138,16 @@ findend:
         newnode->size = size;
 
         if(list->head == NULL) {
-            // empty, just set it
+            yah_log("lru: the list is empty , just insert into head");
+            // empty, just insert it
             list->head = list->tail = newnode;  
             list->count++;  
         } else {
+            yah_log("lru: the list is not empty");
             if(list->count < cache->max) {
+                yah_log("lru: not exceed");
                 if(node && key == node->key) {
+                    yah_log("lru: key exists, append it");
                     // just insert into the end of node
                     struct yah_cache_node* ptr = node;
                     while(ptr->next_same != NULL) {
@@ -148,6 +155,7 @@ findend:
                     }
                     ptr->next = newnode;
                 } else {
+                    yah_log("lru: key not exists, add to head");
                     // insert into the head of list
                     newnode->next = list->head;
                     list->head->prev = newnode;
@@ -155,6 +163,7 @@ findend:
                 }
                 list->count++;
             } else {
+                yah_log("lru: exceed, remove tail");
                 // remove the tail
                 // decrease count
                 struct yah_cache_node* tail = list->tail;
@@ -170,6 +179,8 @@ findend:
                     list->count--;
                 }
 
+                yah_log("lru: add to head");
+
                 // add new node to head
                 list->head->prev = newnode;
                 newnode->next = list->head;
@@ -177,6 +188,7 @@ findend:
             }
         }
     }
-
+    yah_log("unlock mutex, final size = %d", list->count);
+    pthread_mutex_unlock(&cache->mutex);
     return ret;
 }

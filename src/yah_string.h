@@ -26,4 +26,9 @@ void yah_string_destory(void* a, unsigned as);
 // copy a string with size as - 1
 void* yah_string_copy(void* a, unsigned as);
 
+// return the part^{th} of a split with ' '
+// treat multi-' ' as one ' '
+// return the pointer to **begin
+char* yah_string_get_next_part(char* a, char** begin, char** end);
+
 #endif

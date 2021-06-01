@@ -69,3 +69,21 @@ yah_string_copy(void* a, unsigned as) {
     memcpy(r, a, as);
     return r;
 }
+
+char*
+yah_string_get_next_part(char* a, char** begin, char** end) {
+    while(*a && *a == ' ') {
+        ++a;
+    }
+
+    if(!a) {
+        return NULL;
+    }
+
+    *begin = a;
+    *end = a;
+    while(**end && **end != ' ') {
+        ++(*end);
+    }
+    return a;
+}

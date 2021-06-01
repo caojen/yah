@@ -37,6 +37,19 @@ struct yah_airodump_ap {
     time_t create_time;
 };
 
+enum yah_airodump_type {
+    apstation = 0,
+    ap
+};
+
+struct yah_airodump_data {
+    enum yah_airodump_type type;
+    union {
+        struct yah_airodump_apstation apstation;
+        struct yah_airodump_ap ap;
+    } data ;
+};
+
 struct yah_fp_pool_job_arg {
     char line[YAH_CAPTURE_LINE];
     time_t create_time;
