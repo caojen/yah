@@ -11,6 +11,7 @@
 #include "yah_thread_pool.h"
 #include "yah_config.h"
 #include "yah_mem.h"
+#include "yah_string.h"
 
 /**
  * make airodump_pid as global variable
@@ -179,6 +180,13 @@ yah_fp_pool_job_func(void* __arg) {
     yah_log("fp_job_func: receive arg with line.length = %d", length);
     if(length < YAH_CAPTURE_MIN_LINE) {
         // ignore this line
+        return;
+    }
+
+    // continue
+    // if newline begin with "BSSID" / "FREQ", ignore
+    if(yah_string_prefix(newline, "BSSID") || yah_string_prefix(newline, "Freq")) {
+        // ignore it
         return;
     }
     yah_log_string_hex(newline);
