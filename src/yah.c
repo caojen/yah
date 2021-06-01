@@ -33,7 +33,11 @@ main(int argc, char** argv) {
 
     /* test all arguments. */
     for(int i = 1; i < argc; i++) {
-        if(strcmp(argv[i], "start") == 0) {
+        if(strcmp(argv[i], "help") == 0 || strcmp(argv[i], "-h") == 0) {
+            yah_usage();
+            exit(0);
+        }
+        else if(strcmp(argv[i], "start") == 0) {
             /* start as daemon */
             yah_daemonize();
             yah_core_start();
