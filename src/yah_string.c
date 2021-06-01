@@ -54,3 +54,18 @@ int yah_string_cmp(char* a, unsigned as, char* b, unsigned bs) {
     }
     return 0;
 }
+
+void
+yah_string_destory(void* a, unsigned as) {
+    free(a);
+}
+
+void*
+yah_string_copy(void* a, unsigned as) {
+    void* r = malloc (as);
+    if(r == NULL) {
+        yah_error("string copy error, malloc return NULL");
+    }
+    memcpy(r, a, as);
+    return r;
+}

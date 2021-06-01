@@ -12,6 +12,7 @@
 #include "yah_config.h"
 #include "yah_mem.h"
 #include "yah_string.h"
+#include "yah_lru.h"
 
 /**
  * make airodump_pid as global variable
@@ -20,6 +21,7 @@
 pid_t airodump_pid = 0;
 yah_thread_pool* rp_pool = NULL;
 yah_thread_pool* fp_pool = NULL;
+struct yah_cache* cache = NULL;
 
 /**
  * What should core do?
@@ -74,6 +76,13 @@ void yah_core_start() {
     /* parent process */
     /* continue */
     yah_log("core: parent process continue");
+
+    /**
+     * init the lru cache
+     */
+    yah_log("core: trying to init lru cache");
+    cache = yah_cache_init(64, yah_string_cmp, yah_string_destory, yah_string_copy);
+    yah_log("core: cache init done");
 
     /**
      * 4. create a pool to receive all formatted data

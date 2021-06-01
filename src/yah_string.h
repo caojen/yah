@@ -20,4 +20,10 @@ int yah_string_prefix(const char* a, const char* b);
 // if the string is equaled, return 0
 int yah_string_cmp(char* a, unsigned as, char* b, unsigned bs);
 
+// destory a string init with malloc
+void yah_string_destory(void* a, unsigned as);
+
+// copy a string with size as - 1
+void* yah_string_copy(void* a, unsigned as);
+
 #endif
