@@ -25,7 +25,7 @@ extern yah_thread_pool* rp_pool;
 extern yah_thread_pool* fp_pool;
 
 // the main func that formatted-push pool's job do
-// __arg: a char* end with \n\0
+// __arg: a `struct yah_fp_pool_job_arg*`
 // formattedn arg, then, push to rp_pool
 void yah_fp_pool_job_func(void* __arg);
 

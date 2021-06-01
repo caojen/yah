@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "yah_thread_pool_job.h"
+#include "yah_log.h"
 
 struct yah_job*
 yah_job_init() {
@@ -64,8 +65,9 @@ yah_job_queue_pop_job(struct yah_job_queue* queue) {
         queue->count--;
     } else {
         ret = queue->tail;
-        ret->prev = ret->next = NULL;
         queue->tail->prev->next = NULL;
+        queue->tail = queue->tail->prev;
+        ret->prev = ret->next = NULL;
         queue->count--;
     }
 

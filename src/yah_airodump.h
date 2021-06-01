@@ -21,4 +21,25 @@
  */
 int get_airodump_device_name(char name[YAH_MAX_DEVICE_NAME]);
 
+#include <time.h>
+#include "yah_core.h"
+
+struct yah_airodump_apstation {
+    char bssid[20];
+    char station[20];
+    char comment[1024];
+    time_t create_time;
+};
+
+struct yah_airodump_ap {
+    char bssid[20];
+    char comment[1024];
+    time_t create_time;
+};
+
+struct yah_fp_pool_job_arg {
+    char line[YAH_CAPTURE_LINE];
+    time_t create_time;
+};
+
 #endif

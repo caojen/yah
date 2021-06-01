@@ -104,17 +104,24 @@ void yah_core_start() {
     // get line by line
     while(fgets(buf, YAH_CAPTURE_LINE, fp) != NULL) {
         int length = strlen(buf);
-        yah_log("main: receive length: %d", length);
-        yah_log("main: fp_job genereating...");
-        char* arg = yah_mem_alloc(length + 1);
-        memcpy(arg, buf, length * sizeof(char));
+        // yah_log("main: receive");
+        // yah_log("main: fp_job genereating...");
+        struct yah_fp_pool_job_arg* job_arg = 
+            (struct yah_fp_pool_job_arg*) malloc (sizeof(struct yah_fp_pool_job_arg)); 
+        memset(job_arg, 0, sizeof(struct yah_fp_pool_job_arg));
+        job_arg->create_time = time(NULL);
+        memcpy(job_arg->line, buf, length);
+
         // genereate fp_pool_job
         struct yah_job* job = YAH_JOB_INITIALIZER;
-        job->arg = arg;
+        // yah_log("main: fp_job_init done. setting...");
+        job->arg = job_arg;
         job->arg_destory = yah_mem_free;
         job->func = yah_fp_pool_job_func;
+        // yah_log("main: fp_job_setting done. pushing...");
         yah_thread_pool_push_job(fp_pool, job);
-        yah_log("main: fp_job push to fp_pool done...");
+        // yah_log("main: fp_job push done. jobs remain = %d", yah_job_queue_count(fp_pool->jobs));
+        // yah_log("main: fp_job push to fp_pool done...");
     }
 
     unreachable();
@@ -122,5 +129,9 @@ void yah_core_start() {
 
 void
 yah_fp_pool_job_func(void* __arg) {
-    
+    struct yah_fp_pool_job_arg* arg =
+        (struct yah_fp_pool_job_arg*) __arg;
+
+    yah_log("fp_job_func: receive arg at time = %ld\n", arg->create_time);
+    yah_log("fp_job_func: receive arg with line.length = %d", strlen(arg->line));
 }
