@@ -5,7 +5,12 @@
 #ifndef YAH_LRU_H
 #define YAH_LRU_H
 
+#include <pthread.h>
+
 typedef unsigned long yah_hash_key;
+
+#define YAH_CACHE_NODE_EXISTS 1
+#define YAH_CACHE_NODE_NOTEXISTS 0
 
 // a hash function
 // see http://www.cse.yorku.ca/~oz/hash.html
@@ -52,6 +57,8 @@ struct yah_cache {
     void (*destory)(void* value, unsigned int size);
     // copy a new value from the old value with size sz
     void* (*copy)(void* old, unsigned sz);
+    // mutex to access the list
+    pthread_mutex_t mutex;
 };
 
 // init a cache with max
@@ -63,5 +70,17 @@ struct yah_cache* yah_cache_init(unsigned int max,
     void* (*copy)(void* old, unsigned sz));
 
 // destory a cache
+// if success, return 0
+int yah_cache_destory(struct yah_cache* cache);
+
+// update a cache with value
+// returns:
+// if the value already exists (before update), return YAH_CACHE_NODE_EXISTS
+// else return YAH_CACHE_NODE_NOTEXISTS
+// no matter how, the cache will be update
+//
+// multi-thread warning:
+// this function may block because the mutex
+int yah_cache_update(struct yah_cache* cache, void* value, unsigned sz);
 
 #endif
