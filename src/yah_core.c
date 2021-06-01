@@ -82,8 +82,8 @@ void yah_core_start() {
      * init the lru cache
      */
     yah_log("core: trying to init lru cache");
-    ap_cache = yah_cache_init(64, 24 * 60 * 60, yah_string_cmp, yah_string_destory, yah_string_copy);
-    apstation_cache = yah_cache_init(64, 10 * 60, yah_string_cmp, yah_string_destory, yah_string_copy);
+    ap_cache = yah_cache_init(64, YAH_AP_TIME, yah_string_cmp, yah_string_destory, yah_string_copy);
+    apstation_cache = yah_cache_init(64, YAH_APSTATION_TIME, yah_string_cmp, yah_string_destory, yah_string_copy);
     yah_log("core: cache init done");
 
     /**
@@ -119,7 +119,7 @@ void yah_core_start() {
         // yah_log("main: receive");
         // yah_log("main: fp_job genereating...");
         struct yah_fp_pool_job_arg* job_arg = 
-            (struct yah_fp_pool_job_arg*) malloc (sizeof(struct yah_fp_pool_job_arg)); 
+            (struct yah_fp_pool_job_arg*) yah_mem_alloc (sizeof(struct yah_fp_pool_job_arg)); 
         memset(job_arg, 0, sizeof(struct yah_fp_pool_job_arg));
         job_arg->create_time = time(NULL);
         memcpy(job_arg->line, buf, length);
@@ -222,7 +222,7 @@ yah_fp_pool_job_func(void* __arg) {
         int incache = yah_cache_update(apstation_cache, first_part_begin, first_part_length + 1);
         if(incache == YAH_CACHE_NODE_NOTEXISTS) {
             yah_log("push type = %d, bssid = %s", type, first_part_begin);
-            data = (struct yah_airodump_data*) malloc (sizeof(struct yah_airodump_data));
+            data = (struct yah_airodump_data*) yah_mem_alloc (sizeof(struct yah_airodump_data));
             memset(data, 0, sizeof(struct yah_airodump_data));
             data->type = apstation;
             strcpy(data->data.apstation.bssid, first_part_begin);
@@ -238,7 +238,7 @@ yah_fp_pool_job_func(void* __arg) {
         int incache = yah_cache_update(ap_cache, first_part_begin, first_part_length + 1);
         if(incache == YAH_CACHE_NODE_NOTEXISTS) {
             yah_log("push type = %d, bssid = %s", type, first_part_begin);
-            data = (struct yah_airodump_data*) malloc (sizeof(struct yah_airodump_data));
+            data = (struct yah_airodump_data*) yah_mem_alloc (sizeof(struct yah_airodump_data));
             memset(data, 0, sizeof(struct yah_airodump_data));
             data->type = ap;
             strcpy(data->data.ap.bssid, first_part_begin);
@@ -251,5 +251,18 @@ yah_fp_pool_job_func(void* __arg) {
     }
     if(data != NULL) {
         // generate that job, and push to rp_pool's job queue
+        struct yah_job* job = YAH_JOB_INITIALIZER;
+        job->arg = (void*) data;
+        job->arg_destory = yah_mem_free;
+        job->func = yah_rp_pool_job_func;
+        yah_thread_pool_push_job(rp_pool, job);
     }
+}
+
+void
+yah_rp_pool_job_func(void* __arg) {
+    yah_log("rp_job_func: a job has push to rp_pool");
+    struct yah_airodump_data* arg = 
+        (struct yah_airodump_data*) __arg;
+    yah_log("rp_job_func: its type is %d", arg->type);
 }

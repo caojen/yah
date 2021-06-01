@@ -57,4 +57,10 @@
 
 // define unix special charactors
 #define ESC (27)
+
+// define time that wait for ap/apstation appear again
+// also the time of lru odtime
+// time is in seconds
+#define YAH_AP_TIME (24 * 60 * 60)
+#define YAH_APSTATION_TIME (10 * 60)
 #endif

@@ -32,7 +32,13 @@ extern yah_thread_pool* fp_pool;
 
 // the main func that formatted-push pool's job do
 // __arg: a `struct yah_fp_pool_job_arg*`
-// formattedn arg, then, push to rp_pool
+// formatted arg, then, push to rp_pool
 void yah_fp_pool_job_func(void* __arg);
+
+// the main func that receive-post pool's job do
+// __arg: a `struct yah_airodump_data*`
+// confirm that __arg did not store in database
+// after confirmed, push to network
+void yah_rp_pool_job_func(void* __arg);
 
 #endif

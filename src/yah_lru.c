@@ -72,6 +72,7 @@ yah_cache_destory(struct yah_cache* cache) {
 }
 
 int yah_cache_update(struct yah_cache* cache, void* value, unsigned size) {
+    // yah_log("lru cache updating");
     int ret = YAH_CACHE_NODE_NOTEXISTS;
 
     // get the hash key
