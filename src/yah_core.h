@@ -41,6 +41,8 @@ void yah_fp_pool_job_func(void* __arg);
 // after confirmed, push to network
 void yah_rp_pool_job_func(void* __arg);
 
+#include "yah_airodump.h"
+struct yah_airodump_data;
 void yah_rp_pool_job_func_ap(struct yah_airodump_data* data);
 void yah_rp_pool_job_func_apstation(struct yah_airodump_data* data);
 
