@@ -7,12 +7,17 @@
 
 yah_hash_key
 hash(void* bytes, unsigned int bysz) {
-    unsigned char* str = (unsigned char*) bytes;
-    yah_hash_key hash = 5381;
-    for(unsigned int i = 0; i < bysz; i++) {
-        hash = ((hash << 5) + hash) + str[i];
+    // unsigned char* str = (unsigned char*) bytes;
+    // yah_hash_key hash = 5381;
+    // for(unsigned int i = 0; i < bysz; i++) {
+    //     hash = ((hash << 5) + hash) + str[i];
+    // }
+    // return hash;
+    if(random() % 2 == 0) {
+        return 0;
+    } else {
+        return 1;
     }
-    return hash;
 }
 
 struct yah_cache*
@@ -21,8 +26,8 @@ yah_cache_init(unsigned int max, unsigned odtime,
     void (*destory)(void* value, unsigned int size),
     void* (*copy)(void* old, unsigned sz)) {
     
-    if(max <= 10) {
-        max = 32;
+    if(max <= 1) {
+        max = 2;
     }
     struct yah_cache* cache = 
         (struct yah_cache*) malloc (sizeof(struct yah_cache));
@@ -139,6 +144,30 @@ int yah_cache_update(struct yah_cache* cache, void* value, unsigned size) {
                 }
                 ptr = ptr->next_same;
             }
+            if(list->count >= cache->max) {
+                yah_log("found the key equal, no value matched, but the buttle is full.");
+                yah_log("remove the tail");
+                struct yah_cache_node* tail = list->tail;
+                if(list->tail == list->head) {
+                    list->tail = list->head = NULL;
+                } else {
+                    tail->prev->next = NULL;
+                    list->tail = tail->prev;
+                }
+                yah_log("free the whole tail");
+                struct yah_cache_node* ptrs;
+                while(tail) {
+                    ptrs = tail->next_same;
+                    tail->destory(tail->value, tail->size);
+                    free(tail);
+                    tail = ptrs;
+                    list->count--;
+                }
+                if(node == tail) {
+                    yah_log("set node = NULL");
+                    node = NULL;
+                }
+            }
             goto findend;
         }
         node = node->next;
@@ -200,7 +229,7 @@ findend:
                     while(ptr->next_same != NULL) {
                         ptr = ptr->next_same;
                     }
-                    ptr->next = newnode;
+                    ptr->next_same = newnode;
                 } else {
                     yah_log("lru: key not exists, add to head");
                     // insert into the head of list
@@ -211,30 +240,48 @@ findend:
                 list->count++;
             } else {
                 yah_log("lru: exceed, remove tail");
-                // remove the tail
-                // decrease count
-                yah_log("tail at: %p", list->tail);
-                struct yah_cache_node* tail = list->tail;
-                yah_log("prev of tail at %p", list->tail->prev);
-                struct yah_cache_node* prev = tail->prev;
-                prev->next = NULL;
+                if(list->tail == list->head) {
+                    // remove all
+                    // only one node is the new node
+                    struct yah_cache_node* tail = list->tail;
+                    list->tail = list->head = newnode;
+                    list->count = 1;
+                    // remove tail
+                    struct yah_cache_node* ptrs;
+                    while(tail) {
+                        ptrs = tail->next_same;
+                        tail->destory(tail->value, tail->size);
+                        free(tail);
+                        tail = ptrs;
+                    }
+                } else {
+                    // remove the tail
+                    // decrease count
+                    yah_log("tail at: %p", list->tail);
+                    struct yah_cache_node* tail = list->tail;
+                    yah_log("prev of tail at %p", list->tail->prev);
+                    struct yah_cache_node* prev = tail->prev;
+                    prev->next = NULL;
+                    list->tail = prev;
 
-                struct yah_cache_node* next;
-                yah_log("lru: removing all links");
-                while(tail) {
-                    next = tail->next_same;
-                    tail->destory(tail->value, tail->size);
-                    free(tail);
-                    tail = next;
-                    list->count--;
+                    struct yah_cache_node* next;
+                    yah_log("lru: removing all links");
+                    while(tail) {
+                        next = tail->next_same;
+                        tail->destory(tail->value, tail->size);
+                        free(tail);
+                        tail = next;
+                        list->count--;
+                    }
+
+                    yah_log("lru: add to head");
+
+                    // add new node to head
+                    list->head->prev = newnode;
+                    newnode->next = list->head;
+                    list->head = newnode;
+                    list->count++;
                 }
-
-                yah_log("lru: add to head");
-
-                // add new node to head
-                list->head->prev = newnode;
-                newnode->next = list->head;
-                list->head = newnode;
             }
         }
     }
@@ -242,9 +289,18 @@ finish:
     yah_log("unlock mutex, final size = %d", list->count);
     yah_log("keylist:");
     struct yah_cache_node* j = cache->list->head;
+    int i = 0;
     while(j) {
-        yah_log("%lu", j->key);
+        yah_log("%d: %lu", i, j->key);
         j = j->next;
+        i++;
+    }
+    yah_log("reverse:");
+    j = cache->list->tail;
+    while(j) {
+        yah_log("%d: %lu", i, j->key);
+        j = j->prev;
+        i--;
     }
     pthread_mutex_unlock(&cache->mutex);
     return ret;
