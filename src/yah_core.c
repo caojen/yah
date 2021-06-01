@@ -82,8 +82,8 @@ void yah_core_start() {
      * init the lru cache
      */
     yah_log("core: trying to init lru cache");
-    ap_cache = yah_cache_init(5, 24 * 60 * 60, yah_string_cmp, yah_string_destory, yah_string_copy);
-    apstation_cache = yah_cache_init(5, 10 * 60, yah_string_cmp, yah_string_destory, yah_string_copy);
+    ap_cache = yah_cache_init(64, 24 * 60 * 60, yah_string_cmp, yah_string_destory, yah_string_copy);
+    apstation_cache = yah_cache_init(64, 10 * 60, yah_string_cmp, yah_string_destory, yah_string_copy);
     yah_log("core: cache init done");
 
     /**

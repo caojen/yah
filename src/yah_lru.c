@@ -7,17 +7,12 @@
 
 yah_hash_key
 hash(void* bytes, unsigned int bysz) {
-    // unsigned char* str = (unsigned char*) bytes;
-    // yah_hash_key hash = 5381;
-    // for(unsigned int i = 0; i < bysz; i++) {
-    //     hash = ((hash << 5) + hash) + str[i];
-    // }
-    // return hash;
-    if(random() % 2 == 0) {
-        return 0;
-    } else {
-        return 1;
+    unsigned char* str = (unsigned char*) bytes;
+    yah_hash_key hash = 5381;
+    for(unsigned int i = 0; i < bysz; i++) {
+        hash = ((hash << 5) + hash) + str[i];
     }
+    return hash;
 }
 
 struct yah_cache*
