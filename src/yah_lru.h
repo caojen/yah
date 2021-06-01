@@ -50,6 +50,8 @@ struct yah_cache {
     int (*cmp)(void* v1, unsigned int s1, void* v2, unsigned int s2);
     // the destory function that use to init node
     void (*destory)(void* value, unsigned int size);
+    // copy a new value from the old value with size sz
+    void* (*copy)(void* old, unsigned sz);
 };
 
 // init a cache with max
@@ -57,7 +59,8 @@ struct yah_cache {
 // provide the cmp and destory to init the cache
 struct yah_cache* yah_cache_init(unsigned int max,
     int (*cmp)(void* v1, unsigned int s1, void* v2, unsigned int s2),
-    void (*destory)(void* value, unsigned int size));
+    void (*destory)(void* value, unsigned int size),
+    void* (*copy)(void* old, unsigned sz));
 
 // destory a cache
 
