@@ -261,8 +261,21 @@ yah_fp_pool_job_func(void* __arg) {
 
 void
 yah_rp_pool_job_func(void* __arg) {
-    yah_log("rp_job_func: a job has push to rp_pool");
     struct yah_airodump_data* arg = 
         (struct yah_airodump_data*) __arg;
-    yah_log("rp_job_func: its type is %d", arg->type);
+    if(arg->type == ap) {
+        yah_rp_pool_job_func_ap(arg);
+    } else {
+        yah_rp_pool_job_func_apstation(arg);
+    }
+}
+
+void
+yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
+
+}
+
+void
+yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
+
 }
