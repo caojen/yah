@@ -6,7 +6,7 @@ void* yah_mem_alloc(unsigned size) {
     if(size == 0) {
         return NULL;
     }
-    
+
     void* r = malloc(size);
 
     return r;
