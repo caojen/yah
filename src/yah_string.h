@@ -16,4 +16,8 @@
 //      if b is not null, compare them
 int yah_string_prefix(const char* a, const char* b);
 
+// compare two string, as, bs is the bytes that the string take('\0' included)
+// if the string is equaled, return 0
+int yah_string_cmp(char* a, unsigned as, char* b, unsigned bs);
+
 #endif

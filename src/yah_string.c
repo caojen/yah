@@ -40,3 +40,17 @@ yah_string_prefix(const char* a, const char* b) {
         return 0;
     }
 }
+
+int yah_string_cmp(char* a, unsigned as, char* b, unsigned bs) {
+    if(as != bs) {
+        return 1;
+    }
+
+    for(int i = 0; i < as ;i++) {
+        if(a[i] != b[i]) {
+            // just return, secure is not concerned.
+            return 1;
+        }
+    }
+    return 0;
+}
