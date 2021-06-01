@@ -10,6 +10,8 @@ int log_level = YAH_LOG_LEVEL_LOG;
 int rpworkers = 1;
 int fpworkers = 1;
 
+int device_number;
+
 FILE* YAH_FILENO_LOG = 0;
 FILE* YAH_FILENO_WARN = 0;
 FILE* YAH_FILENO_ERROR = 0;
@@ -90,6 +92,9 @@ yah_set_config_without_mutex(const char* key, int value) {
         ret = 0;
     } else if(strcmp(key, "fpworkers") == 0) {
         fpworkers = value;
+        ret = 0;
+    } else if(strcmp(key, "device_number") == 0) {
+        device_number = value;
         ret = 0;
     }
 

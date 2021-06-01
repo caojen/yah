@@ -17,6 +17,8 @@ extern FILE* YAH_FILENO_LOG;
 extern FILE* YAH_FILENO_WARN;
 extern FILE* YAH_FILENO_ERROR;
 
+extern int device_number;
+
 
 /**
  * reload config from CONFFILE
