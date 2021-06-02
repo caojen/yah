@@ -108,13 +108,10 @@ void yah_core_start() {
     fp_pool = yah_thread_pool_init(fpworkers, fpworker_main_func);
     yah_log("core: fp_pool init done");
 
-    // init the database
-    yah_core_init_database();
-    // init pool data
-    yah_core_init_pool_data();
-
     // open database and init it
     yah_open_database();
+    yah_airodump_data_de_redundancy();
+    yah_core_init_pool_data();
 
     /**
      * 2. capture all outputs from fd
@@ -272,10 +269,15 @@ void
 yah_rp_pool_job_func(void* __arg) {
     struct yah_airodump_data* arg = 
         (struct yah_airodump_data*) __arg;
-    if(arg->type == ap) {
-        yah_rp_pool_job_func_ap(arg);
-    } else {
-        yah_rp_pool_job_func_apstation(arg);
+    switch (arg->type) {
+        case ap:
+            yah_rp_pool_job_func_ap(arg);
+            break;
+        case apstation:
+            yah_rp_pool_job_func_apstation(arg);
+            break;
+        default:
+            unreachable();
     }
 }
 
@@ -289,10 +291,12 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
 
 }
 
-void yah_core_init_database() {
-    yah_log("core: using database %s, init", YAH_DATABASE);
-}
-
 void yah_core_init_pool_data() {
+    struct yah_airodump_data* data;
+    unsigned size = 0;
+    if(yah_airodump_data_fetch_unupdated(&data, &size) != 0) {
+        yah_quit("cannot init from pool. exit...");
+    }
 
+    yah_log("get data size = %d", size);
 }

@@ -41,10 +41,6 @@ void yah_fp_pool_job_func(void* __arg);
 // after confirmed, push to network
 void yah_rp_pool_job_func(void* __arg);
 
-// init the database file
-// according YAH_DATABASE
-void yah_core_init_database();
-
 // init fp_pool and rp_pool from database
 void yah_core_init_pool_data();
 

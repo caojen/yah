@@ -168,3 +168,76 @@ yah_airodump_database_init() {
     r |= yah_sqlite_drop(db, YAH_DATABASE_APSTATION_SQL);
     return r;
 }
+
+int
+yah_airodump_data_fetch_unupdated(struct yah_airodump_data** data, unsigned* size) {
+    sqlite3_stmt* count_stmt;
+    sqlite3_stmt *ap_stmt, *apstation_stmt;
+    int ap_size = 0, apstation_size = 0;
+
+    // count ap
+    sqlite3_prepare_v2(db, YAH_AP_COUNT_SQL, sizeof(YAH_AP_COUNT_SQL), &count_stmt, NULL);
+    if(sqlite3_step(count_stmt) != SQLITE_ROW) {
+        yah_quit("sqlite3 count ap failed");
+    }
+    ap_size = sqlite3_column_int(count_stmt, 0);
+    yah_log("remain ap size = %d", ap_size);
+    sqlite3_finalize(count_stmt); count_stmt = NULL;
+
+    // count apstation
+    sqlite3_prepare_v2(db, YAH_APSTATION_COUNT_SQL, sizeof(YAH_APSTATION_COUNT_SQL), &count_stmt, NULL);
+    if(sqlite3_step(count_stmt) != SQLITE_ROW) {
+        yah_quit("sqlite3 count apstation failed");
+    }
+    apstation_size = sqlite3_column_int(count_stmt, 0);
+    yah_log("remain apstation size = %d", apstation_size);
+    sqlite3_finalize(count_stmt); count_stmt = NULL;
+    *size = ap_size + apstation_size;
+
+    if(*size == 0) {
+        // empty, just return
+        *data = NULL;
+        return 0;
+    }
+    // have data. save to *data
+    *data = (struct yah_airodump_data*) malloc (sizeof(struct yah_airodump_data) * *size);
+
+    sqlite3_prepare_v2(db, YAH_AP_UNUPDATE_SQL, sizeof(YAH_AP_UNUPDATE_SQL), &ap_stmt, NULL);
+    int index = 0;
+    // id, bssid, comment, create_time
+    while(sqlite3_step(ap_stmt) != SQLITE_DONE) {
+        unsigned id = sqlite3_column_int(ap_stmt, 0);
+        const char* bssid = sqlite3_column_text(ap_stmt, 1);
+        const char* comment = sqlite3_column_text(ap_stmt, 2);
+        time_t create_time = sqlite3_column_int64(ap_stmt, 3);
+        (*data)[index].type = ap;
+        strcpy((*data)[index].specify, bssid);
+        strcpy((*data)[index].data.ap.bssid, bssid);
+        strcpy((*data)[index].data.ap.comment, comment);
+        (*data)[index].data.ap.create_time = create_time;
+        (*data)[index].data.ap.id = id;
+        index++;
+    }
+    sqlite3_finalize(ap_stmt);
+
+    sqlite3_prepare_v2(db, YAH_APSTATION_UNUPDATE_SQL, sizeof(YAH_APSTATION_UNUPDATE_SQL), &apstation_stmt, NULL);
+    // id, bssid, station, comment, create_time
+    while(sqlite3_step(apstation_stmt) != SQLITE_DONE) {
+        unsigned id = sqlite3_column_int(apstation_stmt, 0);
+        const char* bssid = sqlite3_column_text(apstation_stmt, 1);
+        const char* station = sqlite3_column_text(apstation_stmt, 2);
+        const char* comment = sqlite3_column_text(apstation_stmt, 3);
+        time_t create_time = sqlite3_column_int64(apstation_stmt, 4);
+        (*data)[index].type = apstation;
+        strcpy((*data)[index].specify, station);
+        strcpy((*data)[index].data.apstation.bssid, bssid);
+        strcpy((*data)[index].data.apstation.station, bssid);
+        strcpy((*data)[index].data.apstation.comment, comment);
+        (*data)[index].data.apstation.create_time = create_time;
+        (*data)[index].data.apstation.id = id;
+        index++;
+    }
+
+    sqlite3_finalize(apstation_stmt);
+    return 0;
+}

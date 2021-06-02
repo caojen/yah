@@ -118,6 +118,10 @@ int yah_airodump_data_fetch_unupdated(struct yah_airodump_data** data, unsigned*
 #define YAH_APSTATION_RM_REDUN_SQL "DELETE FROM apstation WHERE is_uploaded = 1 AND create_time < ?"
 #define YAH_AP_INSERT_SQL "INSERT INTO ap(bssid, comment, create_time) VALUES('%q', '%q', %d)"
 #define YAH_APSTATION_INSERT_SQL "INSERT INTO apstation(bssid, station, comment, create_time) VALUES('%q', '%q', '%q', %d)"
+#define YAH_AP_COUNT_SQL "SELECT count(1) AS count FROM ap WHERE is_uploaded = 0"
+#define YAH_APSTATION_COUNT_SQL "SELECT count(1) AS count FROM apstation WHERE is_uploaded = 0"
+#define YAH_AP_UNUPDATE_SQL "SELECT id, bssid, comment, create_time FROM ap WHERE is_uploaded = 0"
+#define YAH_APSTATION_UNUPDATE_SQL "SELECT id, bssid, station, comment, create_time FROM apstation WHERE is_uploaded = 0"
 
 // db should be opened before calling this function
 // init the database using YAH_DATABASE_AP_SQL and YAH_DATABASE_APSTATION_SQL
