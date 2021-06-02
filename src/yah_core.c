@@ -303,12 +303,18 @@ yah_rp_pool_job_func(void* __arg) {
 
 void
 yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
+    // TODO: upload the data to remote
 
+    // set data is_uploaded in database
+    yah_airodump_data_updated(data);
 }
 
 void
 yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
+    // TODO: upload the data to remote
 
+    // set data is uploaded in database
+    yah_airodump_data_updated(data);
 }
 
 void yah_core_init_pool_data() {
