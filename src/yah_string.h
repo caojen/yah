@@ -31,4 +31,12 @@ void* yah_string_copy(void* a, unsigned as);
 // return the pointer to **begin
 char* yah_string_get_next_part(char* a, char** begin, char** end);
 
+#define YAH_IS_SUBSTRING 1
+#define YAH_ISNOT_SUBSTRING 0
+
+// check if b is a substring of a
+// if true, return YAH_STRING_IS_SUBSTRING
+// if false, return YAH_STRING_ISNOT_SUBTRING
+int yah_string_substring(const char* a, const char* b);
+
 #endif

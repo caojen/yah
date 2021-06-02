@@ -90,3 +90,38 @@ yah_string_get_next_part(char* a, char** begin, char** end) {
     }
     return a;
 }
+
+int
+yah_string_substring(const char* a, const char* b) {
+
+    /**
+     * The worst implementation of substring.
+     * Time = O(ab)
+     */
+    const char* last_a = a;
+    const char* ptr_a = a;
+    const char* ptr_b = b;
+    int len_a = strlen(a);
+    int len_b = strlen(b);
+
+    if(len_a < len_b) {
+        return YAH_ISNOT_SUBSTRING;
+    } else if(len_a == len_b && strcmp(a, b) == 0) {
+        return YAH_IS_SUBSTRING;
+    } else {
+        while(*ptr_a && *ptr_b) {
+            if(*ptr_a == *ptr_b) {
+                ++ptr_a, ++ptr_b;
+            } else {
+                ++last_a;
+                ptr_a = last_a;
+                ptr_b = b;
+            }
+        }
+        if(!*ptr_a && !*ptr_b || *ptr_a) {
+            return YAH_IS_SUBSTRING;
+        } else {
+            return YAH_ISNOT_SUBSTRING;
+        }
+    }
+}
