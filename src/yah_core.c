@@ -24,6 +24,7 @@ yah_thread_pool* rp_pool = NULL;
 yah_thread_pool* fp_pool = NULL;
 struct yah_cache* ap_cache = NULL;
 struct yah_cache* apstation_cache = NULL;
+char airodump_time[YAH_CAPTURE_LINE + 1];
 
 /**
  * What should core do?
@@ -202,10 +203,14 @@ yah_fp_pool_job_func(void* __arg) {
 
     // continue
     // if newline begin with "BSSID" / "FREQ", ignore
-    if(yah_string_prefix(newline, "BSSID") || yah_string_prefix(newline, "Freq") ||
+    if(yah_string_prefix(newline, "BSSID") ||
         yah_string_prefix(newline, "(not associated)") || yah_string_prefix(newline, "available") || 
         yah_string_substring(newline, "<length:")) {
         // ignore it
+        return;
+    }
+    if(yah_string_prefix(newline, "Freq")) {
+        strcpy(airodump_time, newline);
         return;
     }
     // yah_log("%s", newline);
@@ -229,6 +234,7 @@ yah_fp_pool_job_func(void* __arg) {
         int incache = yah_cache_update(apstation_cache, first_part_begin, first_part_length + 1);
         if(incache == YAH_CACHE_NODE_NOTEXISTS) {
             yah_log("push type = %d, bssid = %s", type, first_part_begin);
+            yah_log("current airodump time = %s", airodump_time);
             data = (struct yah_airodump_data*) yah_mem_alloc (sizeof(struct yah_airodump_data));
             memset(data, 0, sizeof(struct yah_airodump_data));
             data->type = apstation;
@@ -245,6 +251,7 @@ yah_fp_pool_job_func(void* __arg) {
         int incache = yah_cache_update(ap_cache, first_part_begin, first_part_length + 1);
         if(incache == YAH_CACHE_NODE_NOTEXISTS) {
             yah_log("push type = %d, bssid = %s", type, first_part_begin);
+            yah_log("current airodump time = %s", airodump_time);
             data = (struct yah_airodump_data*) yah_mem_alloc (sizeof(struct yah_airodump_data));
             memset(data, 0, sizeof(struct yah_airodump_data));
             data->type = ap;
@@ -262,9 +269,7 @@ yah_fp_pool_job_func(void* __arg) {
         job->arg = (void*) data;
         job->arg_destory = yah_mem_free;
         job->func = yah_rp_pool_job_func;
-        yah_log("tring to push job to rp_pool");
         yah_thread_pool_push_job(rp_pool, job);
-        yah_log("push one job to rp_pool, type = %d, specify = %s", data->type, data->specify);
     }
 }
 
@@ -292,7 +297,7 @@ yah_rp_pool_job_func(void* __arg) {
         }
     } else {
         // skip this job
-        yah_log("rp_pool_job: skip type = %d, specify = %s", arg->type, arg->specify);
+        // yah_log("rp_pool_job: skip type = %d, specify = %s", arg->type, arg->specify);
     }
 }
 
@@ -317,9 +322,10 @@ void yah_core_init_pool_data() {
     for(unsigned i = 0; i < size; i++) {
         // generate that job, and push to rp_pool's job queue
         struct yah_job* job = YAH_JOB_INITIALIZER;
-        yah_log("old job: type = %d, specify = %s", data[i].type, data[i].specify);
+        yah_log("%d: old job: type = %d, specify = %s", i + 1, data[i].type, data[i].specify);
         job->arg = (void*) (data + i);
-        job->arg_destory = yah_mem_free;
+        // job->arg_destory = yah_mem_free;
+        job->arg_destory = NULL;    // memory leap here. TODO: find some ways to debug
         job->func = yah_rp_pool_job_func;
         yah_thread_pool_push_job(rp_pool, job);
     }
