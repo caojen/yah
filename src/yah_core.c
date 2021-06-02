@@ -239,7 +239,7 @@ yah_fp_pool_job_func(void* __arg) {
         enum yah_airodump_type type = apstation;
         int incache = yah_cache_update(apstation_cache, first_part_begin, first_part_length + 1);
         if(incache == YAH_CACHE_NODE_NOTEXISTS) {
-            yah_log("push type = %d, bssid = %s", type, first_part_begin);
+            yah_log("fp_pool_job: will push to rp_pool type = %d, bssid = %s", type, first_part_begin);
             // yah_log("current airodump time = %s", airodump_time);
             data = (struct yah_airodump_data*) yah_mem_alloc (sizeof(struct yah_airodump_data));
             memset(data, 0, sizeof(struct yah_airodump_data));
@@ -256,7 +256,7 @@ yah_fp_pool_job_func(void* __arg) {
         enum yah_airodump_type type = ap;
         int incache = yah_cache_update(ap_cache, first_part_begin, first_part_length + 1);
         if(incache == YAH_CACHE_NODE_NOTEXISTS) {
-            yah_log("push type = %d, bssid = %s", type, first_part_begin);
+            yah_log("fp_pool_job: will push to rp_pool type = %d, bssid = %s", type, first_part_begin);
             // yah_log("current airodump time = %s", airodump_time);
             data = (struct yah_airodump_data*) yah_mem_alloc (sizeof(struct yah_airodump_data));
             memset(data, 0, sizeof(struct yah_airodump_data));
