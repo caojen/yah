@@ -7,7 +7,8 @@
 
 // exec a command just like in shell
 // run that command like `/bin/sh -c "${command}"`
-// auto generate "" around command, avoid using " in command
+// the command can contains special characters, because we pass the arguments
+// from exec*, which is different from terminal.
 // store the stdout of the command, max size is outputsz, ending with 0
 // return the command status
 // warn that, this function will block until the command ended(exit or error).
