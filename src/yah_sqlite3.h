@@ -18,7 +18,7 @@
 // close a database
 #define yah_sqlite_close(db) sqlite3_close(db)
 
-typedef int (*callback_f)(void* callback, int argc, char** argv, char** colName);
+typedef int (*sqlite3_callback_f)(void* callback, int argc, char** argv, char** colName);
 
 // exec a sql statement in db
 // return 0(SQLITE_OK) if success
