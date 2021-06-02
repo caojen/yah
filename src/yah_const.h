@@ -37,7 +37,7 @@
 #define YAH_CHECK_AIRODUMP 0
 
 // log file path
-#if DEBUG
+#ifdef DEBUG
     #define YAH_LOGFILE_LOG "/home/pi/yah/yah.log"
     #define YAH_LOGFILE_WARN "/home/pi/yah/yah.warn"
     #define YAH_LOGFILE_ERROR "/home/pi/yah/yah.error"
@@ -63,4 +63,11 @@
 // time is in seconds
 #define YAH_AP_TIME (24 * 60 * 60)
 #define YAH_APSTATION_TIME (10 * 60)
+
+// define the local storage database
+#ifdef DEBUG
+    #define YAH_DATABASE "/home/pi/yah/db.sqlite3"
+#else
+    #define YAH_DATABASE "/var/run/yah.sqlite3"
+#endif
 #endif

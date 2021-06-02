@@ -107,6 +107,11 @@ void yah_core_start() {
     fp_pool = yah_thread_pool_init(fpworkers, fpworker_main_func);
     yah_log("core: fp_pool init done");
 
+    // init the database
+    yah_core_init_database();
+    // init pool data
+    yah_core_init_pool_data();
+
     /**
      * 2. capture all outputs from fd
      */
@@ -277,5 +282,13 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
 
 void
 yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
+
+}
+
+void yah_core_init_database() {
+    yah_log("core: using database %s, init", YAH_DATABASE);
+}
+
+void yah_core_init_pool_data() {
 
 }
