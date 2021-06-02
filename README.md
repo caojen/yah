@@ -84,3 +84,8 @@ device_number 362
 ```
 
 Note that you need to install ``airodump-ng`` and ``libsqlite3`` in your device. See ``src/const.h`` for more infomation.
+
+## Local Storage
+Our database is sqlite3. The path is specified in ``src/yah_const.h``. Check the path yourself, and rebuild the program if needed.
+
+You can use ``sqlite3 <sqlite3_file_name>`` to see what data is collected. There are 2 tables in the database, ``ap`` and ``apstation``, indicates the 2 types of output from ``airodump-ng``.
