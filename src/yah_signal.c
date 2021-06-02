@@ -3,14 +3,15 @@
 #include "yah_const.h"
 #include "yah_config.h"
 #include "yah_daemon.h"
+#include "yah_core.h"
 
 int
 signal_handler_register(void) {
     struct sigaction sa;
 
-    int signals[] = { SIGHUP, SIGTERM };
+    int signals[] = { SIGHUP, SIGTERM, SIGCHLD };
     void (*handlers[])(int, siginfo_t*, void*) = {
-        sighup_handler, sigterm_handler
+        sighup_handler, sigterm_handler, sigchld_handler
     };
     int ret = sizeof(signals) / sizeof(signals[0]);
 
@@ -57,5 +58,21 @@ sigterm_handler(int signo, siginfo_t* info, void* context) {
         daemon_exit();
     } else {
         yah_warn("SIGTERM handler received error signo");
+    }
+}
+
+void
+sigchld_handler(int signo, siginfo_t* info, void* context) {
+    /**
+     * SIGCHLD received;
+     * Test the child is the airodump or not.
+     * If so, just call reboot
+     */
+    if(signo == SIGCHLD) {
+        pid_t child = info->si_pid;
+        yah_log("%ld: SIGTERM received from child's pid = %ld", getpid(), child);
+        yah_log("airodump-ng pid = %ld", airodump_pid);
+    } else {
+        yah_warn("SIGCHLD handler received error signo");
     }
 }
