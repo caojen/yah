@@ -25,6 +25,7 @@ int get_airodump_device_name(char name[YAH_MAX_DEVICE_NAME]);
 #include "yah_core.h"
 
 struct yah_airodump_apstation {
+    unsigned id;    // storage specify id
     char bssid[20];
     char station[20];
     char comment[1024];
@@ -32,6 +33,7 @@ struct yah_airodump_apstation {
 };
 
 struct yah_airodump_ap {
+    unsigned id;    // storage specify id
     char bssid[20];
     char comment[1024];
     time_t create_time;
