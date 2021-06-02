@@ -142,7 +142,7 @@ void yah_core_start() {
         // yah_log("main: fp_job push done. jobs remain = %d", yah_job_queue_count(fp_pool->jobs));
         // yah_log("main: fp_job push to fp_pool done...");
     }
-
+    yah_warn("core: out-of-loop, reach the unreachable code!");
     unreachable();
 }
 
@@ -202,13 +202,21 @@ yah_fp_pool_job_func(void* __arg) {
     }
 
     // continue
-    // if newline begin with "BSSID" / "FREQ", ignore
-    if(yah_string_prefix(newline, "BSSID") ||
-        yah_string_prefix(newline, "(not associated)") || yah_string_prefix(newline, "available") || 
+    // if newline begin with "BSSID" / "FREQ" / ..., ignore
+    if(
+        // not a valid line:
+        yah_string_prefix(newline, "BSSID") || yah_string_prefix(newline, "available") || 
+        // not usable data
+        yah_string_prefix(newline, "(not associated)") || 
+        // network broken:
+        yah_string_prefix(newline, "failed:") || yah_string_prefix(newline, "ioctl(SIOCGIFINDEX)") || 
+        // not usable data:
         yah_string_substring(newline, "<length:")) {
-        // ignore it
+        
         return;
+
     }
+    // From "Freq", we can get the time.
     if(yah_string_prefix(newline, "Freq")) {
         // here we get the time that airodump output this line
         // note that the create_time is the time that we catch the output

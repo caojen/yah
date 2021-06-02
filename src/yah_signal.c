@@ -66,12 +66,19 @@ sigchld_handler(int signo, siginfo_t* info, void* context) {
     /**
      * SIGCHLD received;
      * Test the child is the airodump or not.
-     * If so, just call reboot
+     * If so, yah `may` be killed by the kernel.
+     * Yah should just kill itself immediately.
+     * 
+     * If Yah is running as daemon(listened by init),
+     * it can wake up soon.
      */
     if(signo == SIGCHLD) {
         pid_t child = info->si_pid;
-        yah_log("%ld: SIGTERM received from child's pid = %ld", getpid(), child);
-        yah_log("airodump-ng pid = %ld", airodump_pid);
+        yah_log("receive sigchld from %ld...", child);
+        if(airodump_pid != 0 && airodump_pid == child) {
+            yah_log("%ld: SIGCHLD received from airodump-ng child's pid = %ld", getpid(), child);
+            send_signal_to_current(SIGTERM);
+        }
     } else {
         yah_warn("SIGCHLD handler received error signo");
     }

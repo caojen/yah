@@ -77,7 +77,7 @@ yah_log_hex(const char* bytes, unsigned bysz) {
 
 void
 unimplemented() {
-    fprintf(stderr, "Unimplemented!\n");
+    yah_error("Unimplemented!");
     daemon_exit();
     exit(1);
 }
@@ -85,6 +85,7 @@ unimplemented() {
 void
 unreachable() {
     fprintf(stderr, "thread has reached unreachable code!\n");
+    yah_error("thread has reached unreachable code!");
     daemon_exit();
     exit(1);
 }

@@ -75,7 +75,17 @@ main(int argc, char** argv) {
             } else {
                 yah_log("sending SIGTERM to pid %ld", daemon_pid);
                 send_signal(daemon_pid, SIGTERM);
-                yah_log("done");
+                yah_log("send done, wait 2s and check kill status...");
+                sleep(2);
+                if(get_running_daemon_pid() != -1) {
+                    yah_log("oh. it is still runnning. send SIGKILL to pid %ld", daemon_pid);
+                    send_signal(daemon_pid, SIGKILL);
+                    yah_log("send done, wait 2s and check kill status...");
+                    if(get_running_daemon_pid() != -1) {
+                        yah_error("cannot kill the current daemon. it is already running, but signal has no affect.");
+                        exit(1);
+                    }
+                }
             }
         } else {
             yah_usage();
