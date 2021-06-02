@@ -87,6 +87,8 @@ ${OBJ_DIR}/yah_sqlite3.o: ${SRC_DIR}/yah_sqlite3.c ${HEADER}
 clean:
 	rm -rf **/*.o ${BIN_DIR}/yah **/*.test
 
+.PHONY: test test/sqlite3.test
+
 test: test/sqlite3.test
 	@echo \> build all tests done
 

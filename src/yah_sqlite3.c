@@ -88,7 +88,7 @@ yah_airodump_data_insert_apstation(struct yah_airodump_data* data) {
 int
 yah_airodump_data_insert_ap_should_insert(struct yah_airodump_data* data) {
     sqlite3_stmt* stmt;
-    sqlite3_prepare_v2(db, YAH_AP_SHOULD_INSERT_SQL, sizeof(YAH_AP_SHOULD_INSERT_SQL), &stmt, NULL);
+    sqlite3_prepare_v2(db, YAH_AP_SHOULD_INSERT_SQL, -1, &stmt, NULL);
     sqlite3_bind_text(stmt, 1, data->specify, strlen(data->specify), SQLITE_STATIC);
     sqlite3_bind_int64(stmt, 2, data->data.ap.create_time - YAH_AP_TIME);
     int ret = sqlite3_step(stmt);
@@ -107,7 +107,7 @@ yah_airodump_data_insert_ap_should_insert(struct yah_airodump_data* data) {
 int
 yah_airodump_data_insert_apstation_should_insert(struct yah_airodump_data* data) {
     sqlite3_stmt* stmt;
-    sqlite3_prepare_v2(db, YAH_APSTATION_SHOULD_INSERT_SQL, sizeof(YAH_APSTATION_SHOULD_INSERT_SQL), &stmt, NULL);
+    sqlite3_prepare_v2(db, YAH_APSTATION_SHOULD_INSERT_SQL, -1, &stmt, NULL);
     sqlite3_bind_text(stmt, 1, data->specify, strlen(data->specify), SQLITE_STATIC);
     sqlite3_bind_int64(stmt, 2, data->data.apstation.create_time - YAH_APSTATION_TIME);
     int ret = sqlite3_step(stmt);
@@ -130,11 +130,11 @@ yah_airodump_data_updated(struct yah_airodump_data* data) {
     yah_db_lock();
     switch (data->type) {
         case ap:
-            sqlite3_prepare_v2(db, YAH_AP_UPDATE_SQL, sizeof(YAH_AP_UPDATE_SQL), &stmt, NULL);
+            sqlite3_prepare_v2(db, YAH_AP_UPDATE_SQL, -1, &stmt, NULL);
             id = data->data.ap.id;
             break;
         case apstation:
-            sqlite3_prepare_v2(db, YAH_APSTATION_UPDATE_SQL, sizeof(YAH_APSTATION_UPDATE_SQL), &stmt, NULL);
+            sqlite3_prepare_v2(db, YAH_APSTATION_UPDATE_SQL, -1, &stmt, NULL);
             id = data->data.apstation.id;
             break;
         default:
@@ -153,9 +153,11 @@ int
 yah_airodump_data_de_redundancy() {
     char* query;
     query = sqlite3_mprintf(YAH_AP_RM_REDUN_SQL, time(NULL) - YAH_AP_TIME);
+    yah_log("de_redundancy: running sql - %s", query);
     yah_sqlite_drop(db, query);
 
     query = sqlite3_mprintf(YAH_APSTATION_RM_REDUN_SQL, time(NULL) - YAH_APSTATION_TIME);
+    yah_log("de_redundancy: running sql - %s", query);
     yah_sqlite_drop(db, query);
     return 0;
 }
@@ -174,10 +176,11 @@ yah_airodump_data_fetch_unupdated(struct yah_airodump_data** data, unsigned* siz
     sqlite3_stmt* count_stmt;
     sqlite3_stmt *ap_stmt, *apstation_stmt;
     int ap_size = 0, apstation_size = 0;
-
+    int res = 0;
     // count ap
-    sqlite3_prepare_v2(db, YAH_AP_COUNT_SQL, sizeof(YAH_AP_COUNT_SQL), &count_stmt, NULL);
-    if(sqlite3_step(count_stmt) != SQLITE_ROW) {
+    res = sqlite3_prepare_v2(db, YAH_AP_COUNT_SQL, -1, &count_stmt, NULL);
+    res = sqlite3_step(count_stmt);
+    if(res != SQLITE_ROW) {
         yah_quit("sqlite3 count ap failed");
     }
     ap_size = sqlite3_column_int(count_stmt, 0);
@@ -185,7 +188,7 @@ yah_airodump_data_fetch_unupdated(struct yah_airodump_data** data, unsigned* siz
     sqlite3_finalize(count_stmt); count_stmt = NULL;
 
     // count apstation
-    sqlite3_prepare_v2(db, YAH_APSTATION_COUNT_SQL, sizeof(YAH_APSTATION_COUNT_SQL), &count_stmt, NULL);
+    sqlite3_prepare_v2(db, YAH_APSTATION_COUNT_SQL, -1, &count_stmt, NULL);
     if(sqlite3_step(count_stmt) != SQLITE_ROW) {
         yah_quit("sqlite3 count apstation failed");
     }
