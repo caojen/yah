@@ -90,7 +90,8 @@ clean:
 	rm -rf **/*.o ${BIN_DIR}/yah **/*.test
 
 test: test/sqlite3.test
-	@echo \> build all tests done
+	test/sqlite3.test
+	@echo \> build & run all tests done. test pass.
 
 test/sqlite3.test: test/sqlite3.c ${HEADER}
 	$(CC) $(CFLAG) $(TEST) $< ${SRC_DIR}/*.c -o $@
