@@ -272,15 +272,26 @@ yah_rp_pool_job_func(void* __arg) {
     struct yah_airodump_data* arg = 
         (struct yah_airodump_data*) __arg;
     yah_log("rp_pool_job: resolving type = %d, specify = %s", arg->type, arg->specify);
-    switch (arg->type) {
-        case ap:
-            yah_rp_pool_job_func_ap(arg);
-            break;
-        case apstation:
-            yah_rp_pool_job_func_apstation(arg);
-            break;
-        default:
-            unreachable();
+    // update database and get id
+    int should_insert = (
+        yah_airodump_data_insert(arg)
+    ) == 0;
+    if(should_insert) {
+        switch (arg->type) {
+            case ap:
+                yah_log("rp_pool_job: genereate id for type = %d, specify = %s, id = %d", arg->type, arg->specify, arg->data.ap.id);
+                yah_rp_pool_job_func_ap(arg);
+                break;
+            case apstation:
+                yah_log("rp_pool_job: genereate id for type = %d, specify = %s, id = %d", arg->type, arg->specify, arg->data.apstation.id);
+                yah_rp_pool_job_func_apstation(arg);
+                break;
+            default:
+                unreachable();
+        }
+    } else {
+        // skip this job
+        yah_log("rp_pool_job: skip type = %d, specify = %s", arg->type, arg->specify);
     }
 }
 
