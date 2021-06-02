@@ -15,6 +15,8 @@
 #include "yah_core.h"
 #include "yah_signal.h"
 
+#ifndef TEST
+
 int
 main(int argc, char** argv) {
     yah_init_stdpipe();
@@ -99,3 +101,5 @@ yah_init_stdpipe(void) {
     YAH_FILENO_WARN = stdout;
     YAH_FILENO_ERROR = stderr;
 }
+
+#endif

@@ -6,6 +6,7 @@ CC:=gcc
 DEBUG:=-D DEBUG -g
 PTHREADF:=-lpthread
 SQLITEF:=-lsqlite3
+TEST:=-D TEST -D DEBUG -g
 CFLAG:=-I${SRC_DIR} -Wall \
 	-D _GNU_SOURCE ${DEBUG} \
 	${PTHREADF} ${SQLITEF}
@@ -23,6 +24,8 @@ OBJS:=${OBJ_DIR}/yah.o ${OBJ_DIR}/yah_log.o ${OBJ_DIR}/yah_config.o \
 	${OBJ_DIR}/yah_thread_pool.o ${OBJ_DIR}/yah_core.o ${OBJ_DIR}/yah_pty.o \
 	${OBJ_DIR}/yah_exec.o ${OBJ_DIR}/yah_airodump.o ${OBJ_DIR}/yah_mem.o \
 	${OBJ_DIR}/yah_string.o ${OBJ_DIR}/yah_lru.o ${OBJ_DIR}/yah_sqlite3.o
+
+all: yah test
 
 yah: ${BIN_DIR}/yah
 	@echo \> build succeed
@@ -82,4 +85,11 @@ ${OBJ_DIR}/yah_sqlite3.o: ${SRC_DIR}/yah_sqlite3.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
 clean:
-	rm -rf **/*.o ${BIN_DIR}/yah
+	rm -rf **/*.o ${BIN_DIR}/yah **/*.test
+
+test: test/sqlite3.test
+	@echo \> build all tests done
+
+test/sqlite3.test: test/sqlite3.c ${HEADER}
+	$(CC) $(CFLAG) $(TEST) $< ${SRC_DIR}/*.c -o $@
+	@ echo \> test build: $@

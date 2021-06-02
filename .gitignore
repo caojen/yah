@@ -6,3 +6,5 @@ bin/*
 **/*.error
 **/*.log
 **/*.warn
+**/*.test
+**/db.sqlite3
