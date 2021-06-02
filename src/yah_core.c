@@ -261,7 +261,9 @@ yah_fp_pool_job_func(void* __arg) {
         job->arg = (void*) data;
         job->arg_destory = yah_mem_free;
         job->func = yah_rp_pool_job_func;
+        yah_log("tring to push job to rp_pool");
         yah_thread_pool_push_job(rp_pool, job);
+        yah_log("push one job to rp_pool, type = %d, specify = %s", data->type, data->specify);
     }
 }
 
@@ -269,6 +271,7 @@ void
 yah_rp_pool_job_func(void* __arg) {
     struct yah_airodump_data* arg = 
         (struct yah_airodump_data*) __arg;
+    yah_log("rp_pool_job: resolving type = %d, specify = %s", arg->type, arg->specify);
     switch (arg->type) {
         case ap:
             yah_rp_pool_job_func_ap(arg);
@@ -298,5 +301,14 @@ void yah_core_init_pool_data() {
         yah_quit("cannot init from pool. exit...");
     }
 
-    yah_log("get data size = %d", size);
+    yah_log("get old data size = %d", size);
+    for(unsigned i = 0; i < size; i++) {
+        // generate that job, and push to rp_pool's job queue
+        struct yah_job* job = YAH_JOB_INITIALIZER;
+        yah_log("old job: type = %d, specify = %s", data[i].type, data[i].specify);
+        job->arg = (void*) (data + i);
+        job->arg_destory = yah_mem_free;
+        job->func = yah_rp_pool_job_func;
+        yah_thread_pool_push_job(rp_pool, job);
+    }
 }

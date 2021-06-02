@@ -5,6 +5,7 @@
 #include "yah_sqlite3.h"
 #include "yah_const.h"
 #include "yah_log.h"
+#include "yah_mem.h"
 
 sqlite3* db = NULL;
 pthread_mutex_t db_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -203,7 +204,7 @@ yah_airodump_data_fetch_unupdated(struct yah_airodump_data** data, unsigned* siz
         return 0;
     }
     // have data. save to *data
-    *data = (struct yah_airodump_data*) malloc (sizeof(struct yah_airodump_data) * *size);
+    *data = (struct yah_airodump_data*) yah_mem_alloc (sizeof(struct yah_airodump_data) * *size);
 
     sqlite3_prepare_v2(db, YAH_AP_UNUPDATE_SQL, sizeof(YAH_AP_UNUPDATE_SQL), &ap_stmt, NULL);
     int index = 0;
