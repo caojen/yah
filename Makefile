@@ -3,21 +3,26 @@ SRC_DIR:=${ROOT_DIR}/src
 OBJ_DIR:=${ROOT_DIR}/obj
 BIN_DIR:=${ROOT_DIR}/bin
 CC:=gcc
-CFLAG:=-I${SRC_DIR} -Wall -D _GNU_SOURCE -D DEBUG -lpthread
+DEBUG:=-D DEBUG -g
 PTHREADF:=-lpthread
+SQLITEF:=-lsqlite3
+CFLAG:=-I${SRC_DIR} -Wall \
+	-D _GNU_SOURCE ${DEBUG} \
+	${PTHREADF} ${SQLITEF}
+
 HEADER = ${SRC_DIR}/yah_config.h ${SRC_DIR}/yah_const.h ${SRC_DIR}/yah_daemon.h \
 	${SRC_DIR}/yah_error.h ${SRC_DIR}/yah_log.h ${SRC_DIR}/yah.h \
 	${SRC_DIR}/yah_signal.h ${SRC_DIR}/yah_thread_pool_job.h ${SRC_DIR}/yah_thread_pool_worker.h \
 	${SRC_DIR}/yah_thread_pool_manager.h ${SRC_DIR}/yah_thread_pool.h ${SRC_DIR}/yah_core.h \
 	${SRC_DIR}/yah_pty.h ${SRC_DIR}/yah_exec.h ${SRC_DIR}/yah_airodump.h ${SRC_DIR}/yah_mem.h \
-	${SRC_DIR}/yah_string.h ${SRC_DIR}/yah_lru.h
+	${SRC_DIR}/yah_string.h ${SRC_DIR}/yah_lru.h ${SRC_DIR}/yah_sqlite3.h
 
 OBJS:=${OBJ_DIR}/yah.o ${OBJ_DIR}/yah_log.o ${OBJ_DIR}/yah_config.o \
 	${OBJ_DIR}/yah_daemon.o ${OBJ_DIR}/yah_signal.o ${OBJ_DIR}/yah_thread_pool_job.o \
 	${OBJ_DIR}/yah_thread_pool_worker.o ${OBJ_DIR}/yah_thread_pool_manager.o \
 	${OBJ_DIR}/yah_thread_pool.o ${OBJ_DIR}/yah_core.o ${OBJ_DIR}/yah_pty.o \
 	${OBJ_DIR}/yah_exec.o ${OBJ_DIR}/yah_airodump.o ${OBJ_DIR}/yah_mem.o \
-	${OBJ_DIR}/yah_string.o ${OBJ_DIR}/yah_lru.o
+	${OBJ_DIR}/yah_string.o ${OBJ_DIR}/yah_lru.o ${OBJ_DIR}/yah_sqlite3.o
 
 yah: ${BIN_DIR}/yah
 	@echo \> build succeed
@@ -71,6 +76,9 @@ ${OBJ_DIR}/yah_string.o: ${SRC_DIR}/yah_string.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
 ${OBJ_DIR}/yah_lru.o: ${SRC_DIR}/yah_lru.c ${HEADER}
+	$(CC) $(CFLAG) -o $@ -c $<
+
+${OBJ_DIR}/yah_sqlite3.o: ${SRC_DIR}/yah_sqlite3.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
 clean:
