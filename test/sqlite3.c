@@ -31,5 +31,6 @@ int main() {
 
     res = yah_airodump_data_insert_ap(&d);
     printf("insert done, ap return res = %d, id = %d\n", res, d.data.ap.id);
+    yah_close_database();
     return 0;
 }

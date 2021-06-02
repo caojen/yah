@@ -25,6 +25,8 @@ OBJS:=${OBJ_DIR}/yah.o ${OBJ_DIR}/yah_log.o ${OBJ_DIR}/yah_config.o \
 	${OBJ_DIR}/yah_exec.o ${OBJ_DIR}/yah_airodump.o ${OBJ_DIR}/yah_mem.o \
 	${OBJ_DIR}/yah_string.o ${OBJ_DIR}/yah_lru.o ${OBJ_DIR}/yah_sqlite3.o
 
+.PHONY: test clean all yah
+
 all: yah test
 
 yah: ${BIN_DIR}/yah
@@ -86,8 +88,6 @@ ${OBJ_DIR}/yah_sqlite3.o: ${SRC_DIR}/yah_sqlite3.c ${HEADER}
 
 clean:
 	rm -rf **/*.o ${BIN_DIR}/yah **/*.test
-
-.PHONY: test test/sqlite3.test
 
 test: test/sqlite3.test
 	@echo \> build all tests done
