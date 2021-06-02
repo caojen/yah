@@ -211,8 +211,8 @@ yah_airodump_data_fetch_unupdated(struct yah_airodump_data** data, unsigned* siz
     // id, bssid, comment, create_time
     while(sqlite3_step(ap_stmt) != SQLITE_DONE) {
         unsigned id = sqlite3_column_int(ap_stmt, 0);
-        const char* bssid = sqlite3_column_text(ap_stmt, 1);
-        const char* comment = sqlite3_column_text(ap_stmt, 2);
+        const const char* bssid = sqlite3_column_text(ap_stmt, 1);
+        const const char* comment = sqlite3_column_text(ap_stmt, 2);
         time_t create_time = sqlite3_column_int64(ap_stmt, 3);
         (*data)[index].type = ap;
         strcpy((*data)[index].specify, bssid);

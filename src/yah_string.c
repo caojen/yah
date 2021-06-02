@@ -118,7 +118,7 @@ yah_string_substring(const char* a, const char* b) {
                 ptr_b = b;
             }
         }
-        if(!*ptr_a && !*ptr_b || *ptr_a) {
+        if((!*ptr_a && !*ptr_b) || *ptr_a) {
             return YAH_IS_SUBSTRING;
         } else {
             return YAH_ISNOT_SUBSTRING;

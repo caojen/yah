@@ -89,11 +89,16 @@ ${OBJ_DIR}/yah_sqlite3.o: ${SRC_DIR}/yah_sqlite3.c ${HEADER}
 clean:
 	rm -rf **/*.o ${BIN_DIR}/yah **/*.test
 
-test: test/sqlite3.test
+test: test/sqlite3.test test/substring.test
 	@echo testing...
 	@test/sqlite3.test > /dev/null
+	@test/substring.test > /dev/null
 	@echo \> build \& run all tests done. test pass.
 
 test/sqlite3.test: test/sqlite3.c ${HEADER}
+	$(CC) $(CFLAG) $(TEST) $< ${SRC_DIR}/*.c -o $@
+	@ echo \> test build: $@
+
+test/substring.test: test/substring.c ${HEADER}
 	$(CC) $(CFLAG) $(TEST) $< ${SRC_DIR}/*.c -o $@
 	@ echo \> test build: $@
