@@ -203,7 +203,8 @@ yah_fp_pool_job_func(void* __arg) {
     // continue
     // if newline begin with "BSSID" / "FREQ", ignore
     if(yah_string_prefix(newline, "BSSID") || yah_string_prefix(newline, "Freq") ||
-        yah_string_prefix(newline, "(not associated)") || yah_string_prefix(newline, "available")) {
+        yah_string_prefix(newline, "(not associated)") || yah_string_prefix(newline, "available") || 
+        yah_string_substring(newline, "<length:")) {
         // ignore it
         return;
     }
