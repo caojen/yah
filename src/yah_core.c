@@ -210,7 +210,13 @@ yah_fp_pool_job_func(void* __arg) {
         return;
     }
     if(yah_string_prefix(newline, "Freq")) {
+        // here we get the time that airodump output this line
+        // note that the create_time is the time that we catch the output
+        // but not the time that airodump show the output
+        // pass -D DEBUG to turn it on
+#ifdef DEBUG
         strcpy(airodump_time, newline);
+#endif
         return;
     }
     // yah_log("%s", newline);
@@ -234,7 +240,7 @@ yah_fp_pool_job_func(void* __arg) {
         int incache = yah_cache_update(apstation_cache, first_part_begin, first_part_length + 1);
         if(incache == YAH_CACHE_NODE_NOTEXISTS) {
             yah_log("push type = %d, bssid = %s", type, first_part_begin);
-            yah_log("current airodump time = %s", airodump_time);
+            // yah_log("current airodump time = %s", airodump_time);
             data = (struct yah_airodump_data*) yah_mem_alloc (sizeof(struct yah_airodump_data));
             memset(data, 0, sizeof(struct yah_airodump_data));
             data->type = apstation;
@@ -251,7 +257,7 @@ yah_fp_pool_job_func(void* __arg) {
         int incache = yah_cache_update(ap_cache, first_part_begin, first_part_length + 1);
         if(incache == YAH_CACHE_NODE_NOTEXISTS) {
             yah_log("push type = %d, bssid = %s", type, first_part_begin);
-            yah_log("current airodump time = %s", airodump_time);
+            // yah_log("current airodump time = %s", airodump_time);
             data = (struct yah_airodump_data*) yah_mem_alloc (sizeof(struct yah_airodump_data));
             memset(data, 0, sizeof(struct yah_airodump_data));
             data->type = ap;
