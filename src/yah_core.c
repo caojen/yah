@@ -13,6 +13,7 @@
 #include "yah_mem.h"
 #include "yah_string.h"
 #include "yah_lru.h"
+#include "yah_sqlite3.h"
 
 /**
  * make airodump_pid as global variable
@@ -111,6 +112,9 @@ void yah_core_start() {
     yah_core_init_database();
     // init pool data
     yah_core_init_pool_data();
+
+    // open database and init it
+    yah_open_database();
 
     /**
      * 2. capture all outputs from fd
@@ -231,7 +235,7 @@ yah_fp_pool_job_func(void* __arg) {
             memset(data, 0, sizeof(struct yah_airodump_data));
             data->type = apstation;
             strcpy(data->data.apstation.bssid, first_part_begin);
-            strcpy(data->bssid, first_part_begin);
+            strcpy(data->specify, second_part_begin);
             strcpy(data->data.apstation.station, second_part_begin);
             *first_part_end = ' ';
             *second_part_end = ' ';
@@ -247,7 +251,7 @@ yah_fp_pool_job_func(void* __arg) {
             memset(data, 0, sizeof(struct yah_airodump_data));
             data->type = ap;
             strcpy(data->data.ap.bssid, first_part_begin);
-            strcpy(data->bssid, first_part_begin);
+            strcpy(data->specify, first_part_begin);
             *first_part_end = ' ';
             *second_part_end = ' ';
             strcpy(data->data.ap.comment, newline);
