@@ -66,6 +66,7 @@ main(int argc, char** argv) {
             exit(0);
         } else if(strcmp(argv[i], "config") == 0) {
             printf("\n");
+            printf("Config file: %s\n", YAH_CONFFILE);
             printf("Log files: %s %s %s\n", YAH_LOGFILE_LOG, YAH_LOGFILE_WARN, YAH_LOGFILE_ERROR);
             printf("Database: %s\n", YAH_DATABASE);
             printf("\n");
