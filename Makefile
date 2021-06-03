@@ -112,6 +112,7 @@ else
 	systemctl disable yah || true
 	cp ${ROOT_DIR}/systemd/yah.service /usr/lib/systemd/system/yah.service
 	cp ${ROOT_DIR}/bin/yah /usr/bin/yah
+	cp ${ROOT_DIR}/yah.conf /etc/yah.conf
 	systemctl enable yah > /dev/null
 	@echo
 	@echo "Install done. Binary file added to /usr/bin/yah."
@@ -128,6 +129,7 @@ else
 	systemctl disable yah || true
 	rm /usr/lib/systemd/system/yah.service || true
 	rm /usr/bin/yah || true
+	rm /etc/yah.conf || true
 	systemctl daemon-reload
 
 	@echo
