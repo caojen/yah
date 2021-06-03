@@ -3,7 +3,8 @@ SRC_DIR:=${ROOT_DIR}/src
 OBJ_DIR:=${ROOT_DIR}/obj
 BIN_DIR:=${ROOT_DIR}/bin
 CC:=gcc
-DEBUG:=-D DEBUG -g
+# DEBUG:=-D DEBUG
+DEBUG:=
 PTHREADF:=-lpthread
 SQLITEF:=-lsqlite3
 TEST:=-D TEST -D DEBUG -g
@@ -27,7 +28,7 @@ OBJS:=${OBJ_DIR}/yah.o ${OBJ_DIR}/yah_log.o ${OBJ_DIR}/yah_config.o \
 
 .PHONY: test clean all yah install uninstall
 
-all: yah test
+all: yah
 
 yah: ${BIN_DIR}/yah
 	@echo \> build succeed

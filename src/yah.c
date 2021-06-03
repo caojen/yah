@@ -64,11 +64,11 @@ main(int argc, char** argv) {
                 yah_log("done");
             }
             exit(0);
-        } else if(strcmp(argv[i], "set") == 0) {
-            /* set a key */
-            /* set the key to config */
-            /* then send SIGHUP to daemon */
-            unimplemented();
+        } else if(strcmp(argv[i], "config") == 0) {
+            printf("\n");
+            printf("Log files: %s %s %s\n", YAH_LOGFILE_LOG, YAH_LOGFILE_WARN, YAH_LOGFILE_ERROR);
+            printf("Database: %s\n", YAH_DATABASE);
+            printf("\n");
             exit(0);
         } else if(strcmp(argv[i], "stop") == 0) {
             long daemon_pid = get_running_daemon_pid();
@@ -103,10 +103,12 @@ void
 yah_usage(void) {
     printf("\n");
     printf("\tYah -- v1.0\n\n");
-    printf("\t\tUsage: Yah [start | reload | daemon] <...>\n\n");
+    printf("\t\tUsage: Yah [start | reload | daemon | config | stop] <...>\n\n");
     printf("\t\tstart: start the program\n");
     printf("\t\tdaemon: run the program in daemon, meaning that running in the background.\n");
     printf("\t\treload: reload settings from config file: %s\n", YAH_CONFFILE);
+    printf("\t\tconfig: show the config in current settings\n");
+    printf("\t\tstop: stop the running program\n");
     printf("\n");
 }
 
