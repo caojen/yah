@@ -3,7 +3,7 @@
 ## Description
 YAH is a tool based on ``airodump-ng`` running on Raspberry.
 It captures all the outputs of ``airodump-ng`` and tries to format
-them into structed data. In the previous implementation, we found
+them into structured data. In the previous implementation, we found
 that because ``airodump-ng`` flushes the screen so fast that it
 causes lots of resource of our system, especially CPU. Hence, YAH
 is built for solving all these problems.
