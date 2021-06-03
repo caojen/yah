@@ -38,10 +38,14 @@ main(int argc, char** argv) {
         if(strcmp(argv[i], "help") == 0 || strcmp(argv[i], "-h") == 0) {
             yah_usage();
             exit(0);
-        }
-        else if(strcmp(argv[i], "start") == 0) {
+        } else if(strcmp(argv[i], "daemon") == 0) {
+            yah_daemonize(1);
+            yah_core_start();
+            yah_log("exit from main");
+            exit(0);
+        } else if(strcmp(argv[i], "start") == 0) {
             /* start as daemon */
-            yah_daemonize();
+            yah_daemonize(0);
             yah_core_start();
             yah_log("exit from main");
             exit(0);
@@ -97,12 +101,13 @@ main(int argc, char** argv) {
 
 void
 yah_usage(void) {
-    printf("Yah -- v1.0\n");
-    printf(" Usage: Yah [start | reload | set] <...>\n\n");
-    printf(" start: start daemon. If the daemon is started, error.\n");
-    printf(" reload: reload settings from config file: %s\n", YAH_CONFFILE);
-    printf(" set <key> <value>: set setting. It willn't update config file.\n");
-    printf("   'set' and 'reload' try to change the daemon. It the daemon is not started, error.\n");
+    printf("\n");
+    printf("\tYah -- v1.0\n\n");
+    printf("\t\tUsage: Yah [start | reload | daemon] <...>\n\n");
+    printf("\t\tstart: start the program\n");
+    printf("\t\tdaemon: run the program in daemon, meaning that running in the background.\n");
+    printf("\t\treload: reload settings from config file: %s\n", YAH_CONFFILE);
+    printf("\n");
 }
 
 void

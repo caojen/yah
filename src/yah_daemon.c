@@ -16,7 +16,7 @@
 #include "yah_core.h"
 
 int
-yah_daemonize(void) {
+yah_daemonize(int daemon) {
     umask(0);
 
     int isroot = check_is_root();
@@ -44,43 +44,45 @@ yah_daemonize(void) {
         yah_quit("cannot get the maximun number of file descriptors");
     }
 
-    /**
-     * fork and use setsid()
-     * In this way, the new process will become a session leader,
-     *  and no tty will connect to it.
-     */
-    pid_t pid;
-    pid = fork();
-    if(pid < 0) {
-        yah_quit("cannot fork a new subprocess");
-    } else if(pid > 0) { /* parent process */
-        yah_log("parent process exit...");
-        exit(0);
-    }
+    if(daemon == 1) {
+        /**
+         * fork and use setsid()
+         * In this way, the new process will become a session leader,
+         *  and no tty will connect to it.
+         */
+        pid_t pid;
+        pid = fork();
+        if(pid < 0) {
+            yah_quit("cannot fork a new subprocess");
+        } else if(pid > 0) { /* parent process */
+            yah_log("parent process exit...");
+            exit(0);
+        }
 
-    /* child process */
-    setsid();
-    /* ignore SIG_IGN */
-    struct sigaction sa;
-    sa.sa_handler = SIG_IGN;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-    if(sigaction(SIGHUP, &sa, NULL) < 0) {
-        yah_quit("cannot ignore SIG_IGN");
-    }
-    if((pid = fork()) < 0) {
-        yah_quit("cannot fork a new subprocess");
-    } else if(pid > 0) { /* parent process */
-        yah_log("parent process exit...");
-        yah_log("see:");
-        yah_log("\t%s", YAH_LOGFILE_LOG);
-        yah_log("\t%s", YAH_LOGFILE_WARN);
-        yah_log("\t%s", YAH_LOGFILE_ERROR);
-        yah_log(" for more starting status");
-        exit(0);
-    }
+        /* child process */
+        setsid();
+        /* ignore SIG_IGN */
+        struct sigaction sa;
+        sa.sa_handler = SIG_IGN;
+        sigemptyset(&sa.sa_mask);
+        sa.sa_flags = 0;
+        if(sigaction(SIGHUP, &sa, NULL) < 0) {
+            yah_quit("cannot ignore SIG_IGN");
+        }
+        if((pid = fork()) < 0) {
+            yah_quit("cannot fork a new subprocess");
+        } else if(pid > 0) { /* parent process */
+            yah_log("parent process exit...");
+            yah_log("see:");
+            yah_log("\t%s", YAH_LOGFILE_LOG);
+            yah_log("\t%s", YAH_LOGFILE_WARN);
+            yah_log("\t%s", YAH_LOGFILE_ERROR);
+            yah_log(" for more starting status");
+            exit(0);
+        }
 
-    /* final child process */
+        /* final child process */
+    }
 
     /* close all file descriptors */
     if(rl.rlim_max == RLIM_INFINITY) {

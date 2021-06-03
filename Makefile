@@ -25,7 +25,7 @@ OBJS:=${OBJ_DIR}/yah.o ${OBJ_DIR}/yah_log.o ${OBJ_DIR}/yah_config.o \
 	${OBJ_DIR}/yah_exec.o ${OBJ_DIR}/yah_airodump.o ${OBJ_DIR}/yah_mem.o \
 	${OBJ_DIR}/yah_string.o ${OBJ_DIR}/yah_lru.o ${OBJ_DIR}/yah_sqlite3.o
 
-.PHONY: test clean all yah
+.PHONY: test clean all yah install uninstall
 
 all: yah test
 
@@ -102,3 +102,34 @@ test/sqlite3.test: test/sqlite3.c ${HEADER}
 test/substring.test: test/substring.c ${HEADER}
 	$(CC) $(CFLAG) $(TEST) $< ${SRC_DIR}/*.c -o $@
 	@ echo \> test build: $@
+
+install:
+ifneq ($(shell id -u), 0)
+	@echo "You must be root to perform this action."
+else
+	systemctl daemon-reload
+	systemctl stop yah || true
+	systemctl disable yah || true
+	cp ${ROOT_DIR}/systemd/yah.service /usr/lib/systemd/system/yah.service
+	cp ${ROOT_DIR}/bin/yah /usr/bin/yah
+	systemctl enable yah > /dev/null
+	@echo
+	@echo "Install done. Binary file added to /usr/bin/yah."
+	@echo "Please run \"systemctl start yah\" to start the service."
+	@echo "Try \"yah\" to check the installation"
+endif
+
+uninstall:
+ifneq ($(shell id -u), 0)
+	@echo "You must be root to perform this action."
+else
+	systemctl daemon-reload
+	systemctl stop yah || true
+	systemctl disable yah || true
+	rm /usr/lib/systemd/system/yah.service || true
+	rm /usr/bin/yah || true
+	systemctl daemon-reload
+
+	@echo
+	@echo "Uninstall done."
+endif

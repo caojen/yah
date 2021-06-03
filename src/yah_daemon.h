@@ -9,8 +9,11 @@
  * 
  * Sometimes, this function may not return but call exit
  * because it may call log_error or LOG_ERROR
+ * 
+ * param: daemon. 1 means that running in dameon
+ *                0 means that just running in the current terminal
  */
-int yah_daemonize(void);
+int yah_daemonize(int daemon);
 
 /**
  * check if there is a daemon running
