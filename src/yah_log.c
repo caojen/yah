@@ -98,12 +98,12 @@ rename_logs() {
         sprintf(newname, "%s.%ld", YAH_LOGFILE_LOG, t);
         rename(YAH_LOGFILE_LOG, newname);
     }
-    if(access(YAH_LOG_LEVEL_WARN, R_OK) == 0) {
+    if(access(YAH_LOGFILE_WARN, R_OK) == 0) {
         sprintf(newname, "%s.%ld", YAH_LOGFILE_WARN, t);
-        rename(YAH_LOG_LEVEL_WARN, newname);
+        rename(YAH_LOGFILE_WARN, newname);
     }
-    if(access(YAH_LOG_LEVEL_ERROR, R_OK) == 0) {
-        sprintf(newname, "%s.%ld", YAH_LOG_LEVEL_ERROR, t);
-        rename(YAH_LOG_LEVEL_ERROR, newname);
+    if(access(YAH_LOGFILE_ERROR, R_OK) == 0) {
+        sprintf(newname, "%s.%ld", YAH_LOGFILE_ERROR, t);
+        rename(YAH_LOGFILE_ERROR, newname);
     }
 }
