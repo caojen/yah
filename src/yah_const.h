@@ -74,6 +74,7 @@
 // define the remote info
 #define YAH_REMOTE_HOST "fscc.in.3322.org"
 #define YAH_REMOTE_PORT 36675
+#define YAH_REMOTE_DESC "fscc.in.3322.org:36675"
 #define YAH_REMOTE_URL_AP "/pidc/akap/uploadM2Data.action"
 #define YAH_REMOTE_URL_APSTATION "/pidc/akapstation/uploadM2Data.action"
 #endif

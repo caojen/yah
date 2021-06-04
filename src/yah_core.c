@@ -19,6 +19,7 @@
 #include "yah_sqlite3.h"
 #include "yah_json.h"
 #include "yah_base64.h"
+#include "yah_http.h"
 
 /**
  * make airodump_pid as global variable
@@ -341,7 +342,8 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
 
     // serialize the json
     char str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
-    yah_json_serialize(&json, str);
+    yah_json_serialize(&json, str, 0, 1);
+    yah_log("str: %s", str);
 
     // gzip compress
     unsigned char dest[YAH_JSON_COMPRESS_LENGTH];
@@ -361,6 +363,28 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
 
     // convert into base64
     char* final = base64_encode(dest, bufsize);
+
+    // generate the final data
+    Json body;
+    memset(&body, 0, sizeof(Json));
+    YAH_JSON_ADD_STR(&body, "data", final);
+    char body_str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
+    yah_json_serialize(&body, body_str, 0, 0);
+    yah_log("body: %s", body_str);
+
+    // generate the socket
+    Request* request = yah_request_init();
+    yah_request_set_remote(request, remote_ip, remote_port);
+    yah_request_set_method(request, REQUEST_METHOD_POST);
+    yah_request_set_url(request, YAH_REMOTE_URL_AP);
+    yah_request_add_header(request, "Content-Type", "application/json;charset=UTF-8");
+    yah_request_add_header(request, "Host", YAH_REMOTE_DESC);
+    yah_request_add_header(request, "User-Agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Mobile Safari/537.36");
+    yah_log("final set body = %s", body_str);
+    yah_request_set_body(request, body_str);
+    int code = yah_request_send(request);
+    yah_log("ap: return code = %d", code);
+    yah_request_destory(request);
 
     // set data is_uploaded in database
     yah_airodump_data_updated(data);
@@ -382,7 +406,8 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
 
     // serialize the json
     char str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
-    yah_json_serialize(&json, str);
+    yah_json_serialize(&json, str, 0, 1);
+    yah_log("str: %s", str);
 
     // gzip compress
     unsigned char dest[YAH_JSON_COMPRESS_LENGTH];
@@ -405,6 +430,29 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     
     // convert into base64 code
     char* final = base64_encode(dest, bufsize);
+    
+    // generate the final data
+    Json body;
+    memset(&body, 0, sizeof(Json));
+    YAH_JSON_ADD_STR(&body, "data", final);
+    char body_str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
+    yah_json_serialize(&body, body_str, 0, 0);
+    yah_log("body: %s", body_str);
+
+    // generate the socket
+    Request* request = yah_request_init();
+    yah_request_set_remote(request, remote_ip, remote_port);
+    yah_request_set_method(request, REQUEST_METHOD_POST);
+    yah_request_set_url(request, YAH_REMOTE_URL_APSTATION);
+    yah_request_add_header(request, "Content-Type", "application/json;charset=UTF-8");
+    yah_request_add_header(request, "Host", YAH_REMOTE_DESC);
+    yah_request_add_header(request, "User-Agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Mobile Safari/537.36");
+    yah_request_set_body(request, body_str);
+    yah_log("final set body = %s", body_str);
+    int code = yah_request_send(request);
+    yah_log("apstation: return code = %d", code);
+    yah_request_destory(request);
+
     // set data is uploaded in database
     yah_airodump_data_updated(data);
 }

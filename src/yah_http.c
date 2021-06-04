@@ -155,7 +155,7 @@ yah_request_send(Request* request) {
         yah_log("request: read socket error, return -1");
         return REQUEST_READ_ERROR;
     }
-    yah_log("request: read from socket: %s", response);
+    // yah_log("request: read from socket: %s", response);
 
     // close socket
     close(sock);
@@ -208,6 +208,6 @@ yah_http_generate(Request* request, char* msg) {
         strcat(msg, part);
         strcat(msg, "\r\n");
     }
-    yah_log("http generated: %s", msg);
+    // yah_log("http generated: %s", msg);
     return 0;
 }

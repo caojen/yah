@@ -49,21 +49,42 @@ yah_json_set(Json* json, const char* key, const struct yah_json_value* value) {
 }
 
 int
-yah_json_serialize(const Json* json, char output[YAH_JSON_SERIALIZE_LENGTH]) {
+yah_json_serialize(const Json* json, char output[YAH_JSON_SERIALIZE_LENGTH], int escape, int as_array) {
     if(json == NULL || json->count == 0) {
-        sprintf(output, "{}");
+        if(as_array == 1) {
+            sprintf(output, "[{}]");
+        } else {
+            sprintf(output, "{}");
+        }
         return 0;
     }
     char tmp[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
     int first = 1;
 
-    output[0] = '{';
+    
+    if(as_array == 1) {
+        output[0] = '[';
+        output[1] = '{';
+        output[2] = 0;
+    } else {
+        output[0] = '{';
+        output[1] = 0;
+    }
+
 
     for(int i = 0; i < json->count; i++) {
-        if(json->values[i].type == string) {
-            sprintf(tmp, "\\\"%s\\\":\\\"%s\\\"", json->keys[i], json->values[i].value.string);
+        if(escape) {
+            if(json->values[i].type == string) {
+                sprintf(tmp, "\\\"%s\\\":\\\"%s\\\"", json->keys[i], json->values[i].value.string);
+            } else {
+                sprintf(tmp, "\\\"%s\\\":%d", json->keys[i], json->values[i].value.integer);
+            }
         } else {
-            sprintf(tmp, "\\\"%s\\\":%d", json->keys[i], json->values[i].value.integer);
+            if(json->values[i].type == string) {
+                sprintf(tmp, "\"%s\":\"%s\"", json->keys[i], json->values[i].value.string);
+            } else {
+                sprintf(tmp, "\"%s\":%d", json->keys[i], json->values[i].value.integer);
+            }
         }
         if(first == 1) {
             first = 0;
@@ -72,7 +93,12 @@ yah_json_serialize(const Json* json, char output[YAH_JSON_SERIALIZE_LENGTH]) {
         }
         strcat(output, tmp);
     }
-    strcat(output, "}");
+    if(as_array == 1) {
+        strcat(output, "}]");
+    } else {
+        strcat(output, "}");
+    }
+    
     return 0;
 }
 

@@ -37,7 +37,9 @@ typedef struct yah_json_value Value;
 typedef struct yah_json Json;
 
 int yah_json_set(Json* json, const char* key, const struct yah_json_value* value);
-int yah_json_serialize(const Json* json, char output[YAH_JSON_SERIALIZE_LENGTH]);
+// when escape == 1, it means adding \ to key & value, like {\"key\": \"value\"}
+// when escape == 0, it means donot add \ to key & value, like {"key": "value"} 
+int yah_json_serialize(const Json* json, char output[YAH_JSON_SERIALIZE_LENGTH], int escape, int as_array);
 
 #define YAH_JSON_ADD_INT(json, key, __integer) do {   \
     Value value;                                    \
