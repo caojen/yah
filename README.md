@@ -30,18 +30,13 @@ The picture below shows the whole system of YAH.
 ![](system.jpeg)
 
 ## Install and Run
-Note that currently, YAH can **only** fetch and store data into mysql. Besides, the only way to install is to build the source code yourself.
+The only way to install currently is to build the source code yourself.
 
 Firstly, clone this repo:
 ```
 git clone https://github.caojen/yah.git
 cd yah
 ```
-
-Then, you may need to modify some configures:
-
-1. If you want to run in ``DEBUG`` mode, please open ``src/yah_const.h``. You can change the config here.
-2. Otherwires, you need to remove ``DEBUG`` flag. Please open ``Makefile``, at line 6, set ``DEBUG:=``
 
 You can run ``make`` to build now.
 
@@ -58,6 +53,7 @@ If you want to stop the program, just run:
 ```
 
 **If ``make``  finishes, you can run ``make install`` to install the program**
+
 The program will be install into ``/usr/bin/yah``, and be registered to systemd. After rebooting, the program can run automatically. You can also you the command below to run immediately:
 ```bash
 systemctl start yah
@@ -104,6 +100,6 @@ device_number 362
 Note that you need to install ``airodump-ng`` and ``libsqlite3`` in your device. See ``src/const.h`` for more infomation.
 
 ## Local Storage
-Our database is sqlite3. The path is specified in ``src/yah_const.h``. Check the path yourself, and rebuild the program if needed.
+Our database is sqlite3. The path is specified in ``src/yah_const.h``. Check the path yourself, and rebuild the program if needed. The default path is ``/var/run/yah.sqlite3``
 
 You can use ``sqlite3 <sqlite3_file_name>`` to see what data is collected. There are 2 tables in the database, ``ap`` and ``apstation``, indicates the 2 types of output from ``airodump-ng``.
