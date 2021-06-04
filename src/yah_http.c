@@ -9,9 +9,6 @@
 #include "yah_log.h"
 #include "yah_string.h"
 
-char remote_ip[20] = { 0 };
-int remote_port = 0;
-
 Request*
 yah_request_init() {
     Request* request = 

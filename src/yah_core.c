@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <netdb.h>
+#include <arpa/inet.h>
 
 #include "yah_core.h"
 #include "yah_log.h"
@@ -25,6 +27,8 @@ yah_thread_pool* fp_pool = NULL;
 struct yah_cache* ap_cache = NULL;
 struct yah_cache* apstation_cache = NULL;
 char airodump_time[YAH_CAPTURE_LINE + 1];
+char remote_ip[20] = { 0 };
+int remote_port = 0;
 
 /**
  * What should core do?
@@ -79,6 +83,10 @@ void yah_core_start() {
     /* parent process */
     /* continue */
     yah_log("core: parent process continue");
+
+
+    // init remote_ip and remote_port
+    yah_init_remote();
 
     /**
      * init the lru cache
@@ -349,4 +357,15 @@ void yah_core_init_pool_data() {
         job->func = yah_rp_pool_job_func;
         yah_thread_pool_push_job(rp_pool, job);
     }
+}
+
+void yah_init_remote() {
+    const char* address = YAH_REMOTE_HOST;
+    struct hostent* host = gethostbyname(address);
+    yah_log("remote: get host by name: %s\n", address);
+    yah_log("remote: alias: %s\n", host->h_name);
+    yah_log("remote: ip: %s\n", inet_ntoa(*(struct in_addr*)host->h_addr));
+    char* ip = inet_ntoa(*(struct in_addr*)host->h_addr);
+    memcpy(remote_ip, ip, strlen(ip));
+    remote_port = YAH_REMOTE_PORT;
 }
