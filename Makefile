@@ -10,7 +10,7 @@ SQLITEF:=-lsqlite3
 ZLIB:=-lz
 TEST:=-D TEST -D DEBUG -g
 CFLAG:=-I${SRC_DIR} -Wall \
-	-D _GNU_SOURCE ${DEBUG} \
+	-D _GNU_SOURCE ${DEBUG} -O2 \
 	${PTHREADF} ${SQLITEF} ${ZLIB}
 
 HEADER = ${SRC_DIR}/yah_config.h ${SRC_DIR}/yah_const.h ${SRC_DIR}/yah_daemon.h \
