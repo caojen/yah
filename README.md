@@ -103,3 +103,19 @@ Note that you need to install ``airodump-ng`` and ``libsqlite3`` in your device.
 Our database is sqlite3. The path is specified in ``src/yah_const.h``. Check the path yourself, and rebuild the program if needed. The default path is ``/var/run/yah.sqlite3``
 
 You can use ``sqlite3 <sqlite3_file_name>`` to see what data is collected. There are 2 tables in the database, ``ap`` and ``apstation``, indicates the 2 types of output from ``airodump-ng``.
+
+## Usage Page
+You can use ``./bin/yah -h``(before installing), or ``yah -h``(after installing) to see our usage page.
+
+The usage page shown as below:
+```
+Usage: Yah [start | reload | daemon | config | stop] <...>
+
+start: start the program
+daemon: run the program in daemon, meaning that running in the background.
+reload: reload settings from config file: /etc/yah.conf
+config: show the config in current settings
+stop: stop the running program
+```
+
+For example, you can use ``yah config`` to show the config will be used.
