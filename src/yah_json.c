@@ -61,9 +61,9 @@ yah_json_serialize(const Json* json, char output[YAH_JSON_SERIALIZE_LENGTH]) {
 
     for(int i = 0; i < json->count; i++) {
         if(json->values[i].type == string) {
-            sprintf(tmp, "\"%s\":\"%s\"", json->keys[i], json->values[i].value.string);
+            sprintf(tmp, "\\\"%s\\\":\\\"%s\\\"", json->keys[i], json->values[i].value.string);
         } else {
-            sprintf(tmp, "\"%s\":%d", json->keys[i], json->values[i].value.integer);
+            sprintf(tmp, "\\\"%s\\\":%d", json->keys[i], json->values[i].value.integer);
         }
         if(first == 1) {
             first = 0;
@@ -77,9 +77,9 @@ yah_json_serialize(const Json* json, char output[YAH_JSON_SERIALIZE_LENGTH]) {
 }
 
 int
-yah_json_value_integer(int integer, struct yah_json_value* output) {
+yah_json_value_integer(int __integer, struct yah_json_value* output) {
     output->type = integer;
-    output->value.integer = integer;
+    output->value.integer = __integer;
     return 0;
 }
 

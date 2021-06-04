@@ -1,6 +1,8 @@
 #ifndef YAH_JSON_H
 #define YAH_JSON_H
 
+#include <time.h>
+
 #include "yah_core.h"
 
 #define YAH_JSON_MAX_KEY_COUNT      10
@@ -35,5 +37,24 @@ typedef struct yah_json Json;
 
 int yah_json_set(Json* json, const char* key, const struct yah_json_value* value);
 int yah_json_serialize(const Json* json, char output[YAH_JSON_SERIALIZE_LENGTH]);
+
+#define YAH_JSON_ADD_INT(json, key, __integer) do {   \
+    Value value;                                    \
+    yah_json_value_integer(__integer, &value);        \
+    yah_json_set(json, key, &value);                \
+} while(0)
+
+#define YAH_JSON_ADD_STR(json, key, str) do {       \
+    Value value;                                    \
+    yah_json_value_string(str, &value);             \
+    yah_json_set(json, key, &value);                \
+} while(0)
+
+#define YAH_JSON_ADD_TIME(json, key, time) do {     \
+    struct tm* t = localtime(&time);                \
+    char time_str[32] = { 0 };                      \
+    strftime(time_str, 32, "%Y-%m-%d %H:%M:%S", t); \
+    YAH_JSON_ADD_STR(json, key, time_str);          \
+} while(0)
 
 #endif

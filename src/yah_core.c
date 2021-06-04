@@ -16,6 +16,7 @@
 #include "yah_string.h"
 #include "yah_lru.h"
 #include "yah_sqlite3.h"
+#include "yah_json.h"
 
 /**
  * make airodump_pid as global variable
@@ -299,7 +300,7 @@ void
 yah_rp_pool_job_func(void* __arg) {
     struct yah_airodump_data* arg = 
         (struct yah_airodump_data*) __arg;
-    yah_log("rp_pool_job: resolving type = %d, specify = %s", arg->type, arg->specify);
+    yah_log("rp_pool_job: resolving type = %d, specify = %s, device = %d", arg->type, arg->specify, device_number);
     // update database and get id
     int should_insert = (
         yah_airodump_data_insert(arg)
@@ -325,7 +326,20 @@ yah_rp_pool_job_func(void* __arg) {
 
 void
 yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
-    // TODO: upload the data to remote
+    // generate data into json
+    time_t now = time(NULL);
+    Json json;
+    memset(&json, 0, sizeof(Json));
+    YAH_JSON_ADD_INT(&json, "id", data->data.ap.id);
+    YAH_JSON_ADD_INT(&json, "mobile", device_number);
+    YAH_JSON_ADD_STR(&json, "bssid", data->data.ap.bssid);
+    YAH_JSON_ADD_STR(&json, "comment", data->data.ap.comment);
+    YAH_JSON_ADD_TIME(&json, "create_time", data->data.ap.create_time);
+    YAH_JSON_ADD_TIME(&json, "etl_time", now);
+
+    // serialize the json
+    char str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
+    yah_json_serialize(&json, str);
 
     // set data is_uploaded in database
     yah_airodump_data_updated(data);
@@ -333,7 +347,21 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
 
 void
 yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
-    // TODO: upload the data to remote
+    // generate data into json
+    time_t now = time(NULL);
+    Json json;
+    memset(&json, 0, sizeof(Json));
+    YAH_JSON_ADD_INT(&json, "id", data->data.apstation.id);
+    YAH_JSON_ADD_STR(&json, "bssid", data->data.apstation.bssid);
+    YAH_JSON_ADD_STR(&json, "station", data->data.apstation.station);
+    YAH_JSON_ADD_STR(&json, "comment", data->data.apstation.comment);
+    YAH_JSON_ADD_TIME(&json, "create_time", data->data.apstation.create_time);
+    YAH_JSON_ADD_TIME(&json, "etl_time", now);
+    YAH_JSON_ADD_INT(&json, "mobile", device_number);
+
+    // serialize the json
+    char str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
+    yah_json_serialize(&json, str);
 
     // set data is uploaded in database
     yah_airodump_data_updated(data);
