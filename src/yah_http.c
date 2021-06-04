@@ -7,6 +7,7 @@
 #include "yah_http.h"
 #include "yah_mem.h"
 #include "yah_log.h"
+#include "yah_string.h"
 
 char remote_ip[20] = { 0 };
 int remote_port = 0;
@@ -136,29 +137,7 @@ yah_request_send(Request* request) {
 
     // generate message here
     char msg[2 * sizeof(Request)] = { 0 };
-    char part[2 * sizeof(Request)] = { 0 };
-    sprintf(part, "%s %s HTTP/1.0\r\n", request->method, request->url);
-    strcat(msg, part);
-    /// headers:
-    for(int i = 0; i < request->header_count; i++) {
-        sprintf(part, "%s: %s\r\n", request->header_keys[i], request->header_values[i]);
-        strcat(msg, part);
-    }
-    /// generate content-length when request->body exists
-    if(request->body[0] != 0) {
-        sprintf(part, "Content-Length: %d\r\n", strlen(request->body));
-        strcat(msg, part);
-    } else {
-        sprintf(part, "Content-Length: 0\r\n");
-        strcat(msg, part);
-    }
-    strcat(msg, "\r\n");
-    if(request->body[0] != 0) {
-        sprintf(part, "%s", request->body);
-        strcat(msg, part);
-        strcat(msg, "\r\n");
-    }
-    yah_log("http generated: %s", msg);
+    yah_http_generate(request, msg);
 
     // connect to the socket
     int sock = yah_tcp_scoket_connect(request->ip, request->port);
@@ -184,5 +163,54 @@ yah_request_send(Request* request) {
     // close socket
     close(sock);
     // get http code from response
-    return REQUEST_OK;
+    char* begin = response;
+    char* end = begin;
+    yah_string_get_next_part(response, &begin, &end);
+    yah_string_get_next_part(end, &begin, &end);
+    *end = 0;
+    int code = atoi(begin);
+    *begin = ' ';
+    if(code >= 200 && code <= 399) {
+        return REQUEST_OK;
+    } else if(code == 400) {
+        return REQUEST_BAD_REQUEST;
+    } else if(code == 401) {
+        return REQUEST_UNAUTHORIZED;
+    } else if(code == 403) {
+        return REQUEST_FORBIDDEN;
+    } else if(code == 406) {
+        return REQUEST_NOTACCETABLE;
+    } else if(code == 404) {
+        return REQUEST_NOTFOUND;
+    } else {
+        return REQUEST_ERROR;
+    }
+}
+
+int
+yah_http_generate(Request* request, char* msg) {
+    char part[2 * sizeof(Request)] = { 0 };
+    sprintf(part, "%s %s HTTP/1.0\r\n", request->method, request->url);
+    strcat(msg, part);
+    /// headers:
+    for(int i = 0; i < request->header_count; i++) {
+        sprintf(part, "%s: %s\r\n", request->header_keys[i], request->header_values[i]);
+        strcat(msg, part);
+    }
+    /// generate content-length when request->body exists
+    if(request->body[0] != 0) {
+        sprintf(part, "Content-Length: %d\r\n", strlen(request->body));
+        strcat(msg, part);
+    } else {
+        sprintf(part, "Content-Length: 0\r\n");
+        strcat(msg, part);
+    }
+    strcat(msg, "\r\n");
+    if(request->body[0] != 0) {
+        sprintf(part, "%s", request->body);
+        strcat(msg, part);
+        strcat(msg, "\r\n");
+    }
+    yah_log("http generated: %s", msg);
+    return 0;
 }

@@ -78,4 +78,6 @@ int yah_request_send(Request* request);
 // return the file descriptor of this socket
 int yah_tcp_scoket_connect(const char* ip, int port);
 
+int yah_http_generate(Request* request, char* output);
+
 #endif
