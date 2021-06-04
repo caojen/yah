@@ -118,4 +118,4 @@ config: show the config in current settings
 stop: stop the running program
 ```
 
-For example, you can use ``yah config`` to show the config will be used.
+For example, you can use ``yah config`` to show the config that will be used.
