@@ -45,7 +45,7 @@ Then, you may need to modify some configures:
 
 You can run ``make`` to build now.
 
-After the ``make`` done, a binary file ``yah`` is stored into ``./bin`` directory. You can run like:
+After the ``make`` done, a binary file ``yah`` is stored into ``./bin`` directory. You can run like to test:
 ```
 ./bin/yah start
 ```
@@ -53,9 +53,27 @@ After the ``make`` done, a binary file ``yah`` is stored into ``./bin`` director
 **If you are not the root, you should use ``sudo``.**
 
 If you want to stop the program, just run:
-```
+```bash
 ./bin/yah stop
 ```
+
+**If ``make``  finishes, you can run ``make install`` to install the program**
+The program will be install into ``/usr/bin/yah``, and be registered to systemd. After rebooting, the program can run automatically. You can also you the command below to run immediately:
+```bash
+systemctl start yah
+```
+**If you are not the root, you should use ``sudo``.**
+
+To uninstall the program, just use this command easily:
+```bash
+make uninstall
+```
+
+After you install the program, you can use:
+```bash
+systemctl status yah
+```
+to check the running status.
 
 The configure file is stored in ``config.yaml``. You may check your ``src/config.h`` and rebuild if needed.
 
