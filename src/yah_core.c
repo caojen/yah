@@ -3,6 +3,7 @@
 #include <string.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#include <zlib.h>
 
 #include "yah_core.h"
 #include "yah_log.h"
@@ -341,6 +342,11 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
     char str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
     yah_json_serialize(&json, str);
 
+    // compress
+    unsigned char dest[YAH_JSON_COMPRESS_LENGTH];
+    unsigned int bufsize = YAH_JSON_COMPRESS_LENGTH;
+    compress(dest, &bufsize, str, strlen(str));
+
     // set data is_uploaded in database
     yah_airodump_data_updated(data);
 }
@@ -362,6 +368,11 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     // serialize the json
     char str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
     yah_json_serialize(&json, str);
+
+    // compress
+    unsigned char dest[YAH_JSON_COMPRESS_LENGTH];
+    unsigned int bufsize = YAH_JSON_COMPRESS_LENGTH;
+    compress(dest, &bufsize, str, strlen(str));
 
     // set data is uploaded in database
     yah_airodump_data_updated(data);
