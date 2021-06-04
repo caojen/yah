@@ -343,7 +343,6 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
     // serialize the json
     char str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
     yah_json_serialize(&json, str, 0, 1);
-    yah_log("str: %s", str);
 
     // gzip compress
     unsigned char dest[YAH_JSON_COMPRESS_LENGTH];
@@ -370,7 +369,6 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
     YAH_JSON_ADD_STR(&body, "data", final);
     char body_str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
     yah_json_serialize(&body, body_str, 0, 0);
-    yah_log("body: %s", body_str);
 
     // generate the socket
     Request* request = yah_request_init();
@@ -380,10 +378,11 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
     yah_request_add_header(request, "Content-Type", "application/json;charset=UTF-8");
     yah_request_add_header(request, "Host", YAH_REMOTE_DESC);
     yah_request_add_header(request, "User-Agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Mobile Safari/537.36");
-    yah_log("final set body = %s", body_str);
     yah_request_set_body(request, body_str);
     int code = yah_request_send(request);
-    yah_log("ap: return code = %d", code);
+    if(code != REQUEST_OK) {
+        yah_warn("sending ap return %d, uploading for ap's id = %d", code, data->data.ap.id);
+    }
     yah_request_destory(request);
 
     // set data is_uploaded in database
@@ -407,7 +406,6 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     // serialize the json
     char str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
     yah_json_serialize(&json, str, 0, 1);
-    yah_log("str: %s", str);
 
     // gzip compress
     unsigned char dest[YAH_JSON_COMPRESS_LENGTH];
@@ -437,7 +435,6 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     YAH_JSON_ADD_STR(&body, "data", final);
     char body_str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
     yah_json_serialize(&body, body_str, 0, 0);
-    yah_log("body: %s", body_str);
 
     // generate the socket
     Request* request = yah_request_init();
@@ -448,9 +445,10 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     yah_request_add_header(request, "Host", YAH_REMOTE_DESC);
     yah_request_add_header(request, "User-Agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Mobile Safari/537.36");
     yah_request_set_body(request, body_str);
-    yah_log("final set body = %s", body_str);
     int code = yah_request_send(request);
-    yah_log("apstation: return code = %d", code);
+    if(code != REQUEST_OK) {
+        yah_warn("sending apstation return %d, uploading for apstation's id = %d", code, data->data.apstation.id);
+    }
     yah_request_destory(request);
 
     // set data is uploaded in database
