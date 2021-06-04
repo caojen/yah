@@ -1,6 +1,9 @@
 #ifndef YAH_HTTP_H
 #define YAH_HTTP_H
 
+extern char remote_ip[20];
+extern int remote_port;
+
 #define YAH_REQUEST_MAX_METHOD 8
 #define YAH_REQUEST_MAX_URL 129
 #define YAH_REQUEST_MAX_HEADER_COUNT 5
