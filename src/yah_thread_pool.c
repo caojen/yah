@@ -5,36 +5,25 @@
 
 void*
 yah_thread_pool_callback(void* __worker) {
-    // yah_log("t1");
     struct yah_worker* worker = (struct yah_worker*) __worker;
     yah_thread_pool* pool = worker->manager;
-    // yah_log("t2");
     while(1) {
         // try to get the pool's mutex lock
         // to modify job queue
-        // yah_log("threadpool: waiting for mutex...");
-        // yah_log("threadpool: waiting mutex...");
         pthread_mutex_lock(&pool->job_mutex);
-        // yah_log("threadpool: get mutex");
-        // yah_log("t4");
         // test if the queue is empty
         while(yah_job_queue_count(pool->jobs) == 0) {
             // the queue is empty
             // this thread sleep, wait for cond signal
             pthread_cond_wait(&pool->worker_cond, &pool->job_mutex);
         }
-        // yah_log("threadpool: queue is not empty. fetch...");
         // pop and get that job
         struct yah_job* job = yah_job_queue_pop_job(pool->jobs);
         // unlock mutex
-        // yah_log("threadpool: release mutex");
         pthread_mutex_unlock(&pool->job_mutex);
-        // yah_log("threadpool: release mutex done. run that job");
         // run that job
         job->func(job->arg);
-        // yah_log("threadpool: job->func done. destory...");
         // job done, destory that job
         yah_job_destory(job);
-        // yah_log("threadpool: destory done");
     }
 }
