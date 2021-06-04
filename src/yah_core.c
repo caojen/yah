@@ -64,7 +64,7 @@ void yah_core_start() {
         yah_log("get device name = %s", device_name);
     }
 
-    //   1.2 init a pseudo terminal
+    //   1.2 init a pseudo terminal, for running airodump-ng
     int airodump_fd;
     char slave_name[MAX_PTYNAME];
     struct winsize wsize;
@@ -90,25 +90,25 @@ void yah_core_start() {
 
 
     // init remote_ip and remote_port
+    // store in global variable remote_ip and remote_port
+    // (system call gethostbyname() used)
     yah_init_remote();
 
     /**
-     * init the lru cache
+     * init two lru caches. for ap and apstation.
+     * 
+     * these two caches storing into global variable ap_cache and apstation_cache
      */
-    yah_log("core: trying to init lru cache");
     ap_cache = yah_cache_init(64, YAH_AP_TIME, yah_string_cmp, yah_string_destory, yah_string_copy);
     apstation_cache = yah_cache_init(64, YAH_APSTATION_TIME, yah_string_cmp, yah_string_destory, yah_string_copy);
-    yah_log("core: cache init done");
 
     /**
      * 4. create a pool to receive all formatted data
      * and try to post them
      * these job is adding by another pool
      */
-    yah_log("core: trying to init thread pool...");
     // Receive-Post pool
     rp_pool = yah_thread_pool_init(rpworkers, rpworker_main_func);
-    yah_log("core: rp_pool init done");
 
     /**
      * 3. format each line into formatted data
@@ -122,21 +122,24 @@ void yah_core_start() {
     yah_log("core: fp_pool init done");
 
     // open database and init it
+    // the database path is defined in yah_config.h.
     yah_open_database();
+    // remove old data to minimize the database
     yah_airodump_data_de_redundancy();
+    // call init sql (create table if not exists....) to init the database
     yah_core_init_pool_data();
 
     /**
      * 2. capture all outputs from fd
+     * fd is the file descriptor from pty(where airodump-ng is running)
      */
     char buf[YAH_CAPTURE_LINE];
     yah_log("core: will call fdopen");
     FILE* fp = fdopen(airodump_fd, "r");
     // get line by line
     while(fgets(buf, YAH_CAPTURE_LINE, fp) != NULL) {
+        // capture one line in buf, make it a job, then push to fp_pool
         int length = strlen(buf);
-        // yah_log("main: receive");
-        // yah_log("main: fp_job genereating...");
         struct yah_fp_pool_job_arg* job_arg = 
             (struct yah_fp_pool_job_arg*) yah_mem_alloc (sizeof(struct yah_fp_pool_job_arg)); 
         memset(job_arg, 0, sizeof(struct yah_fp_pool_job_arg));
@@ -145,14 +148,10 @@ void yah_core_start() {
 
         // genereate fp_pool_job
         struct yah_job* job = YAH_JOB_INITIALIZER;
-        // yah_log("main: fp_job_init done. setting...");
         job->arg = job_arg;
         job->arg_destory = yah_mem_free;
         job->func = yah_fp_pool_job_func;
-        // yah_log("main: fp_job_setting done. pushing...");
         yah_thread_pool_push_job(fp_pool, job);
-        // yah_log("main: fp_job push done. jobs remain = %d", yah_job_queue_count(fp_pool->jobs));
-        // yah_log("main: fp_job push to fp_pool done...");
     }
     yah_warn("core: out-of-loop, reach the unreachable code!");
     unreachable();
@@ -213,7 +212,6 @@ yah_fp_pool_job_func(void* __arg) {
         return;
     }
 
-    // continue
     // if newline begin with "BSSID" / "FREQ" / ..., ignore
     if(
         // not a valid line:
@@ -289,6 +287,7 @@ yah_fp_pool_job_func(void* __arg) {
             data->data.ap.create_time = arg->create_time;
         }
     }
+    // data is generated. check if data->specify(usually the bssid or the apstation)'s length is 17 or not.
     if(data != NULL && strlen(data->specify) == 17) {
         // generate that job, and push to rp_pool's job queue
         struct yah_job* job = YAH_JOB_INITIALIZER;
@@ -329,6 +328,7 @@ yah_rp_pool_job_func(void* __arg) {
 
 void
 yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
+    // this function is for ap, pushing ap to remote address
     // generate data into json
     time_t now = time(NULL);
     Json json;
@@ -391,6 +391,7 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
 
 void
 yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
+    // this function is for apstation, pushing apstation to remote address
     // generate data into json
     time_t now = time(NULL);
     Json json;
@@ -459,6 +460,9 @@ void
 yah_core_init_pool_data() {
     struct yah_airodump_data* data;
     unsigned size = 0;
+
+    // get all is_uploaded = 0
+    // make them as jobs. push to rp_pool
     if(yah_airodump_data_fetch_unupdated(&data, &size) != 0) {
         yah_quit("cannot init from pool. exit...");
     }
@@ -470,7 +474,7 @@ yah_core_init_pool_data() {
         yah_log("%d: old job: type = %d, specify = %s", i + 1, data[i].type, data[i].specify);
         job->arg = (void*) (data + i);
         // job->arg_destory = yah_mem_free;
-        job->arg_destory = NULL;    // memory leap here. TODO: find some ways to debug
+        job->arg_destory = NULL;    // memory leak here. TODO: find some ways to debug
         job->func = yah_rp_pool_job_func;
         yah_thread_pool_push_job(rp_pool, job);
     }
