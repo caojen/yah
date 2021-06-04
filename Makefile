@@ -18,7 +18,7 @@ HEADER = ${SRC_DIR}/yah_config.h ${SRC_DIR}/yah_const.h ${SRC_DIR}/yah_daemon.h 
 	${SRC_DIR}/yah_thread_pool_manager.h ${SRC_DIR}/yah_thread_pool.h ${SRC_DIR}/yah_core.h \
 	${SRC_DIR}/yah_pty.h ${SRC_DIR}/yah_exec.h ${SRC_DIR}/yah_airodump.h ${SRC_DIR}/yah_mem.h \
 	${SRC_DIR}/yah_string.h ${SRC_DIR}/yah_lru.h ${SRC_DIR}/yah_sqlite3.h \
-	${SRC_DIR}/yah_http.h
+	${SRC_DIR}/yah_http.h ${SRC_DIR}/yah_json.h
 
 OBJS:=${OBJ_DIR}/yah.o ${OBJ_DIR}/yah_log.o ${OBJ_DIR}/yah_config.o \
 	${OBJ_DIR}/yah_daemon.o ${OBJ_DIR}/yah_signal.o ${OBJ_DIR}/yah_thread_pool_job.o \
@@ -26,7 +26,7 @@ OBJS:=${OBJ_DIR}/yah.o ${OBJ_DIR}/yah_log.o ${OBJ_DIR}/yah_config.o \
 	${OBJ_DIR}/yah_thread_pool.o ${OBJ_DIR}/yah_core.o ${OBJ_DIR}/yah_pty.o \
 	${OBJ_DIR}/yah_exec.o ${OBJ_DIR}/yah_airodump.o ${OBJ_DIR}/yah_mem.o \
 	${OBJ_DIR}/yah_string.o ${OBJ_DIR}/yah_lru.o ${OBJ_DIR}/yah_sqlite3.o \
-	${OBJ_DIR}/yah_http.o
+	${OBJ_DIR}/yah_http.o ${OBJ_DIR}/yah_json.o
 
 .PHONY: test clean all yah install uninstall
 
@@ -92,16 +92,20 @@ ${OBJ_DIR}/yah_sqlite3.o: ${SRC_DIR}/yah_sqlite3.c ${HEADER}
 ${OBJ_DIR}/yah_http.o: ${SRC_DIR}/yah_http.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
+${OBJ_DIR}/yah_json.o: ${SRC_DIR}/yah_json.c ${HEADER}
+	$(CC) $(CFLAG) -o $@ -c $<
+
 clean:
 	rm -rf **/*.o ${BIN_DIR}/yah **/*.test
 
 # test: test/sqlite3.test test/substring.test \
 # 	test/http.test
-test: test/http.test
+test: test/json.test
 	@echo testing...
 	# @test/sqlite3.test > /dev/null
 	# @test/substring.test > /dev/null
-	@test/http.test
+	# @test/http.test
+	@test/json.test
 	@echo \> build \& run all tests done. test pass.
 
 test/sqlite3.test: test/sqlite3.c ${HEADER}
@@ -113,6 +117,10 @@ test/substring.test: test/substring.c ${HEADER}
 	@ echo \> test build: $@
 
 test/http.test: test/http.c ${HEADER} ${OBJS}
+	$(CC) $(CFLAG) $(TEST) $< ${SRC_DIR}/*.c -o $@
+	@ echo \> test build: $@
+
+test/json.test: test/json.c ${HEADER} ${OBJS}
 	$(CC) $(CFLAG) $(TEST) $< ${SRC_DIR}/*.c -o $@
 	@ echo \> test build: $@
 

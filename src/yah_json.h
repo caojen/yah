@@ -29,6 +29,8 @@ struct yah_json {
     struct yah_json_value values[YAH_JSON_MAX_KEY_COUNT];
 };
 
+typedef struct yah_json_value Value;
+
 typedef struct yah_json Json;
 
 int yah_json_set(Json* json, const char* key, const struct yah_json_value* value);
