@@ -105,6 +105,9 @@ yah_daemonize(int daemon) {
     if(fd0 != 0 || fd1 != 1 || fd2 != 2) {
         exit(EPIPE);
     }
+
+    // move old file to other names
+    rename_logs();
     
     /* init FILE* for logs */
     YAH_FILENO_LOG = fopen(YAH_LOGFILE_LOG, "w");
@@ -124,7 +127,7 @@ yah_daemonize(int daemon) {
 
     /* change the dir to '/' */
     if(chdir("/") < 0) {
-        yah_quit("cannot fork a new subprocess");
+        yah_quit("cannot chdir to /");
     }
 
     int handlers;

@@ -53,4 +53,9 @@ void unimplemented();
  */
 void unreachable();
 
+/**
+ * store old logfile with other name
+ */
+void rename_logs();
+
 #endif

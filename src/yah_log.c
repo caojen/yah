@@ -89,3 +89,21 @@ unreachable() {
     daemon_exit();
     exit(1);
 }
+
+void
+rename_logs() {
+    time_t t = time(NULL);
+    char newname[256] = { 0 };
+    if(access(YAH_LOGFILE_LOG, R_OK) == 0) {
+        sprintf(newname, "%s.%ld", YAH_LOGFILE_LOG, t);
+        rename(YAH_LOGFILE_LOG, newname);
+    }
+    if(access(YAH_LOG_LEVEL_WARN, R_OK) == 0) {
+        sprintf(newname, "%s.%ld", YAH_LOGFILE_WARN, t);
+        rename(YAH_LOG_LEVEL_WARN, newname);
+    }
+    if(access(YAH_LOG_LEVEL_ERROR, R_OK) == 0) {
+        sprintf(newname, "%s.%ld", YAH_LOG_LEVEL_ERROR, t);
+        rename(YAH_LOG_LEVEL_ERROR, newname);
+    }
+}
