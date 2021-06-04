@@ -364,8 +364,9 @@ void yah_init_remote() {
     struct hostent* host = gethostbyname(address);
     yah_log("remote: get host by name: %s", address);
     yah_log("remote: alias: %s", host->h_name);
-    yah_log("remote: ip: %s", inet_ntoa(*(struct in_addr*)host->h_addr));
+    
     char* ip = inet_ntoa(*(struct in_addr*)host->h_addr);
+    yah_log("remote: ip: %s", ip);
     memcpy(remote_ip, ip, strlen(ip));
     remote_port = YAH_REMOTE_PORT;
 }
