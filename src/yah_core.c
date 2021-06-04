@@ -339,7 +339,8 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     yah_airodump_data_updated(data);
 }
 
-void yah_core_init_pool_data() {
+void
+yah_core_init_pool_data() {
     struct yah_airodump_data* data;
     unsigned size = 0;
     if(yah_airodump_data_fetch_unupdated(&data, &size) != 0) {
@@ -359,7 +360,8 @@ void yah_core_init_pool_data() {
     }
 }
 
-void yah_init_remote() {
+void
+yah_init_remote() {
     const char* address = YAH_REMOTE_HOST;
     struct hostent* host = gethostbyname(address);
     yah_log("remote: get host by name: %s", address);
