@@ -18,6 +18,7 @@
 #include "yah_lru.h"
 #include "yah_sqlite3.h"
 #include "yah_json.h"
+#include "yah_base64.h"
 
 /**
  * make airodump_pid as global variable
@@ -287,7 +288,7 @@ yah_fp_pool_job_func(void* __arg) {
             data->data.ap.create_time = arg->create_time;
         }
     }
-    if(data != NULL) {
+    if(data != NULL && strlen(data->specify) == 17) {
         // generate that job, and push to rp_pool's job queue
         struct yah_job* job = YAH_JOB_INITIALIZER;
         job->arg = (void*) data;
@@ -342,10 +343,24 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
     char str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
     yah_json_serialize(&json, str);
 
-    // compress
+    // gzip compress
     unsigned char dest[YAH_JSON_COMPRESS_LENGTH];
     unsigned int bufsize = YAH_JSON_COMPRESS_LENGTH;
-    compress(dest, &bufsize, str, strlen(str));
+    z_stream strm;
+    strm.zalloc = Z_NULL;
+    strm.zfree  = Z_NULL;
+    strm.opaque = Z_NULL;
+    strm.avail_in = strlen(str) + 1;
+    strm.avail_out = bufsize;
+    strm.next_in = (Bytef *)str;
+    strm.next_out = (Bytef *)dest;
+    deflateInit2(&strm, Z_DEFAULT_COMPRESSION, Z_DEFLATED, MAX_WBITS+16, MAX_MEM_LEVEL, Z_DEFAULT_STRATEGY);
+    deflate(&strm, Z_FINISH);
+    bufsize = bufsize - strm.avail_out;
+    deflateEnd(&strm);
+
+    // convert into base64
+    char* final = base64_encode(dest, bufsize);
 
     // set data is_uploaded in database
     yah_airodump_data_updated(data);
@@ -369,11 +384,27 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     char str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
     yah_json_serialize(&json, str);
 
-    // compress
+    // gzip compress
     unsigned char dest[YAH_JSON_COMPRESS_LENGTH];
     unsigned int bufsize = YAH_JSON_COMPRESS_LENGTH;
-    compress(dest, &bufsize, str, strlen(str));
 
+    // z_stream strm;
+    // compress(dest, &bufsize, str, strlen(str) + 1);
+    z_stream strm;
+    strm.zalloc = Z_NULL;
+    strm.zfree  = Z_NULL;
+    strm.opaque = Z_NULL;
+    strm.avail_in = strlen(str) + 1;
+    strm.avail_out = bufsize;
+    strm.next_in = (Bytef *)str;
+    strm.next_out = (Bytef *)dest;
+    deflateInit2(&strm, Z_DEFAULT_COMPRESSION, Z_DEFLATED, MAX_WBITS+16, MAX_MEM_LEVEL, Z_DEFAULT_STRATEGY);
+    deflate(&strm, Z_FINISH);
+    bufsize = bufsize - strm.avail_out;
+    deflateEnd(&strm);
+    
+    // convert into base64 code
+    char* final = base64_encode(dest, bufsize);
     // set data is uploaded in database
     yah_airodump_data_updated(data);
 }
