@@ -53,18 +53,25 @@ yah_airodump_data_insert(struct yah_airodump_data* data) {
         default:
             unreachable();
     }
-
     return r;
 }
 
 int
 yah_airodump_data_insert_ap(struct yah_airodump_data* data) {
-    if(yah_airodump_data_insert_ap_should_insert(data) == YAH_AIRODUMP_DATA_SHOULD_INSERT) {
+    int test;
+    if(data->data.ap.id > 0) {
+        test = YAH_AIRODUMP_DATA_OLD_DATA;
+    } else {
+        test = yah_airodump_data_insert_ap_should_insert(data);
+    }
+    if(test == YAH_AIRODUMP_DATA_SHOULD_INSERT) {
         char* sql = sqlite3_mprintf(YAH_AP_INSERT_SQL, data->data.ap.bssid, data->data.ap.comment, data->data.ap.create_time);
         yah_db_lock();
         yah_sqlite_drop(db, sql);
         data->data.ap.id = yah_db_last_id();
         yah_db_unlock();
+        return 0;
+    } else if(test == YAH_AIRODUMP_DATA_OLD_DATA) {
         return 0;
     }
 
@@ -73,7 +80,13 @@ yah_airodump_data_insert_ap(struct yah_airodump_data* data) {
 
 int
 yah_airodump_data_insert_apstation(struct yah_airodump_data* data) {
-    if(yah_airodump_data_insert_apstation_should_insert(data) == YAH_AIRODUMP_DATA_SHOULD_INSERT) {
+    int test;
+    if(data->data.apstation.id > 0) {
+        test = YAH_AIRODUMP_DATA_OLD_DATA;
+    } else {
+        test = yah_airodump_data_insert_apstation_should_insert(data);
+    }
+    if(test == YAH_AIRODUMP_DATA_SHOULD_INSERT) {
         char* sql = sqlite3_mprintf(YAH_APSTATION_INSERT_SQL,
             data->data.apstation.bssid, data->data.apstation.station,
             data->data.apstation.comment, data->data.apstation.create_time);
@@ -81,6 +94,8 @@ yah_airodump_data_insert_apstation(struct yah_airodump_data* data) {
         yah_sqlite_drop(db, sql);
         data->data.apstation.id = yah_db_last_id();
         yah_db_unlock();
+        return 0;
+    } else if(test == YAH_AIRODUMP_DATA_OLD_DATA) {
         return 0;
     }
     return 1;

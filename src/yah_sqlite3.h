@@ -82,6 +82,7 @@ int yah_airodump_data_insert_ap(struct yah_airodump_data* data);
 int yah_airodump_data_insert_apstation(struct yah_airodump_data* data);
 // should insert function return 1 means that should insert
 // return 0 means that shouldn't insert
+#define YAH_AIRODUMP_DATA_OLD_DATA 2
 #define YAH_AIRODUMP_DATA_SHOULD_INSERT 1
 #define YAH_AIRODUMP_DATA_SHOULDNOT_INSERT 0
 int yah_airodump_data_insert_ap_should_insert(struct yah_airodump_data* data);
