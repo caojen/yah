@@ -253,6 +253,7 @@ yah_fp_pool_job_func(void* __arg) {
     *(nptr + 1) = 0;
     // if the line is too short, ignore it.
     // yah_log("fp_job_func: receive arg with line.length = %d", length);
+    // yah_log("fp_job_func: receive line: %s", newline);
     if(length < YAH_CAPTURE_MIN_LINE) {
         // ignore this line
         return;
