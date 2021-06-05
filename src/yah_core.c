@@ -495,7 +495,7 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     yah_request_set_body(request, body_str);
     int code = yah_request_send(request);
     if(code != REQUEST_OK) {
-        yah_warn("sending apstation return %d, uploading for apstation's id = %d", code, data->data.apstation.id);
+        yah_log("sending apstation return %d, uploading for apstation's id = %d", code, data->data.apstation.id);
         // data is not uploaded, push it back to rp_pool's queue
         struct yah_job* job = YAH_JOB_INITIALIZER;
         job->arg = (void*) data;
