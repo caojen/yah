@@ -496,11 +496,17 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     int code = yah_request_send(request);
     if(code != REQUEST_OK) {
         yah_warn("sending apstation return %d, uploading for apstation's id = %d", code, data->data.apstation.id);
+        // data is not uploaded, push it back to rp_pool's queue
+        struct yah_job* job = YAH_JOB_INITIALIZER;
+        job->arg = (void*) data;
+        job->arg_destory = yah_mem_free;
+        job->func = yah_rp_pool_job_func;
+        yah_thread_pool_push_job(rp_pool, job);
+    } else {
+        // set data is uploaded in database
+        yah_airodump_data_updated(data);
     }
     yah_request_destory(request);
-
-    // set data is uploaded in database
-    yah_airodump_data_updated(data);
 }
 
 void
