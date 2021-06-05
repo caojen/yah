@@ -4,6 +4,8 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <zlib.h>
+#include <errno.h>
+#include <sys/wait.h>
 
 #include "yah_core.h"
 #include "yah_log.h"
@@ -133,25 +135,69 @@ void yah_core_start() {
      * 2. capture all outputs from fd
      * fd is the file descriptor from pty(where airodump-ng is running)
      */
-    char buf[YAH_CAPTURE_LINE];
-    yah_log("core: will call fdopen");
-    FILE* fp = fdopen(airodump_fd, "r");
-    // get line by line
-    while(fgets(buf, YAH_CAPTURE_LINE, fp) != NULL) {
-        // capture one line in buf, make it a job, then push to fp_pool
-        int length = strlen(buf);
-        struct yah_fp_pool_job_arg* job_arg = 
-            (struct yah_fp_pool_job_arg*) yah_mem_alloc (sizeof(struct yah_fp_pool_job_arg)); 
-        memset(job_arg, 0, sizeof(struct yah_fp_pool_job_arg));
-        job_arg->create_time = time(NULL);
-        memcpy(job_arg->line, buf, length);
+    const int bufsize = YAH_CAPTURE_LINE + 3;
+    char buf[bufsize];
+    int length = 0;
+    // yah_log("core: will call fdopen");
+    // use select to check airodump_fd is ok
+    fd_set input_set;
+    FD_ZERO(&input_set);
+    FD_SET(airodump_fd, &input_set);
+    struct timeval timeout; timeout.tv_sec = 15; timeout.tv_usec = 0; // create timeout to 15s
+    int ready_for_reading;
+    while(1) {
+        ready_for_reading = select(1, &input_set, NULL, NULL, &timeout);
+        if(ready_for_reading == -1) {
+            // read error. check the airodump-ng
+            yah_log("core: system call select timeout of %ds", timeout.tv_sec);
+            yah_log("core: to check airodump-ng with pid = %d is running", airodump_pid);
+            int status;
+            pid_t result = waitpid(airodump_pid, &status, WNOHANG);
+            if(result == 0) {
+                // airodump-ng is still running. do nothing.
+                yah_log("core: airodump-ng is still running.");
+            } else if(result == -1) {
+                // Error
+                yah_log("core: checking airodump-ng subprocess error, with result = -1");
+            } else {
+                yah_log("core: airodump-ng has exited. the parent process should exit.");
+                daemon_exit();
+            }
+        } else {
+            // read ok. just proceed.
+            // read one line into buf
+            char ch;
+            char* bufptr = buf;
+            int r;
+            while(1) {
+                while((r = read(airodump_fd, &ch, 1)) == -1 && errno == EINTR);
+                if(ch == '\n') {
+                    *bufptr = ch;
+                    *(bufptr + 1) = 0;
+                    length = bufptr - buf;
+                    break;
+                } else {
+                    *bufptr = ch;
+                    ++bufptr;
+                }
+            }
+            // store this line to buf, with strlen(buf) == length
+            // if length < 10, ignore this line
+            if(length >= 10) {
+                struct yah_fp_pool_job_arg* job_arg = 
+                    (struct yah_fp_pool_job_arg*) yah_mem_alloc (sizeof(struct yah_fp_pool_job_arg)); 
+                memset(job_arg, 0, sizeof(struct yah_fp_pool_job_arg));
+                job_arg->create_time = time(NULL);
+                memcpy(job_arg->line, buf, length);
 
-        // genereate fp_pool_job
-        struct yah_job* job = YAH_JOB_INITIALIZER;
-        job->arg = job_arg;
-        job->arg_destory = yah_mem_free;
-        job->func = yah_fp_pool_job_func;
-        yah_thread_pool_push_job(fp_pool, job);
+                // genereate fp_pool_job
+                struct yah_job* job = YAH_JOB_INITIALIZER;
+                job->arg = job_arg;
+                job->arg_destory = yah_mem_free;
+                job->func = yah_fp_pool_job_func;
+                yah_thread_pool_push_job(fp_pool, job);
+            }
+        }
     }
     yah_warn("core: out-of-loop, reach the unreachable code!");
     unreachable();
@@ -232,9 +278,9 @@ yah_fp_pool_job_func(void* __arg) {
         // note that the create_time is the time that we catch the output
         // but not the time that airodump show the output
         // pass -D DEBUG to turn it on
-#ifdef DEBUG
+// #ifdef DEBUG
         strcpy(airodump_time, newline);
-#endif
+// #endif
         return;
     }
     // yah_log("%s", newline);
@@ -258,7 +304,7 @@ yah_fp_pool_job_func(void* __arg) {
         int incache = yah_cache_update(apstation_cache, first_part_begin, first_part_length + 1);
         if(incache == YAH_CACHE_NODE_NOTEXISTS) {
             yah_log("fp_pool_job: will push to rp_pool type = %d, bssid = %s", type, first_part_begin);
-            // yah_log("current airodump time = %s", airodump_time);
+            yah_log("current airodump time = %s", airodump_time);
             data = (struct yah_airodump_data*) yah_mem_alloc (sizeof(struct yah_airodump_data));
             memset(data, 0, sizeof(struct yah_airodump_data));
             data->type = apstation;
@@ -275,7 +321,7 @@ yah_fp_pool_job_func(void* __arg) {
         int incache = yah_cache_update(ap_cache, first_part_begin, first_part_length + 1);
         if(incache == YAH_CACHE_NODE_NOTEXISTS) {
             yah_log("fp_pool_job: will push to rp_pool type = %d, bssid = %s", type, first_part_begin);
-            // yah_log("current airodump time = %s", airodump_time);
+            yah_log("current airodump time = %s", airodump_time);
             data = (struct yah_airodump_data*) yah_mem_alloc (sizeof(struct yah_airodump_data));
             memset(data, 0, sizeof(struct yah_airodump_data));
             data->type = ap;
