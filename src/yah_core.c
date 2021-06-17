@@ -264,7 +264,7 @@ yah_fp_pool_job_func(void* __arg) {
         // not a valid line:
         yah_string_prefix(newline, "BSSID") || yah_string_prefix(newline, "available") || 
         // not usable data
-        yah_string_prefix(newline, "(not associated)") || 
+        // yah_string_prefix(newline, "(not associated)") || 
         // network broken:
         yah_string_prefix(newline, "failed:") || yah_string_prefix(newline, "ioctl(SIOCGIFINDEX)") || 
         // not usable data:
