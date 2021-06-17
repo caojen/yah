@@ -293,6 +293,11 @@ yah_fp_pool_job_func(void* __arg) {
 
     yah_string_get_next_part(newline, &first_part_begin, &first_part_end);
     yah_string_get_next_part(first_part_end, &second_part_begin, &second_part_end);
+
+    if(yah_string_prefix(newline, "(not associated)")) {
+        first_part_end = second_part_end;
+        yah_string_get_next_part(first_part_end, &second_part_begin, &second_part_end);
+    }
     
     *first_part_end = 0;    // first part is the bssid
     *second_part_end = 0;
@@ -305,6 +310,7 @@ yah_fp_pool_job_func(void* __arg) {
         int incache = yah_cache_update(apstation_cache, first_part_begin, first_part_length + 1);
         if(incache == YAH_CACHE_NODE_NOTEXISTS) {
             yah_log("fp_pool_job: will push to rp_pool type = %d, bssid = %s", type, first_part_begin);
+            yah_log("fp_pool_job: apstation, %s, %s", first_part_begin, second_part_begin);
             yah_log("current airodump time = %s", airodump_time);
             data = (struct yah_airodump_data*) yah_mem_alloc (sizeof(struct yah_airodump_data));
             memset(data, 0, sizeof(struct yah_airodump_data));
