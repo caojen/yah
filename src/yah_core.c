@@ -307,7 +307,7 @@ yah_fp_pool_job_func(void* __arg) {
     struct yah_airodump_data* data = NULL;
     if(second_part_length > 10) {
         enum yah_airodump_type type = apstation;
-        int incache = yah_cache_update(apstation_cache, first_part_begin, first_part_length + 1);
+        int incache = yah_cache_update(apstation_cache, second_part_begin, second_part_length + 1);
         if(incache == YAH_CACHE_NODE_NOTEXISTS) {
             yah_log("fp_pool_job: will push to rp_pool type = %d, bssid = %s", type, first_part_begin);
             yah_log("fp_pool_job: apstation, %s, %s", first_part_begin, second_part_begin);
