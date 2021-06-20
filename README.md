@@ -34,7 +34,7 @@ The only way to install currently is to build the source code yourself.
 
 Firstly, clone this repo:
 ```
-git clone https://github.caojen/yah.git
+git clone https://github.com/caojen/yah.git
 cd yah
 ```
 
