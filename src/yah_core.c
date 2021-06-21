@@ -492,7 +492,9 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
 
     // generate the socket
     Request* request = yah_request_init();
-    yah_request_set_remote(request, remote_ip, remote_port);
+    char __remote_ip[20] = { 0 };
+    yah_get_remote_local(__remote_ip);
+    yah_request_set_remote(request, __remote_ip, remote_port);
     yah_request_set_method(request, REQUEST_METHOD_POST);
     yah_request_set_url(request, YAH_REMOTE_URL_APSTATION);
     yah_request_add_header(request, "Content-Type", "application/json;charset=UTF-8");
@@ -550,4 +552,13 @@ yah_init_remote() {
     yah_log("remote: ip: %s", ip);
     memcpy(remote_ip, ip, strlen(ip));
     remote_port = YAH_REMOTE_PORT;
+}
+
+void
+yah_get_remote_local(char __remote_ip[20]) {
+    const char* address = YAH_REMOTE_HOST;
+    struct hostent* host = gethostbyname(address);
+    char* ip = inet_ntoa(*(struct in_addr*)host->h_addr);
+    memcpy(__remote_ip, ip, strlen(ip));
+    yah_log("dns: %s => %s", address, __remote_ip);
 }

@@ -52,5 +52,6 @@ void yah_rp_pool_job_func_apstation(struct yah_airodump_data* data);
 // init remote_ip and remote_port
 // from yah_const.h: YAH_REMOTE_HOST YAH_REMOTE_PORT
 void yah_init_remote();
+void yah_get_remote_local(char __remote_ip[20]);
 
 #endif
