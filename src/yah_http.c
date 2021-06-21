@@ -115,11 +115,16 @@ yah_tcp_scoket_connect(const char* ip, int port) {
     // when connect failed, it will try to sleep 2 * (n+1)s
     // and retry connecting
     // until the max-retry exceed SOCKET_CONNECT_RETRY
+    int hasfailed = 0;
     for(int i = 0; i < SOCKET_CONNECT_RETRY; ++i) {
         if(connect(fd, (struct sockaddr*)&serv_addr,sizeof(serv_addr)) < 0) {
-            yah_log("socket: connect return error. sleep %ds and retry", 2 * (i + 1));
+            hasfailed = 1;
+            yah_log("socket: connect to %s:%d return error. sleep %ds and retry", ip, port, 2 * (i + 1));
             sleep(2 * (i + 1));
         } else {
+            if(hasfailed) {
+                yah_log("socket: reconnected.");
+            }
             return fd;
         }
     }
