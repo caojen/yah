@@ -67,7 +67,7 @@ int yah_request_send(Request* request);
 #define REQUEST_METHOD_HEAD 4
 #define REQUEST_METHOD_PATCH 5
 
-#define SOCKET_CONNECT_RETRY 20
+#define SOCKET_CONNECT_RETRY 3
 
 // dealing with base socket functions
 // create socket and try to connect
