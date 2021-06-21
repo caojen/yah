@@ -439,6 +439,7 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
     yah_request_set_body(request, body_str);
     int code = yah_request_send(request);
     if(code != REQUEST_OK) {
+        yah_log("sending ap return %d, pushing back for ap's id = %d", code, data->data.ap.id);
         goto errpushback;
     }
     yah_request_destory(request);
@@ -447,7 +448,6 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
     yah_airodump_data_updated(data);
     return;
 errpushback:
-    yah_log("sending ap return %d, pushing back for ap's id = %d", code, data->data.ap.id);
     // data is not uploaded, push it back to rp_pool's queue
     struct yah_job* job = YAH_JOB_INITIALIZER;
     job->arg = (void*) data;
@@ -521,6 +521,7 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     yah_request_set_body(request, body_str);
     int code = yah_request_send(request);
     if(code != REQUEST_OK) {
+        yah_log("sending apstation return %d, pushing back for apstation's id = %d", code, data->data.apstation.id);
         goto errpushback;
     } else {
         // set data is uploaded in database
@@ -530,7 +531,6 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     return;
 
 errpushback:
-    yah_log("sending apstation return %d, pushing back for apstation's id = %d", code, data->data.apstation.id);
     // data is not uploaded, push it back to rp_pool's queue
     struct yah_job* job = YAH_JOB_INITIALIZER;
     job->arg = (void*) data;
