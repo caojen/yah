@@ -447,7 +447,7 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
     // set data is_uploaded in database
     yah_airodump_data_updated(data);
     return;
-errpushback:
+errpushback:    ;
     // data is not uploaded, push it back to rp_pool's queue
     struct yah_job* job = YAH_JOB_INITIALIZER;
     job->arg = (void*) data;
@@ -530,7 +530,7 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     yah_request_destory(request);
     return;
 
-errpushback:
+errpushback:    ;
     // data is not uploaded, push it back to rp_pool's queue
     struct yah_job* job = YAH_JOB_INITIALIZER;
     job->arg = (void*) data;
