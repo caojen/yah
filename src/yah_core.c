@@ -425,7 +425,12 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
 
     // generate the socket
     Request* request = yah_request_init();
-    yah_request_set_remote(request, remote_ip, remote_port);
+    char __remote_ip[20] = { 0 };
+    if(__remote_ip[0] == 0) {
+        yah_log("dns failed, skip this job, goto err push back");
+        goto errpushback;
+    }
+    yah_request_set_remote(request, __remote_ip, remote_port);
     yah_request_set_method(request, REQUEST_METHOD_POST);
     yah_request_set_url(request, YAH_REMOTE_URL_AP);
     yah_request_add_header(request, "Content-Type", "application/json;charset=UTF-8");
@@ -434,12 +439,21 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
     yah_request_set_body(request, body_str);
     int code = yah_request_send(request);
     if(code != REQUEST_OK) {
-        yah_warn("sending ap return %d, uploading for ap's id = %d", code, data->data.ap.id);
+        goto errpushback;
     }
     yah_request_destory(request);
 
     // set data is_uploaded in database
     yah_airodump_data_updated(data);
+    return;
+errpushback:
+    yah_log("sending ap return %d, pushing back for ap's id = %d", code, data->data.ap.id);
+    // data is not uploaded, push it back to rp_pool's queue
+    struct yah_job* job = YAH_JOB_INITIALIZER;
+    job->arg = (void*) data;
+    job->arg_destory = yah_mem_free;
+    job->func = yah_rp_pool_job_func;
+    yah_thread_pool_push_job(rp_pool, job);
 }
 
 void
@@ -493,6 +507,10 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     // generate the socket
     Request* request = yah_request_init();
     char __remote_ip[20] = { 0 };
+    if(__remote_ip[0] == 0) {
+        yah_log("dns failed, skip this job, goto err push back");
+        goto errpushback;
+    }
     yah_get_remote_local(__remote_ip);
     yah_request_set_remote(request, __remote_ip, remote_port);
     yah_request_set_method(request, REQUEST_METHOD_POST);
@@ -503,18 +521,22 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     yah_request_set_body(request, body_str);
     int code = yah_request_send(request);
     if(code != REQUEST_OK) {
-        yah_log("sending apstation return %d, pushing back for apstation's id = %d", code, data->data.apstation.id);
-        // data is not uploaded, push it back to rp_pool's queue
-        struct yah_job* job = YAH_JOB_INITIALIZER;
-        job->arg = (void*) data;
-        job->arg_destory = yah_mem_free;
-        job->func = yah_rp_pool_job_func;
-        yah_thread_pool_push_job(rp_pool, job);
+        goto errpushback;
     } else {
         // set data is uploaded in database
         yah_airodump_data_updated(data);
     }
     yah_request_destory(request);
+    return;
+
+errpushback:
+    yah_log("sending apstation return %d, pushing back for apstation's id = %d", code, data->data.apstation.id);
+    // data is not uploaded, push it back to rp_pool's queue
+    struct yah_job* job = YAH_JOB_INITIALIZER;
+    job->arg = (void*) data;
+    job->arg_destory = yah_mem_free;
+    job->func = yah_rp_pool_job_func;
+    yah_thread_pool_push_job(rp_pool, job);
 }
 
 void
@@ -547,13 +569,14 @@ yah_init_remote() {
     struct hostent* host = gethostbyname(address);
     yah_log("remote: get host by name: %s", address);
     if(host == NULL) {
-        yah_log("remote: host is null. %s", hstrerror(h_errno));
+        yah_log("remote warning: host is null. %s", hstrerror(h_errno));
+    } else {
+        yah_log("remote: alias: %s", host->h_name);
+        
+        char* ip = inet_ntoa(*(struct in_addr*)host->h_addr);
+        yah_log("remote: ip: %s", ip);
+        memcpy(remote_ip, ip, strlen(ip));
     }
-    yah_log("remote: alias: %s", host->h_name);
-    
-    char* ip = inet_ntoa(*(struct in_addr*)host->h_addr);
-    yah_log("remote: ip: %s", ip);
-    memcpy(remote_ip, ip, strlen(ip));
     remote_port = YAH_REMOTE_PORT;
 }
 
@@ -561,7 +584,12 @@ void
 yah_get_remote_local(char __remote_ip[20]) {
     const char* address = YAH_REMOTE_HOST;
     struct hostent* host = gethostbyname(address);
-    char* ip = inet_ntoa(*(struct in_addr*)host->h_addr);
-    memcpy(__remote_ip, ip, strlen(ip));
-    yah_log("dns: %s => %s", address, __remote_ip);
+    if(host) {
+        char* ip = inet_ntoa(*(struct in_addr*)host->h_addr);
+        memcpy(__remote_ip, ip, strlen(ip));
+        yah_log("dns: %s => %s", address, __remote_ip);
+    } else {
+        yah_log("dns warning. get host by name failed: %s", hstrerror(h_errno));
+        __remote_ip[0] = 0;
+    }
 }
