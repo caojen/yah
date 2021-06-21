@@ -1,7 +1,7 @@
 [Unit]
 Description=yah
 After=network.target
-Requires=network.target
+# Requires=network.target
 
 [Service]
 ExecStart=/usr/bin/yah start
