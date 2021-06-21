@@ -546,6 +546,9 @@ yah_init_remote() {
     const char* address = YAH_REMOTE_HOST;
     struct hostent* host = gethostbyname(address);
     yah_log("remote: get host by name: %s", address);
+    if(host == NULL) {
+        yah_log("remote: host is null. %s", hstrerror(h_errno));
+    }
     yah_log("remote: alias: %s", host->h_name);
     
     char* ip = inet_ntoa(*(struct in_addr*)host->h_addr);
