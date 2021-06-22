@@ -311,7 +311,7 @@ yah_fp_pool_job_func(void* __arg) {
         if(incache == YAH_CACHE_NODE_NOTEXISTS) {
             yah_log("fp_pool_job: will push to rp_pool type = %d, bssid = %s", type, first_part_begin);
             yah_log("fp_pool_job: apstation, %s, %s", first_part_begin, second_part_begin);
-            yah_log("current airodump time = %s", airodump_time);
+            // yah_log("current airodump time = %s", airodump_time);
             data = (struct yah_airodump_data*) yah_mem_alloc (sizeof(struct yah_airodump_data));
             memset(data, 0, sizeof(struct yah_airodump_data));
             data->type = apstation;
@@ -328,7 +328,7 @@ yah_fp_pool_job_func(void* __arg) {
         int incache = yah_cache_update(ap_cache, first_part_begin, first_part_length + 1);
         if(incache == YAH_CACHE_NODE_NOTEXISTS) {
             yah_log("fp_pool_job: will push to rp_pool type = %d, bssid = %s", type, first_part_begin);
-            yah_log("current airodump time = %s", airodump_time);
+            // yah_log("current airodump time = %s", airodump_time);
             data = (struct yah_airodump_data*) yah_mem_alloc (sizeof(struct yah_airodump_data));
             memset(data, 0, sizeof(struct yah_airodump_data));
             data->type = ap;
@@ -355,7 +355,7 @@ void
 yah_rp_pool_job_func(void* __arg) {
     struct yah_airodump_data* arg = 
         (struct yah_airodump_data*) __arg;
-    yah_log("rp_pool_job: resolving type = %d, specify = %s, device = %d", arg->type, arg->specify, device_number);
+    yah_log("rp_pool_job: %p, resolving type = %d, specify = %s, device = %d", arg, arg->type, arg->specify, device_number);
     // update database and get id
     int should_insert = (
         yah_airodump_data_insert(arg)
@@ -363,11 +363,11 @@ yah_rp_pool_job_func(void* __arg) {
     if(should_insert) {
         switch (arg->type) {
             case ap:
-                yah_log("rp_pool_job: genereate id for type = %d, specify = %s, id = %d", arg->type, arg->specify, arg->data.ap.id);
+                yah_log("rp_pool_job: %p, genereate id for type = %d, specify = %s, id = %d", arg, arg->type, arg->specify, arg->data.ap.id);
                 yah_rp_pool_job_func_ap(arg);
                 break;
             case apstation:
-                yah_log("rp_pool_job: genereate id for type = %d, specify = %s, id = %d", arg->type, arg->specify, arg->data.apstation.id);
+                yah_log("rp_pool_job: %p, genereate id for type = %d, specify = %s, id = %d", arg, arg->type, arg->specify, arg->data.apstation.id);
                 yah_rp_pool_job_func_apstation(arg);
                 break;
             default:
@@ -426,8 +426,10 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
     // generate the socket
     Request* request = yah_request_init();
     char __remote_ip[20] = { 0 };
+    yah_get_remote_local(__remote_ip);
     if(__remote_ip[0] == 0) {
-        yah_log("dns failed, skip this job, goto err push back");
+        yah_log("dns failed, skip this job, sleep2 and goto err push back");
+        sleep(2);
         goto errpushback;
     }
     yah_request_set_remote(request, __remote_ip, remote_port);
@@ -450,10 +452,14 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
 errpushback:    ;
     // data is not uploaded, push it back to rp_pool's queue
     struct yah_job* job = YAH_JOB_INITIALIZER;
-    job->arg = (void*) data;
+    struct yah_airodump_data* newdata = (struct yah_airodump_data*)
+        yah_mem_alloc(sizeof(struct yah_airodump_data));
+    memcpy(newdata, data, sizeof(struct yah_airodump_data));
+    job->arg = (void*) newdata;
     job->arg_destory = yah_mem_free;
     job->func = yah_rp_pool_job_func;
     yah_thread_pool_push_job(rp_pool, job);
+    yah_log("yah_rp_ap: errpushback: %p", data);
 }
 
 void
@@ -507,11 +513,12 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     // generate the socket
     Request* request = yah_request_init();
     char __remote_ip[20] = { 0 };
+    yah_get_remote_local(__remote_ip);
     if(__remote_ip[0] == 0) {
-        yah_log("dns failed, skip this job, goto err push back");
+        yah_log("dns failed, skip this job, sleep 2 and goto err push back");
+        sleep(2);
         goto errpushback;
     }
-    yah_get_remote_local(__remote_ip);
     yah_request_set_remote(request, __remote_ip, remote_port);
     yah_request_set_method(request, REQUEST_METHOD_POST);
     yah_request_set_url(request, YAH_REMOTE_URL_APSTATION);
@@ -533,10 +540,14 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
 errpushback:    ;
     // data is not uploaded, push it back to rp_pool's queue
     struct yah_job* job = YAH_JOB_INITIALIZER;
-    job->arg = (void*) data;
+    struct yah_airodump_data* newdata = (struct yah_airodump_data*)
+        yah_mem_alloc(sizeof(struct yah_airodump_data));
+    memcpy(newdata, data, sizeof(struct yah_airodump_data));
+    job->arg = (void*) newdata;
     job->arg_destory = yah_mem_free;
     job->func = yah_rp_pool_job_func;
     yah_thread_pool_push_job(rp_pool, job);
+    yah_log("yah_rp_apstation: errpushback: %p", data);
 }
 
 void
@@ -553,6 +564,7 @@ yah_core_init_pool_data() {
     yah_log("get old data size = %d", size);
     for(unsigned i = 0; i < size; i++) {
         // generate that job, and push to rp_pool's job queue
+        yah_log("%d generating old job", i + 1);
         struct yah_job* job = YAH_JOB_INITIALIZER;
         yah_log("%d: old job: type = %d, specify = %s", i + 1, data[i]->type, data[i]->specify);
         job->arg = (void*) data[i];

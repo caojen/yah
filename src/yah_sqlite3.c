@@ -261,5 +261,9 @@ yah_airodump_data_fetch_unupdated(struct yah_airodump_data*** data, unsigned* si
     }
 
     sqlite3_finalize(apstation_stmt);
+    yah_log("*size = %d", *size);
+    for(int i = 0; i < *size; i++) {
+        yah_log("%d: type=%d, specify=%s", i, (*data)[i]->type, (*data)[i]->specify);
+    }
     return 0;
 }
