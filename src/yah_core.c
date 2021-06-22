@@ -541,7 +541,7 @@ errpushback:    ;
 
 void
 yah_core_init_pool_data() {
-    struct yah_airodump_data* data;
+    struct yah_airodump_data** data;
     unsigned size = 0;
 
     // get all is_uploaded = 0
@@ -554,10 +554,10 @@ yah_core_init_pool_data() {
     for(unsigned i = 0; i < size; i++) {
         // generate that job, and push to rp_pool's job queue
         struct yah_job* job = YAH_JOB_INITIALIZER;
-        yah_log("%d: old job: type = %d, specify = %s", i + 1, data[i].type, data[i].specify);
-        job->arg = (void*) (data + i);
+        yah_log("%d: old job: type = %d, specify = %s", i + 1, data[i]->type, data[i]->specify);
+        job->arg = (void*) data[i];
         // job->arg_destory = yah_mem_free;
-        job->arg_destory = NULL;    // memory leak here. TODO: find some ways to debug
+        job->arg_destory = yah_mem_free;    // memory leak here. TODO: find some ways to debug
         job->func = yah_rp_pool_job_func;
         yah_thread_pool_push_job(rp_pool, job);
     }

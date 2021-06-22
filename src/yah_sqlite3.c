@@ -188,7 +188,7 @@ yah_airodump_database_init() {
 }
 
 int
-yah_airodump_data_fetch_unupdated(struct yah_airodump_data** data, unsigned* size) {
+yah_airodump_data_fetch_unupdated(struct yah_airodump_data*** data, unsigned* size) {
     sqlite3_stmt* count_stmt;
     sqlite3_stmt *ap_stmt, *apstation_stmt;
     int ap_size = 0, apstation_size = 0;
@@ -219,7 +219,10 @@ yah_airodump_data_fetch_unupdated(struct yah_airodump_data** data, unsigned* siz
         return 0;
     }
     // have data. save to *data
-    *data = (struct yah_airodump_data*) yah_mem_alloc (sizeof(struct yah_airodump_data) * *size);
+    *data = (struct yah_airodump_data**) yah_mem_alloc (sizeof(struct yah_airodump_data*) * *size);
+    for(unsigned i = 0; i < *size; i++) {
+        (*data)[i] = (struct yah_airodump_data*) yah_mem_alloc(sizeof(struct yah_airodump_data));
+    }
 
     sqlite3_prepare_v2(db, YAH_AP_UNUPDATE_SQL, sizeof(YAH_AP_UNUPDATE_SQL), &ap_stmt, NULL);
     int index = 0;
@@ -229,12 +232,12 @@ yah_airodump_data_fetch_unupdated(struct yah_airodump_data** data, unsigned* siz
         const const char* bssid = sqlite3_column_text(ap_stmt, 1);
         const const char* comment = sqlite3_column_text(ap_stmt, 2);
         time_t create_time = sqlite3_column_int64(ap_stmt, 3);
-        (*data)[index].type = ap;
-        strcpy((*data)[index].specify, bssid);
-        strcpy((*data)[index].data.ap.bssid, bssid);
-        strcpy((*data)[index].data.ap.comment, comment);
-        (*data)[index].data.ap.create_time = create_time;
-        (*data)[index].data.ap.id = id;
+        (*data)[index]->type = ap;
+        strcpy((*data)[index]->specify, bssid);
+        strcpy((*data)[index]->data.ap.bssid, bssid);
+        strcpy((*data)[index]->data.ap.comment, comment);
+        (*data)[index]->data.ap.create_time = create_time;
+        (*data)[index]->data.ap.id = id;
         index++;
     }
     sqlite3_finalize(ap_stmt);
@@ -247,13 +250,13 @@ yah_airodump_data_fetch_unupdated(struct yah_airodump_data** data, unsigned* siz
         const char* station = sqlite3_column_text(apstation_stmt, 2);
         const char* comment = sqlite3_column_text(apstation_stmt, 3);
         time_t create_time = sqlite3_column_int64(apstation_stmt, 4);
-        (*data)[index].type = apstation;
-        strcpy((*data)[index].specify, station);
-        strcpy((*data)[index].data.apstation.bssid, bssid);
-        strcpy((*data)[index].data.apstation.station, bssid);
-        strcpy((*data)[index].data.apstation.comment, comment);
-        (*data)[index].data.apstation.create_time = create_time;
-        (*data)[index].data.apstation.id = id;
+        (*data)[index]->type = apstation;
+        strcpy((*data)[index]->specify, station);
+        strcpy((*data)[index]->data.apstation.bssid, bssid);
+        strcpy((*data)[index]->data.apstation.station, bssid);
+        strcpy((*data)[index]->data.apstation.comment, comment);
+        (*data)[index]->data.apstation.create_time = create_time;
+        (*data)[index]->data.apstation.id = id;
         index++;
     }
 
