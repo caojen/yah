@@ -103,7 +103,7 @@ int yah_airodump_data_de_redundancy();
 // the size of data is stored into unsigned* size
 // if the data is empty, size will be set to 0, data will be null
 // return 0(SQLITE_OK) if success, ignore other callbacks
-int yah_airodump_data_fetch_unupdated(struct yah_airodump_data** data, unsigned* size);
+int yah_airodump_data_fetch_unupdated(struct yah_airodump_data*** data, unsigned* size);
 
 // define based sqls using in constructing sqlite3 database
 // create ap table sql
