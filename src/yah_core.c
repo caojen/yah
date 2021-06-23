@@ -386,6 +386,8 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
     // generate data into json
     time_t now = time(NULL);
 
+    yah_log("yah_rp_ap started");
+
     cjson_object* json = cjson_object_init();
     cjson_string* cjson_string_id = cjson_string_parse("id");
     cjson_string* cjson_string_mobile = cjson_string_parse("mobile");
@@ -499,7 +501,7 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     // generate data into json
     time_t now = time(NULL);
 
-    yah_log("yah_rp_pool_job_func started");
+    yah_log("yah_rp_apstation started");
 
     cjson_object* json = cjson_object_init();
     cjson_string* cjson_string_id = cjson_string_parse("id");
@@ -600,6 +602,7 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
         yah_airodump_data_updated(data);
     }
     yah_request_destory(request);
+    yah_log("yah_rp_apstation: job ended");
     return;
 
 errpushback:    ;
