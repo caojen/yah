@@ -25,6 +25,8 @@ void yah_core_start();
 #define YAH_CAPTURE_MIN_LINE 20
 
 extern pid_t airodump_pid;
+extern char remote_ip[20];
+extern int remote_port;
 
 #include "yah_thread_pool.h"
 extern yah_thread_pool* rp_pool;
@@ -44,10 +46,7 @@ void yah_rp_pool_job_func(void* __arg);
 // init fp_pool and rp_pool from database
 void yah_core_init_pool_data();
 
-#include "yah_airodump.h"
-struct yah_airodump_data;
-void yah_rp_pool_job_func_ap(struct yah_airodump_data* data);
-void yah_rp_pool_job_func_apstation(struct yah_airodump_data* data);
+#include "yah_jobs.h"
 
 // init remote_ip and remote_port
 // from yah_const.h: YAH_REMOTE_HOST YAH_REMOTE_PORT
