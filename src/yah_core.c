@@ -536,7 +536,6 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     cjson_array_push(origin, json);
 
     // serialize the json
-    unsigned length = YAH_JSON_SINGAL_MAX;
     char str[YAH_JSON_SINGAL_MAX] = { 0 };
     cjson_array_stringify(origin, str, YAH_JSON_SINGAL_MAX);
     yah_log("cjson parse result: %s", str);
