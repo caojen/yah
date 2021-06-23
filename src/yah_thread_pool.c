@@ -21,9 +21,11 @@ yah_thread_pool_callback(void* __worker) {
         struct yah_job* job = yah_job_queue_pop_job(pool->jobs);
         // unlock mutex
         pthread_mutex_unlock(&pool->job_mutex);
+        // yah_log("worker pid = %lu running one job.", worker->pthread_id);
         // run that job
         job->func(job->arg);
         // job done, destory that job
+        // yah_log("worker pid = %lu run job done.", worker->pthread_id);
         yah_job_destory(job);
     }
 }

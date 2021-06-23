@@ -56,6 +56,8 @@ yah_thread_pool_init(unsigned int wnum, void* (*func)(void*)) {
         if(c != 0) {
             yah_error("thread_pool_manager init worker at %d failed, %s", i + 1, strerror(c));
             return NULL;
+        } else {
+            yah_log("thread_pool created: %lu", worker->pthread_id);
         }
         yah_worker_list_add_worker(ret->workers, worker);
     }
