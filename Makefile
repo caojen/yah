@@ -1,6 +1,8 @@
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 SRC_DIR:=${ROOT_DIR}/src
 OBJ_DIR:=${ROOT_DIR}/obj
+CJSON_DIR:=${ROOT_DIR}/src/cjson
+CJSON_OBJ_DIR:=${ROOT_DIR}/src/cjson/obj
 BIN_DIR:=${ROOT_DIR}/bin
 CC:=gcc
 # DEBUG:=-D DEBUG
@@ -9,7 +11,10 @@ PTHREADF:=-lpthread
 SQLITEF:=-lsqlite3
 ZLIB:=-lz
 TEST:=-D TEST -D DEBUG -g
-CFLAG:=-I${SRC_DIR} -Wall \
+CFLAG:=-I${SRC_DIR} \
+	-I${CJSON_OBJ_DIR} \
+	-I${CJSON_OBJ_DIR}/basic \
+	-Wall \
 	-D _GNU_SOURCE ${DEBUG} -O2 \
 	${PTHREADF} ${SQLITEF} ${ZLIB}
 
@@ -29,7 +34,11 @@ OBJS:=${OBJ_DIR}/yah.o ${OBJ_DIR}/yah_log.o ${OBJ_DIR}/yah_config.o \
 	${OBJ_DIR}/yah_string.o ${OBJ_DIR}/yah_lru.o ${OBJ_DIR}/yah_sqlite3.o \
 	${OBJ_DIR}/yah_http.o ${OBJ_DIR}/yah_json.o ${OBJ_DIR}/yah_base64.o
 
-.PHONY: test clean all yah install uninstall
+CJSON_OBJS:=${CJSON_OBJ_DIR}/cjson_array.o ${CJSON_OBJ_DIR}/cjson_bool.o	\
+	${CJSON_OBJ_DIR}/cjson_null.o ${CJSON_OBJ_DIR}/cjson_number.o \
+	${CJSON_OBJ_DIR}/cjson_object.o ${CJSON_OBJ_DIR}/cjson_string.o
+
+.PHONY: test clean all yah install uninstall cjson
 
 all: yah
 
@@ -37,7 +46,8 @@ yah: ${BIN_DIR}/yah
 	@echo \> build succeed
 
 ${BIN_DIR}/yah: ${OBJS}
-	$(CC) $(CFLAG) $^ -o $@
+	cd ${CJSON_DIR} && ${MAKE} && cd -
+	$(CC) $(CFLAG) $^ ${CJSON_OBJS} -o $@
 
 ${OBJ_DIR}/yah.o: ${SRC_DIR}/yah.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
@@ -101,6 +111,7 @@ ${OBJ_DIR}/yah_base64.o: ${SRC_DIR}/yah_base64.c ${HEADER}
 
 clean:
 	rm -rf **/*.o ${BIN_DIR}/yah **/*.test
+	cd ${CJSON_DIR} && ${MAKE} clean && cd -
 
 # test: test/sqlite3.test test/substring.test \
 # 	test/http.test
