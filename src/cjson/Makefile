@@ -4,7 +4,7 @@ LIB_DIR = lib
 SRC_DIR = src
 BIN_DIR = bin
 TEST_DIR = ${SRC_DIR}/tests
-CFLAG = -Wall -I${LIB_DIR} -I${LIB_DIR}/basic
+CFLAG = -Wall -I${LIB_DIR} -I${LIB_DIR}/basic -O2
 HEADERS = ${LIB_DIR}/cjson.h ${LIB_DIR}/basic/cjson_array.h ${LIB_DIR}/basic/cjson_bool.h ${LIB_DIR}/basic/cjson_null.h \
 	${LIB_DIR}/basic/cjson_number.h ${LIB_DIR}/basic/cjson_object.h ${LIB_DIR}/basic/cjson_string.h ${LIB_DIR}/basic/cjson_type.h \
 	${LIB_DIR}/basic/cjson_list.h
