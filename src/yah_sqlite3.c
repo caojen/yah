@@ -253,7 +253,7 @@ yah_airodump_data_fetch_unupdated(struct yah_airodump_data*** data, unsigned* si
         (*data)[index]->type = apstation;
         strcpy((*data)[index]->specify, station);
         strcpy((*data)[index]->data.apstation.bssid, bssid);
-        strcpy((*data)[index]->data.apstation.station, bssid);
+        strcpy((*data)[index]->data.apstation.station, station);
         strcpy((*data)[index]->data.apstation.comment, comment);
         (*data)[index]->data.apstation.create_time = create_time;
         (*data)[index]->data.apstation.id = id;
