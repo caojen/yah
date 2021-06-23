@@ -42,9 +42,9 @@
     #define YAH_LOGFILE_WARN "/home/pi/yah/yah.warn"
     #define YAH_LOGFILE_ERROR "/home/pi/yah/yah.error"
 #else
-    #define YAH_LOGFILE_LOG "/data/yah/yah.log"
-    #define YAH_LOGFILE_WARN "/data/yah/yah.warn"
-    #define YAH_LOGFILE_ERROR "/data/yah/yah.error"
+    #define YAH_LOGFILE_LOG "/run/log/yah.log"
+    #define YAH_LOGFILE_WARN "/run/log/yah.warn"
+    #define YAH_LOGFILE_ERROR "/run/log/yah.error"
 #endif
 
 // for root testing

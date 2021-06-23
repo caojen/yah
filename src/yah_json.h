@@ -5,6 +5,8 @@
 
 #include "yah_core.h"
 
+#if false
+
 #define YAH_JSON_MAX_KEY_COUNT      10
 #define YAH_JSON_MAX_KEY_LENGTH     20
 #define YAH_JSON_MAX_VALUE_LENGTH   (2 * YAH_CAPTURE_LINE)
@@ -58,6 +60,16 @@ int yah_json_serialize(const Json* json, char output[YAH_JSON_SERIALIZE_LENGTH],
     char time_str[32] = { 0 };                      \
     strftime(time_str, 32, "%Y-%m-%d %H:%M:%S", t); \
     YAH_JSON_ADD_STR(json, key, time_str);          \
+} while(0)
+
+#endif
+
+#define YAH_JSON_SINGAL_MAX 1024
+#define YAH_JSON_SINGAL_COMPRESS_MAX 2048
+
+#define YAH_JSON_PARSE_TIME(time, str) do {         \
+    struct tm* t = localtime(&time);                \
+    strftime(str, 32, "%Y-%m-%d %H:%M:%S", t);     \
 } while(0)
 
 #endif

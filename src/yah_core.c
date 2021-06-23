@@ -22,6 +22,7 @@
 #include "yah_json.h"
 #include "yah_base64.h"
 #include "yah_http.h"
+#include "cjson.h"
 
 /**
  * make airodump_pid as global variable
@@ -384,22 +385,46 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
     // this function is for ap, pushing ap to remote address
     // generate data into json
     time_t now = time(NULL);
-    Json json;
-    memset(&json, 0, sizeof(Json));
-    YAH_JSON_ADD_INT(&json, "id", data->data.ap.id);
-    YAH_JSON_ADD_INT(&json, "mobile", device_number);
-    YAH_JSON_ADD_STR(&json, "bssid", data->data.ap.bssid);
-    YAH_JSON_ADD_STR(&json, "comment", data->data.ap.comment);
-    YAH_JSON_ADD_TIME(&json, "create_time", data->data.ap.create_time);
-    YAH_JSON_ADD_TIME(&json, "etl_time", now);
+
+    cjson_object* json = cjson_object_init();
+    cjson_string* cjson_string_id = cjson_string_parse("id");
+    cjson_string* cjson_string_mobile = cjson_string_parse("mobile");
+    cjson_string* cjson_string_bssid = cjson_string_parse("bssid");
+    cjson_string* cjson_string_comment = cjson_string_parse("comment");
+    cjson_string* cjson_string_createtime = cjson_string_parse("create_time");
+    cjson_string* cjson_string_etltime = cjson_string_parse("etl_time");
+
+    cjson_number* cjson_value_id = cjson_number_integer(data->data.ap.id);
+    cjson_number* cjson_value_mobile = cjson_number_integer(device_number);
+    cjson_string* cjson_value_bssid = cjson_string_parse(data->data.ap.bssid);
+    cjson_string* cjson_value_comment = cjson_string_parse(data->data.ap.comment);
+    char create_time[32];
+    char etl_time[32];
+    YAH_JSON_PARSE_TIME(data->data.ap.create_time, create_time);
+    YAH_JSON_PARSE_TIME(now, etl_time);
+    cjson_string* cjson_value_createtime = cjson_string_parse(create_time);
+    cjson_string* cjson_value_etltime = cjson_string_parse(etl_time);
+
+    cjson_object_set(json, cjson_string_id, cjson_value_id);
+    cjson_object_set(json, cjson_string_mobile, cjson_value_mobile);
+    cjson_object_set(json, cjson_string_bssid, cjson_value_bssid);
+    cjson_object_set(json, cjson_string_comment, cjson_value_comment);
+    cjson_object_set(json, cjson_string_createtime, cjson_value_createtime);
+    cjson_object_set(json, cjson_string_etltime, cjson_value_etltime);
+
+    cjson_array* origin = cjson_array_init();
+    cjson_array_push(origin, json);
 
     // serialize the json
-    char str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
-    yah_json_serialize(&json, str, 0, 1);
+    char str[YAH_JSON_SINGAL_MAX] = { 0 };
+    cjson_array_stringify(origin, str, YAH_JSON_SINGAL_MAX);
+    yah_log("cjson parse result: %s", str);
+
+    cjson_array_free_whole(origin);
 
     // gzip compress
-    unsigned char dest[YAH_JSON_COMPRESS_LENGTH];
-    unsigned int bufsize = YAH_JSON_COMPRESS_LENGTH;
+    unsigned char dest[YAH_JSON_SINGAL_COMPRESS_MAX];
+    unsigned int bufsize = YAH_JSON_SINGAL_COMPRESS_MAX;
     z_stream strm;
     strm.zalloc = Z_NULL;
     strm.zfree  = Z_NULL;
@@ -417,18 +442,23 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
     char* final = base64_encode(dest, bufsize);
 
     // generate the final data
-    Json body;
-    memset(&body, 0, sizeof(Json));
-    YAH_JSON_ADD_STR(&body, "data", final);
-    char body_str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
-    yah_json_serialize(&body, body_str, 0, 0);
+    cjson_object* body = cjson_object_init();
+    cjson_string* cjson_string_data = cjson_string_parse("data");
+    cjson_string* cjson_value_data = cjson_string_parse(final);
+    cjson_object_set(body, cjson_string_data, cjson_value_data);
+    char body_str[YAH_JSON_SINGAL_MAX] = { 0 };
+    cjson_object_stringify(body, body_str, YAH_JSON_SINGAL_MAX);
+    yah_log("body generated: %s", body_str);
+
+    cjson_object_free_whole(body);
+    free(final);
 
     // generate the socket
     Request* request = yah_request_init();
     char __remote_ip[20] = { 0 };
     yah_get_remote_local(__remote_ip);
     if(__remote_ip[0] == 0) {
-        yah_log("dns failed, skip this job, sleep2 and goto err push back");
+        yah_log("dns failed, skip this job, sleep 2 and goto err push back");
         sleep(2);
         goto errpushback;
     }
@@ -448,6 +478,7 @@ yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
 
     // set data is_uploaded in database
     yah_airodump_data_updated(data);
+    yah_log("yah_rp_ap: job ended");
     return;
 errpushback:    ;
     // data is not uploaded, push it back to rp_pool's queue
@@ -467,23 +498,49 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     // this function is for apstation, pushing apstation to remote address
     // generate data into json
     time_t now = time(NULL);
-    Json json;
-    memset(&json, 0, sizeof(Json));
-    YAH_JSON_ADD_INT(&json, "id", data->data.apstation.id);
-    YAH_JSON_ADD_STR(&json, "bssid", data->data.apstation.bssid);
-    YAH_JSON_ADD_STR(&json, "station", data->data.apstation.station);
-    YAH_JSON_ADD_STR(&json, "comment", data->data.apstation.comment);
-    YAH_JSON_ADD_TIME(&json, "create_time", data->data.apstation.create_time);
-    YAH_JSON_ADD_TIME(&json, "etl_time", now);
-    YAH_JSON_ADD_INT(&json, "mobile", device_number);
+
+    yah_log("yah_rp_pool_job_func started");
+
+    cjson_object* json = cjson_object_init();
+    cjson_string* cjson_string_id = cjson_string_parse("id");
+    cjson_string* cjson_string_mobile = cjson_string_parse("mobile");
+    cjson_string* cjson_string_bssid = cjson_string_parse("bssid");
+    cjson_string* cjson_string_station = cjson_string_parse("station");
+    cjson_string* cjson_string_comment = cjson_string_parse("comment");
+    cjson_string* cjson_string_createtime = cjson_string_parse("create_time");
+    cjson_string* cjson_string_etltime = cjson_string_parse("etl_time");
+
+    cjson_number* cjson_value_id = cjson_number_integer(data->data.apstation.id);
+    cjson_number* cjson_value_mobile = cjson_number_integer(device_number);
+    cjson_string* cjson_value_bssid = cjson_string_parse(data->data.apstation.bssid);
+    cjson_string* cjson_value_station = cjson_string_parse(data->data.apstation.station);
+    cjson_string* cjson_value_comment = cjson_string_parse(data->data.apstation.comment);
+    char create_time[32];
+    char etl_time[32];
+    YAH_JSON_PARSE_TIME(data->data.apstation.create_time, create_time);
+    YAH_JSON_PARSE_TIME(now, etl_time);
+    cjson_string* cjson_value_createtime = cjson_string_parse(create_time);
+    cjson_string* cjson_value_etltime = cjson_string_parse(etl_time);
+
+    cjson_object_set(json, cjson_string_id, cjson_value_id);
+    cjson_object_set(json, cjson_string_mobile, cjson_value_mobile);
+    cjson_object_set(json, cjson_string_bssid, cjson_value_bssid);
+    cjson_object_set(json, cjson_string_comment, cjson_value_comment);
+    cjson_object_set(json, cjson_string_createtime, cjson_value_createtime);
+    cjson_object_set(json, cjson_string_etltime, cjson_value_etltime);
+
+    cjson_array* origin = cjson_array_init();
+    cjson_array_push(origin, json);
 
     // serialize the json
-    char str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
-    yah_json_serialize(&json, str, 0, 1);
+    unsigned length = YAH_JSON_SINGAL_MAX;
+    char str[YAH_JSON_SINGAL_MAX] = { 0 };
+    cjson_array_stringify(origin, str, YAH_JSON_SINGAL_MAX);
+    yah_log("cjson parse result: %s", str);
 
     // gzip compress
-    unsigned char dest[YAH_JSON_COMPRESS_LENGTH];
-    unsigned int bufsize = YAH_JSON_COMPRESS_LENGTH;
+    unsigned char dest[YAH_JSON_SINGAL_COMPRESS_MAX];
+    unsigned int bufsize = YAH_JSON_SINGAL_COMPRESS_MAX;
 
     // z_stream strm;
     // compress(dest, &bufsize, str, strlen(str) + 1);
@@ -499,16 +556,24 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     deflate(&strm, Z_FINISH);
     bufsize = bufsize - strm.avail_out;
     deflateEnd(&strm);
+
+    cjson_array_free_whole(origin);
     
     // convert into base64 code
     char* final = base64_encode(dest, bufsize);
     
     // generate the final data
-    Json body;
-    memset(&body, 0, sizeof(Json));
-    YAH_JSON_ADD_STR(&body, "data", final);
-    char body_str[YAH_JSON_SERIALIZE_LENGTH] = { 0 };
-    yah_json_serialize(&body, body_str, 0, 0);
+    cjson_object* body = cjson_object_init();
+    cjson_string* cjson_string_data = cjson_string_parse("data");
+    cjson_string* cjson_value_data = cjson_string_parse(final);
+    cjson_object_set(body, cjson_string_data, cjson_value_data);
+    char body_str[1024] = { 0 };
+    cjson_object_stringify(body, body_str, 1024);
+    yah_log("body generated: %s", body_str);
+
+    cjson_object_free_whole(body);
+
+    free(final);
 
     // generate the socket
     Request* request = yah_request_init();

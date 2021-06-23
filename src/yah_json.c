@@ -3,6 +3,8 @@
 
 #include "yah_json.h"
 
+#if false
+
 int
 yah_json_set(Json* json, const char* key, const struct yah_json_value* value) {
     if(json == NULL || json->count >= YAH_JSON_MAX_KEY_COUNT) {
@@ -116,3 +118,5 @@ yah_json_value_string(const char* str, struct yah_json_value* output) {
     strcpy(output->value.string, str);
     return 0;
 }
+
+#endif

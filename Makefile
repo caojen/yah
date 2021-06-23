@@ -3,6 +3,7 @@ SRC_DIR:=${ROOT_DIR}/src
 OBJ_DIR:=${ROOT_DIR}/obj
 CJSON_DIR:=${ROOT_DIR}/src/cjson
 CJSON_OBJ_DIR:=${ROOT_DIR}/src/cjson/obj
+CJSON_LIB_DIR:=${ROOT_DIR}/src/cjson/lib
 BIN_DIR:=${ROOT_DIR}/bin
 CC:=gcc
 # DEBUG:=-D DEBUG
@@ -12,8 +13,8 @@ SQLITEF:=-lsqlite3
 ZLIB:=-lz
 TEST:=-D TEST -D DEBUG -g
 CFLAG:=-I${SRC_DIR} \
-	-I${CJSON_OBJ_DIR} \
-	-I${CJSON_OBJ_DIR}/basic \
+	-I${CJSON_LIB_DIR} \
+	-I${CJSON_LIB_DIR}/basic \
 	-Wall \
 	-D _GNU_SOURCE ${DEBUG} -O2 \
 	${PTHREADF} ${SQLITEF} ${ZLIB}
