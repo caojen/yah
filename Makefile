@@ -132,6 +132,7 @@ install:
 ifneq ($(shell id -u), 0)
 	@echo "You must be root to perform this action."
 else
+	mkdir -p /data/yah
 	systemctl daemon-reload
 	systemctl stop yah || true
 	systemctl disable yah || true
