@@ -530,6 +530,7 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
     cjson_object_set(json, cjson_string_comment, cjson_value_comment);
     cjson_object_set(json, cjson_string_createtime, cjson_value_createtime);
     cjson_object_set(json, cjson_string_etltime, cjson_value_etltime);
+    cjson_object_set(json, cjson_string_station, cjson_value_station);
 
     cjson_array* origin = cjson_array_init();
     cjson_array_push(origin, json);
