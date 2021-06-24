@@ -267,9 +267,10 @@ yah_fp_pool_job_func(void* __arg) {
         // not usable data
         // yah_string_prefix(newline, "(not associated)") || 
         // network broken:
-        yah_string_prefix(newline, "failed:") || yah_string_prefix(newline, "ioctl(SIOCGIFINDEX)") || 
+        yah_string_prefix(newline, "failed:") || yah_string_prefix(newline, "ioctl(SIOCGIFINDEX)")
         // not usable data:
-        yah_string_substring(newline, "<length:")) {
+        // yah_string_substring(newline, "<length:")
+    ) {
         
         return;
 
@@ -280,7 +281,7 @@ yah_fp_pool_job_func(void* __arg) {
         // note that the create_time is the time that we catch the output
         // but not the time that airodump show the output
         // pass -D DEBUG to turn it on
-// #ifdef DEBUG
+// #ifdef DEBUG··
         strcpy(airodump_time, newline);
 // #endif
         return;
