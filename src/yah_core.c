@@ -435,13 +435,6 @@ yah_core_init_pool_data() {
     }
     if(ctr_aps % maxsize) {
         struct yah_job* job = YAH_JOB_INITIALIZER;
-<<<<<<< HEAD
-        yah_log("%d: old job: type = %d, specify = %s", i + 1, data[i]->type, data[i]->specify);
-        job->arg = (void*) data[i];
-        // job->arg_destory = yah_mem_free;
-        job->arg_destory = yah_mem_free;
-        job->func = yah_rp_pool_job_func;
-=======
         job->arg = (void*) aps;
         job->arg_destory = free;
         job->func = yah_rp_pool_job_func_aps;
@@ -452,7 +445,6 @@ yah_core_init_pool_data() {
         job->arg = (void*) apstations;
         job->arg_destory = free;
         job->func = yah_rp_pool_job_func_apstations;
->>>>>>> 82bbf34b47af407b51d3af39a022f0b6c8d12d0f
         yah_thread_pool_push_job(rp_pool, job);
     }
 }
