@@ -385,7 +385,7 @@ void
 yah_core_init_pool_data() {
     struct yah_airodump_data** data;
     unsigned size = 0;
-    const int maxsize = 100;
+    const int maxsize = YAH_OLD_DATA_MAX_SIZE;
 
     // get all is_uploaded = 0
     // make them as jobs. push to rp_pool

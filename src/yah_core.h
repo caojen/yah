@@ -53,4 +53,6 @@ void yah_core_init_pool_data();
 void yah_init_remote();
 void yah_get_remote_local(char __remote_ip[20]);
 
+#define YAH_OLD_DATA_MAX_SIZE 100
+
 #endif
