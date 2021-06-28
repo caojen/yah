@@ -287,8 +287,8 @@ yah_rp_pool_job_func_aps(struct yah_airodump_data** data) {
     cjson_array_stringify(array, str, json_length);
     cjson_array_free_whole(array);
 
-    unsigned char dest[sizeof(char) * 120 * YAH_JSON_SINGAL_MAX];
-    unsigned int bufsize = sizeof(char) * 120 * YAH_JSON_SINGAL_MAX;
+    unsigned char dest[sizeof(char) * (YAH_OLD_DATA_MAX_SIZE + 20) * YAH_JSON_SINGAL_MAX];
+    unsigned int bufsize = sizeof(char) * (YAH_OLD_DATA_MAX_SIZE + 20) * YAH_JSON_SINGAL_MAX;
     z_stream strm;
     strm.zalloc = Z_NULL;
     strm.zfree  = Z_NULL;
@@ -381,8 +381,8 @@ yah_rp_pool_job_func_apstations(struct yah_airodump_data** data) {
     cjson_array_stringify(array, str, json_length);
     cjson_array_free_whole(array);
 
-    unsigned char dest[sizeof(char) * 120 * YAH_JSON_SINGAL_MAX];
-    unsigned int bufsize = sizeof(char) * 120 * YAH_JSON_SINGAL_MAX;
+    unsigned char dest[sizeof(char) * (YAH_OLD_DATA_MAX_SIZE + 20) * YAH_JSON_SINGAL_MAX];
+    unsigned int bufsize = sizeof(char) * (YAH_OLD_DATA_MAX_SIZE + 20) * YAH_JSON_SINGAL_MAX;
     z_stream strm;
     strm.zalloc = Z_NULL;
     strm.zfree  = Z_NULL;
