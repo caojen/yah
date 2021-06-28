@@ -1,5 +1,6 @@
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 SRC_DIR:=${ROOT_DIR}/src
+INCLUDE_IDR:=${ROOT_DIR}/include
 OBJ_DIR:=${ROOT_DIR}/obj
 CJSON_DIR:=${ROOT_DIR}/src/cjson
 CJSON_OBJ_DIR:=${ROOT_DIR}/src/cjson/obj
@@ -12,21 +13,21 @@ PTHREADF:=-lpthread
 SQLITEF:=-lsqlite3
 ZLIB:=-lz
 TEST:=-D TEST -D DEBUG -g
-CFLAG:=-I${SRC_DIR} \
+CFLAG:=-I${INCLUDE_IDR} \
 	-I${CJSON_LIB_DIR} \
 	-I${CJSON_LIB_DIR}/basic \
 	-Wall \
 	-D _GNU_SOURCE ${DEBUG} -O2 \
 	${PTHREADF} ${SQLITEF} ${ZLIB}
 
-HEADER = ${SRC_DIR}/yah_config.h ${SRC_DIR}/yah_const.h ${SRC_DIR}/yah_daemon.h \
-	${SRC_DIR}/yah_error.h ${SRC_DIR}/yah_log.h ${SRC_DIR}/yah.h \
-	${SRC_DIR}/yah_signal.h ${SRC_DIR}/yah_thread_pool_job.h ${SRC_DIR}/yah_thread_pool_worker.h \
-	${SRC_DIR}/yah_thread_pool_manager.h ${SRC_DIR}/yah_thread_pool.h ${SRC_DIR}/yah_core.h \
-	${SRC_DIR}/yah_pty.h ${SRC_DIR}/yah_exec.h ${SRC_DIR}/yah_airodump.h ${SRC_DIR}/yah_mem.h \
-	${SRC_DIR}/yah_string.h ${SRC_DIR}/yah_lru.h ${SRC_DIR}/yah_sqlite3.h \
-	${SRC_DIR}/yah_http.h ${SRC_DIR}/yah_json.h ${SRC_DIR}/yah_base64.h \
-	${SRC_DIR}/yah_jobs.h
+HEADER = ${INCLUDE_IDR}/yah_config.h ${INCLUDE_IDR}/yah_const.h ${INCLUDE_IDR}/yah_daemon.h \
+	${INCLUDE_IDR}/yah_error.h ${INCLUDE_IDR}/yah_log.h ${INCLUDE_IDR}/yah.h \
+	${INCLUDE_IDR}/yah_signal.h ${INCLUDE_IDR}/yah_thread_pool_job.h ${INCLUDE_IDR}/yah_thread_pool_worker.h \
+	${INCLUDE_IDR}/yah_thread_pool_manager.h ${INCLUDE_IDR}/yah_thread_pool.h ${INCLUDE_IDR}/yah_core.h \
+	${INCLUDE_IDR}/yah_pty.h ${INCLUDE_IDR}/yah_exec.h ${INCLUDE_IDR}/yah_airodump.h ${INCLUDE_IDR}/yah_mem.h \
+	${INCLUDE_IDR}/yah_string.h ${INCLUDE_IDR}/yah_lru.h ${INCLUDE_IDR}/yah_sqlite3.h \
+	${INCLUDE_IDR}/yah_http.h ${INCLUDE_IDR}/yah_json.h ${INCLUDE_IDR}/yah_base64.h \
+	${INCLUDE_IDR}/yah_jobs.h
 
 OBJS:=${OBJ_DIR}/yah.o ${OBJ_DIR}/yah_log.o ${OBJ_DIR}/yah_config.o \
 	${OBJ_DIR}/yah_daemon.o ${OBJ_DIR}/yah_signal.o ${OBJ_DIR}/yah_thread_pool_job.o \
