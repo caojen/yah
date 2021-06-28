@@ -267,9 +267,10 @@ yah_fp_pool_job_func(void* __arg) {
         // not usable data
         // yah_string_prefix(newline, "(not associated)") || 
         // network broken:
-        yah_string_prefix(newline, "failed:") || yah_string_prefix(newline, "ioctl(SIOCGIFINDEX)") || 
+        yah_string_prefix(newline, "failed:") || yah_string_prefix(newline, "ioctl(SIOCGIFINDEX)")
         // not usable data:
-        yah_string_substring(newline, "<length:")) {
+        // yah_string_substring(newline, "<length:")
+    ) {
         
         return;
 
@@ -280,7 +281,7 @@ yah_fp_pool_job_func(void* __arg) {
         // note that the create_time is the time that we catch the output
         // but not the time that airodump show the output
         // pass -D DEBUG to turn it on
-// #ifdef DEBUG
+// #ifdef DEBUG··
         strcpy(airodump_time, newline);
 // #endif
         return;
@@ -384,6 +385,7 @@ void
 yah_core_init_pool_data() {
     struct yah_airodump_data** data;
     unsigned size = 0;
+    const maxsize = 100;
 
     // get all is_uploaded = 0
     // make them as jobs. push to rp_pool
@@ -392,15 +394,65 @@ yah_core_init_pool_data() {
     }
 
     yah_log("get old data size = %d", size);
+
+    struct yah_airodump_ap** aps = (struct yah_airodump_ap**) malloc (sizeof(struct yah_airodump_ap*) * (maxsize + 1));
+    memset(aps, NULL, sizeof(struct yah_airodump_ap*) * maxsize + 1);
+    struct yah_airodump_apstation** apstations = (struct yah_airodump_apstation**) malloc (sizeof(struct yah_airodump_apstation*) * (maxsize + 1));
+    memset(apstations, NULL, sizeof(struct yah_airodump_apstation*) * (maxsize + 1));
+
+    int ctr_aps = 0;
+    int ctr_apstations = 0;
+
     for(unsigned i = 0; i < size; i++) {
-        // generate that job, and push to rp_pool's job queue
-        yah_log("%d generating old job", i + 1);
+        switch (data[i]->type) {
+            case ap: {
+                aps[ctr_aps++] = data[i];
+                if(ctr_aps % maxsize == 0) {
+                    struct yah_job* job = YAH_JOB_INITIALIZER;
+                    job->arg = (void*) aps;
+                    job->arg_destory = free;
+                    job->func = yah_rp_pool_job_func_aps;
+                    yah_thread_pool_push_job(rp_pool, job);
+                    aps = (struct yah_airodump_ap**) malloc (sizeof(struct yah_airodump_ap*) * (maxsize + 1));
+                    memset(aps, NULL, sizeof(struct yah_airodump_ap*) * maxsize + 1);
+                }
+                break;
+            }
+            case apstation: {
+                apstations[ctr_apstations++] = data[i];
+                if(ctr_apstations % maxsize == 0) {
+                    struct yah_job* job = YAH_JOB_INITIALIZER;
+                    job->arg = (void*) apstations;
+                    job->arg_destory = free;
+                    job->func = yah_rp_pool_job_func_apstations;
+                    yah_thread_pool_push_job(rp_pool, job);
+                    apstations = (struct yah_airodump_apstation**) malloc (sizeof(struct yah_airodump_apstation*) * (maxsize + 1));
+                    memset(apstations, NULL, sizeof(struct yah_airodump_apstation*) * (maxsize + 1));
+                }
+                break;
+            }
+        }
+    }
+    if(ctr_aps % maxsize) {
         struct yah_job* job = YAH_JOB_INITIALIZER;
+<<<<<<< HEAD
         yah_log("%d: old job: type = %d, specify = %s", i + 1, data[i]->type, data[i]->specify);
         job->arg = (void*) data[i];
         // job->arg_destory = yah_mem_free;
         job->arg_destory = yah_mem_free;
         job->func = yah_rp_pool_job_func;
+=======
+        job->arg = (void*) aps;
+        job->arg_destory = free;
+        job->func = yah_rp_pool_job_func_aps;
+        yah_thread_pool_push_job(rp_pool, job);
+    }
+    if(ctr_apstations % maxsize) {
+        struct yah_job* job = YAH_JOB_INITIALIZER;
+        job->arg = (void*) apstations;
+        job->arg_destory = free;
+        job->func = yah_rp_pool_job_func_apstations;
+>>>>>>> 82bbf34b47af407b51d3af39a022f0b6c8d12d0f
         yah_thread_pool_push_job(rp_pool, job);
     }
 }
