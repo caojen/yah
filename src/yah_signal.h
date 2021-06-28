@@ -33,6 +33,9 @@ void sigterm_handler(int signo, siginfo_t* info, void* context);
  * handle SIGCHLD
  */
 void sigchld_handler(int signo, siginfo_t* info, void* context);
+
+void sigabrt_handler(int signo, siginfo_t* info, void* context);
+
 /**
  * send signal to pid
  */

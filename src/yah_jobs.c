@@ -206,13 +206,15 @@ errpushback:    ;
 
 int yah_rp_pool_job_send_data(char* final, char* url) {
     // generate the final data
+    yah_log("send data started");
     cjson_object* body = cjson_object_init();
     cjson_string* cjson_string_data = cjson_string_parse("data");
     cjson_string* cjson_value_data = cjson_string_parse(final);
     cjson_object_set(body, cjson_string_data, cjson_value_data);
-    char body_str[1024] = { 0 };
-    cjson_object_stringify(body, body_str, 1024);
-    yah_log("body generated: %s", body_str);
+
+    int len = strlen(final);
+    char* body_str = (char*) malloc (sizeof(char*) * (len + 100));
+    cjson_object_stringify(body, body_str, sizeof(char*) * (len + 100));
 
     cjson_object_free_whole(body);
 
@@ -222,6 +224,7 @@ int yah_rp_pool_job_send_data(char* final, char* url) {
     yah_get_remote_local(__remote_ip);
     if(__remote_ip[0] == 0) {
         yah_log("dns failed, skip this job, sleep 2 and goto err push back");
+        free(body_str);
         sleep(2);
         return REQUEST_TIMEOUT;
     }
@@ -234,6 +237,8 @@ int yah_rp_pool_job_send_data(char* final, char* url) {
     yah_request_set_body(request, body_str);
     int code = yah_request_send(request);
     yah_request_destory(request);
+    free(body_str);
+    yah_log("send data ended");
     return code;
 }
 
@@ -282,10 +287,50 @@ yah_rp_pool_job_func_aps(struct yah_airodump_data** data) {
     cjson_array_stringify(array, str, json_length);
     cjson_array_free_whole(array);
 
-    yah_log("yah_rp_aps_size: %d", index);
-    yah_log("yah_rp_aps_cjson_parse_result: %s", str);
+    unsigned char dest[sizeof(char) * 120 * YAH_JSON_SINGAL_MAX];
+    unsigned int bufsize = sizeof(char) * 120 * YAH_JSON_SINGAL_MAX;
+    z_stream strm;
+    strm.zalloc = Z_NULL;
+    strm.zfree  = Z_NULL;
+    strm.opaque = Z_NULL;
+    strm.avail_in = strlen(str) + 1;
+    strm.avail_out = bufsize;
+    strm.next_in = (Bytef *)str;
+    strm.next_out = (Bytef *)dest;
+    deflateInit2(&strm, Z_DEFAULT_COMPRESSION, Z_DEFLATED, MAX_WBITS+16, MAX_MEM_LEVEL, Z_DEFAULT_STRATEGY);
+    deflate(&strm, Z_FINISH);
+    bufsize = bufsize - strm.avail_out;
+    deflateEnd(&strm);
 
+    char* final = base64_encode(dest, bufsize);
+    int code = yah_rp_pool_job_send_data(final, YAH_REMOTE_URL_AP);
+
+    free(final);
     free(str);
+    if(code != REQUEST_OK) {
+        yah_log("sending aps return %d, goto errpushback", code);
+        goto errpushback;
+    }
+
+    // set data updated and free
+    for(int i = 0; i < index; i++) {
+        struct yah_airodump_data* ptr = data[i];
+        yah_airodump_data_updated(ptr);
+        free(ptr);
+    }
+    yah_log("yah_rp_aps: job ended");
+    return;
+
+errpushback: ;
+    struct yah_job* job = YAH_JOB_INITIALIZER;
+    struct yah_airodump_data** newdata = (struct yah_airodump_data**)
+        malloc(sizeof(struct yah_airodump_data*) * (index + 1));
+    memcpy(newdata, data, sizeof(struct yah_airodump_data*) * (index + 1));
+    newdata[index] = 0;
+    job->arg = (void*) newdata;
+    job->arg_destory = free;
+    job->func = yah_rp_pool_job_func_aps;
+    yah_thread_pool_push_job(rp_pool, job);
 }
 
 void
@@ -327,17 +372,58 @@ yah_rp_pool_job_func_apstations(struct yah_airodump_data** data) {
         cjson_object_set(json, cjson_string_comment, cjson_value_comment);
         cjson_object_set(json, cjson_string_createtime, cjson_value_createtime);
         cjson_object_set(json, cjson_string_etltime, cjson_value_etltime);
-
         cjson_array_push(array, json);
         ++index;
     }
     int json_length = sizeof(char) * index * YAH_JSON_SINGAL_MAX;
     char* str = (char*) malloc (json_length);
+    memset(str, 0, json_length);
     cjson_array_stringify(array, str, json_length);
     cjson_array_free_whole(array);
 
-    yah_log("yah_rp_apstation_size: %d", index);
-    yah_log("yah_rp_apstation_cjson_parse_result: %s", str);
+    unsigned char dest[sizeof(char) * 120 * YAH_JSON_SINGAL_MAX];
+    unsigned int bufsize = sizeof(char) * 120 * YAH_JSON_SINGAL_MAX;
+    z_stream strm;
+    strm.zalloc = Z_NULL;
+    strm.zfree  = Z_NULL;
+    strm.opaque = Z_NULL;
+    strm.avail_in = strlen(str) + 1;
+    strm.avail_out = bufsize;
+    strm.next_in = (Bytef *)str;
+    strm.next_out = (Bytef *)dest;
+    deflateInit2(&strm, Z_DEFAULT_COMPRESSION, Z_DEFLATED, MAX_WBITS+16, MAX_MEM_LEVEL, Z_DEFAULT_STRATEGY);
+    deflate(&strm, Z_FINISH);
+    bufsize = bufsize - strm.avail_out;
+    deflateEnd(&strm);
 
+    char* final = base64_encode(dest, bufsize);
+    int code = yah_rp_pool_job_send_data(final, YAH_REMOTE_URL_AP);
+
+    free(final);
     free(str);
+    if(code != REQUEST_OK) {
+        yah_log("sending apstations return %d, goto errpushback", code);
+        goto errpushback;
+    }
+
+    // set data updated and free
+    for(int i = 0; i < index; i++) {
+        struct yah_airodump_data* ptr = data[i];
+        yah_airodump_data_updated(ptr);
+        free(ptr);
+    }
+    yah_log("yah_rp_apstations: job ended");
+    return;
+
+errpushback: ;
+    struct yah_job* job = YAH_JOB_INITIALIZER;
+    struct yah_airodump_data** newdata = (struct yah_airodump_data**)
+        malloc(sizeof(struct yah_airodump_data*) * (index + 1));
+    memcpy(newdata, data, sizeof(struct yah_airodump_data*) * (index + 1));
+    newdata[index] = 0;
+    job->arg = (void*) newdata;
+    job->arg_destory = free;
+    job->func = yah_rp_pool_job_func_apstations;
+    yah_thread_pool_push_job(rp_pool, job);
+
 }

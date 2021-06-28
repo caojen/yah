@@ -1,3 +1,10 @@
+#include <execinfo.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+#include <assert.h>
+
 #include "yah_signal.h"
 #include "yah_log.h"
 #include "yah_const.h"
@@ -82,4 +89,9 @@ sigchld_handler(int signo, siginfo_t* info, void* context) {
     } else {
         yah_warn("SIGCHLD handler received error signo");
     }
+}
+
+
+void sigabrt_handler(int signo, siginfo_t* info, void* context) {
+    abort();
 }

@@ -385,7 +385,7 @@ void
 yah_core_init_pool_data() {
     struct yah_airodump_data** data;
     unsigned size = 0;
-    const maxsize = 100;
+    const int maxsize = 100;
 
     // get all is_uploaded = 0
     // make them as jobs. push to rp_pool
@@ -395,10 +395,10 @@ yah_core_init_pool_data() {
 
     yah_log("get old data size = %d", size);
 
-    struct yah_airodump_ap** aps = (struct yah_airodump_ap**) malloc (sizeof(struct yah_airodump_ap*) * (maxsize + 1));
-    memset(aps, NULL, sizeof(struct yah_airodump_ap*) * maxsize + 1);
-    struct yah_airodump_apstation** apstations = (struct yah_airodump_apstation**) malloc (sizeof(struct yah_airodump_apstation*) * (maxsize + 1));
-    memset(apstations, NULL, sizeof(struct yah_airodump_apstation*) * (maxsize + 1));
+    struct yah_airodump_data** aps = (struct yah_airodump_data**) malloc (sizeof(struct yah_airodump_data*) * (maxsize + 1));
+    memset(aps, 0, sizeof(struct yah_airodump_data*) * maxsize + 1);
+    struct yah_airodump_data** apstations = (struct yah_airodump_data**) malloc (sizeof(struct yah_airodump_data*) * (maxsize + 1));
+    memset(apstations, 0, sizeof(struct yah_airodump_data*) * (maxsize + 1));
 
     int ctr_aps = 0;
     int ctr_apstations = 0;
@@ -406,28 +406,28 @@ yah_core_init_pool_data() {
     for(unsigned i = 0; i < size; i++) {
         switch (data[i]->type) {
             case ap: {
-                aps[ctr_aps++] = data[i];
+                aps[ctr_aps++ % maxsize] = data[i];
                 if(ctr_aps % maxsize == 0) {
                     struct yah_job* job = YAH_JOB_INITIALIZER;
                     job->arg = (void*) aps;
                     job->arg_destory = free;
                     job->func = yah_rp_pool_job_func_aps;
                     yah_thread_pool_push_job(rp_pool, job);
-                    aps = (struct yah_airodump_ap**) malloc (sizeof(struct yah_airodump_ap*) * (maxsize + 1));
-                    memset(aps, NULL, sizeof(struct yah_airodump_ap*) * maxsize + 1);
+                    aps = (struct yah_airodump_data**) malloc (sizeof(struct yah_airodump_data*) * (maxsize + 1));
+                    memset(aps, 0, sizeof(struct yah_airodump_data*) * (maxsize + 1));
                 }
                 break;
             }
             case apstation: {
-                apstations[ctr_apstations++] = data[i];
+                apstations[ctr_apstations++ % maxsize] = data[i];
                 if(ctr_apstations % maxsize == 0) {
                     struct yah_job* job = YAH_JOB_INITIALIZER;
                     job->arg = (void*) apstations;
                     job->arg_destory = free;
                     job->func = yah_rp_pool_job_func_apstations;
                     yah_thread_pool_push_job(rp_pool, job);
-                    apstations = (struct yah_airodump_apstation**) malloc (sizeof(struct yah_airodump_apstation*) * (maxsize + 1));
-                    memset(apstations, NULL, sizeof(struct yah_airodump_apstation*) * (maxsize + 1));
+                    apstations = (struct yah_airodump_data**) malloc (sizeof(struct yah_airodump_data*) * (maxsize + 1));
+                    memset(apstations, 0, sizeof(struct yah_airodump_data*) * (maxsize + 1));
                 }
                 break;
             }
@@ -447,6 +447,7 @@ yah_core_init_pool_data() {
         job->func = yah_rp_pool_job_func_apstations;
         yah_thread_pool_push_job(rp_pool, job);
     }
+    yah_log("old_job fetch ended..");
 }
 
 void
