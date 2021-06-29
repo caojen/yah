@@ -8,3 +8,4 @@ bin/*
 **/*.warn
 **/*.test
 **/db.sqlite3
+**/test.py

@@ -406,12 +406,14 @@ yah_core_init_pool_data() {
     for(unsigned i = 0; i < size; i++) {
         switch (data[i]->type) {
             case ap: {
+                yah_log("old_data_push(index: %d) to aps(%p), specify=%s", i, aps, data[i]->specify);
                 aps[ctr_aps++ % maxsize] = data[i];
                 if(ctr_aps % maxsize == 0) {
                     struct yah_job* job = YAH_JOB_INITIALIZER;
                     job->arg = (void*) aps;
                     job->arg_destory = free;
                     job->func = yah_rp_pool_job_func_aps;
+                    yah_log("old_data_push generate aps job");
                     yah_thread_pool_push_job(rp_pool, job);
                     aps = (struct yah_airodump_data**) malloc (sizeof(struct yah_airodump_data*) * (maxsize + 1));
                     memset(aps, 0, sizeof(struct yah_airodump_data*) * (maxsize + 1));
@@ -419,12 +421,14 @@ yah_core_init_pool_data() {
                 break;
             }
             case apstation: {
+                yah_log("old_data_push(index: %d) to apstations(%p), specify=%s", i, apstations, data[i]->specify);
                 apstations[ctr_apstations++ % maxsize] = data[i];
                 if(ctr_apstations % maxsize == 0) {
                     struct yah_job* job = YAH_JOB_INITIALIZER;
                     job->arg = (void*) apstations;
                     job->arg_destory = free;
                     job->func = yah_rp_pool_job_func_apstations;
+                    yah_log("old_data_push generate apstation job");
                     yah_thread_pool_push_job(rp_pool, job);
                     apstations = (struct yah_airodump_data**) malloc (sizeof(struct yah_airodump_data*) * (maxsize + 1));
                     memset(apstations, 0, sizeof(struct yah_airodump_data*) * (maxsize + 1));
@@ -434,6 +438,7 @@ yah_core_init_pool_data() {
         }
     }
     if(ctr_aps % maxsize) {
+        yah_log("old_data_push generate aps job(final)");
         struct yah_job* job = YAH_JOB_INITIALIZER;
         job->arg = (void*) aps;
         job->arg_destory = free;
@@ -441,6 +446,7 @@ yah_core_init_pool_data() {
         yah_thread_pool_push_job(rp_pool, job);
     }
     if(ctr_apstations % maxsize) {
+        yah_log("old_data_push generate apstation job(final)");
         struct yah_job* job = YAH_JOB_INITIALIZER;
         job->arg = (void*) apstations;
         job->arg_destory = free;
