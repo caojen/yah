@@ -395,12 +395,9 @@ yah_core_init_pool_data() {
     yah_log("get old data size = %d", size);
     for(unsigned i = 0; i < size; i++) {
         // generate that job, and push to rp_pool's job queue
-        yah_log("%d generating old job", i + 1);
         struct yah_job* job = YAH_JOB_INITIALIZER;
-        yah_log("%d: old job: type = %d, specify = %s", i + 1, data[i]->type, data[i]->specify);
         job->arg = (void*) data[i];
-        // job->arg_destory = yah_mem_free;
-        job->arg_destory = yah_mem_free;    // memory leak here. TODO: find some ways to debug
+        job->arg_destory = yah_mem_free;
         job->func = yah_rp_pool_job_func;
         yah_thread_pool_push_job(rp_pool, job);
     }
