@@ -215,7 +215,8 @@ int yah_rp_pool_job_send_data(char* final, char* url) {
     int len = strlen(final);
     char* body_str = (char*) malloc (sizeof(char*) * (len + 100));
     cjson_object_stringify(body, body_str, sizeof(char*) * (len + 100));
-    yah_log("body str: %s", body_str);
+    yah_log("body str: %s(%d)", body_str, strlen(body_str));
+    yah_log("body str show ok");
     sleep(10);
     cjson_object_free_whole(body);
 
