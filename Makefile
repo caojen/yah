@@ -26,7 +26,7 @@ HEADER = ${SRC_DIR}/yah_config.h ${SRC_DIR}/yah_const.h ${SRC_DIR}/yah_daemon.h 
 	${SRC_DIR}/yah_pty.h ${SRC_DIR}/yah_exec.h ${SRC_DIR}/yah_airodump.h ${SRC_DIR}/yah_mem.h \
 	${SRC_DIR}/yah_string.h ${SRC_DIR}/yah_lru.h ${SRC_DIR}/yah_sqlite3.h \
 	${SRC_DIR}/yah_http.h ${SRC_DIR}/yah_json.h ${SRC_DIR}/yah_base64.h \
-	${SRC_DIR}/yah_jobs.h
+	${SRC_DIR}/yah_jobs.h ${SRC_DIR}/yah_customer.h
 
 OBJS:=${OBJ_DIR}/yah.o ${OBJ_DIR}/yah_log.o ${OBJ_DIR}/yah_config.o \
 	${OBJ_DIR}/yah_daemon.o ${OBJ_DIR}/yah_signal.o ${OBJ_DIR}/yah_thread_pool_job.o \
@@ -35,7 +35,7 @@ OBJS:=${OBJ_DIR}/yah.o ${OBJ_DIR}/yah_log.o ${OBJ_DIR}/yah_config.o \
 	${OBJ_DIR}/yah_exec.o ${OBJ_DIR}/yah_airodump.o ${OBJ_DIR}/yah_mem.o \
 	${OBJ_DIR}/yah_string.o ${OBJ_DIR}/yah_lru.o ${OBJ_DIR}/yah_sqlite3.o \
 	${OBJ_DIR}/yah_http.o ${OBJ_DIR}/yah_json.o ${OBJ_DIR}/yah_base64.o \
-	${OBJ_DIR}/yah_jobs.o
+	${OBJ_DIR}/yah_jobs.o ${OBJ_DIR}/yah_customer.o
 
 CJSON_OBJS:=${CJSON_OBJ_DIR}/cjson_array.o ${CJSON_OBJ_DIR}/cjson_bool.o	\
 	${CJSON_OBJ_DIR}/cjson_null.o ${CJSON_OBJ_DIR}/cjson_number.o \
@@ -113,6 +113,9 @@ ${OBJ_DIR}/yah_base64.o: ${SRC_DIR}/yah_base64.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
 ${OBJ_DIR}/yah_jobs.o: ${SRC_DIR}/yah_jobs.c ${HEADER}
+	$(CC) $(CFLAG) -o $@ -c $<
+
+${OBJ_DIR}/yah_customer.o: ${SRC_DIR}/yah_customer.c ${HEADER}
 	$(CC) $(CFLAG) -o $@ -c $<
 
 clean:

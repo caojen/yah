@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <string.h>
+
 #include "yah_customer.h"
 
 yah_customer* yah_customer_init(void (*func)()) {

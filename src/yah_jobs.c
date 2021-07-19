@@ -24,6 +24,12 @@
 #include "yah_http.h"
 #include "cjson.h"
 
+void
+yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {}
+
+void 
+yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {}
+
 // void
 // yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
 //     // this function is for ap, pushing ap to remote address
