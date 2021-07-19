@@ -25,10 +25,20 @@
 #include "cjson.h"
 
 void
-yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {}
+yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
+  yah_customer_push(ap_customer, data);
+}
 
 void 
-yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {}
+yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
+  yah_customer_push(apstation_customer, data);
+}
+
+void
+yah_customer_ap() {}
+
+void
+yah_customer_apstation() {}
 
 // void
 // yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {

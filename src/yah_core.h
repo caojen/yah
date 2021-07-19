@@ -53,4 +53,10 @@ void yah_core_init_pool_data();
 void yah_init_remote();
 void yah_get_remote_local(char __remote_ip[20]);
 
+#include "yah_customer.h"
+struct __yah_customer;
+typedef struct __yah_customer yah_customer;
+extern yah_customer* ap_customer;
+extern yah_customer* apstation_customer;
+
 #endif

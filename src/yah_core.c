@@ -36,6 +36,8 @@ struct yah_cache* apstation_cache = NULL;
 char airodump_time[YAH_CAPTURE_LINE + 1];
 char remote_ip[20] = { 0 };
 int remote_port = 0;
+yah_customer* ap_customer = NULL;
+yah_customer* apstation_customer = NULL;
 
 /**
  * What should core do?
@@ -104,6 +106,15 @@ void yah_core_start() {
      */
     ap_cache = yah_cache_init(64, YAH_AP_TIME, yah_string_cmp, yah_string_destory, yah_string_copy);
     apstation_cache = yah_cache_init(64, YAH_APSTATION_TIME, yah_string_cmp, yah_string_destory, yah_string_copy);
+
+    /**
+     * init two cache customer, for ap and apstation
+     * 
+     * these two caches storing into global variable ap_customer and apstation_customer
+     */
+
+    ap_customer = yah_customer_init(yah_customer_ap);
+    apstation_customer = yah_customer_init(yah_customer_apstation);
 
     /**
      * 4. create a pool to receive all formatted data
