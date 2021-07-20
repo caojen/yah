@@ -10,7 +10,7 @@ struct __yah_customer {
   struct yah_airodump_data * items[YAH_CUSTOMER_QUEUE_SIZE];
   unsigned begin, end;
   pthread_mutex_t mutex;
-  void (*func)(struct yah_airodump_data*[YAH_CUSTOMER_EACH_FETCH]);
+  void (*func)(struct yah_airodump_data*[YAH_CUSTOMER_EACH_FETCH], unsigned);
   pthread_t pthread_id;
 };
 

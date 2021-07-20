@@ -22,7 +22,7 @@ static void* yah_customer_main_thread(void * __c) {
       } else {
         timewait = 0;
       }
-      c->func(items);
+      c->func(items, size);
     }
 
     if(timewait > 0) {
