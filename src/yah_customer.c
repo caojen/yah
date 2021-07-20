@@ -40,7 +40,7 @@ yah_customer* yah_customer_init(void (*func)(struct yah_airodump_data*[YAH_CUSTO
   ret->func = func;
 
   // init one thread
-  int c = pthread_create(&ret->pthread_id, NULL, ret->func, ret);
+  int c = pthread_create(&ret->pthread_id, NULL, yah_customer_main_thread, ret);
   yah_log("customer init thread %lu, ret = %d", ret->pthread_id, c);
   return ret;
 }
