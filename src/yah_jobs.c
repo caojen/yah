@@ -38,12 +38,12 @@ yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
 
 void
 yah_customer_ap(struct yah_airodump_data* items[YAH_CUSTOMER_EACH_FETCH], unsigned size) {
-  yah_log("yah_customer_ap running");
+  yah_log("yah_customer_ap running with size = %u", size);
 }
 
 void
 yah_customer_apstation(struct yah_airodump_data* items[YAH_CUSTOMER_EACH_FETCH], unsigned size) {
-  yah_log("yah_customer_apstation running");
+  yah_log("yah_customer_apstation running with size = %u", size);
 }
 
 // void
