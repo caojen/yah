@@ -1,16 +1,17 @@
 #ifndef YAH_CUSTOMER_H
 #define YAH_CUSTOMER_H
 
-#include "yah_airodump.h"
-
 #define YAH_CUSTOMER_QUEUE_SIZE 10000
 #define YAH_CUSTOMER_EACH_FETCH 100
+
+#include "yah_airodump.h"
 
 struct __yah_customer {
   struct yah_airodump_data * items[YAH_CUSTOMER_QUEUE_SIZE];
   unsigned begin, end;
   pthread_mutex_t mutex;
-  void (*func)();
+  void (*func)(struct yah_airodump_data*[YAH_CUSTOMER_EACH_FETCH]);
+  pthread_t pthread_id;
 };
 
 typedef struct __yah_customer yah_customer;
@@ -21,7 +22,7 @@ typedef struct __yah_customer yah_customer;
 #define customer_current(c) (c->items[c->begin])
 
 // init a customer
-yah_customer* yah_customer_init(void (*func)());
+yah_customer* yah_customer_init(void (*func)(struct yah_airodump_data*[YAH_CUSTOMER_EACH_FETCH], unsigned));
 // push an item in customer
 // block if the cache is full
 void yah_customer_push(yah_customer*, struct yah_airodump_data*);

@@ -26,19 +26,25 @@
 
 void
 yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
+  yah_log("rp_pool, push ap to customer %p", data);
   yah_customer_push(ap_customer, data);
 }
 
 void 
 yah_rp_pool_job_func_apstation(struct yah_airodump_data* data) {
+  yah_log("rp_pool, push apstation to customer %p", data);
   yah_customer_push(apstation_customer, data);
 }
 
 void
-yah_customer_ap() {}
+yah_customer_ap(struct yah_airodump_data* items[YAH_CUSTOMER_EACH_FETCH], unsigned size) {
+  yah_log("yah_customer_ap running");
+}
 
 void
-yah_customer_apstation() {}
+yah_customer_apstation(struct yah_airodump_data* items[YAH_CUSTOMER_EACH_FETCH], unsigned size) {
+  yah_log("yah_customer_apstation running");
+}
 
 // void
 // yah_rp_pool_job_func_ap(struct yah_airodump_data* data) {
