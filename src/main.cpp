@@ -38,6 +38,6 @@ usage:
 exit:
   return 1;
 unreachable:
-  printf("Program run into unreachable code.");
+  printf("Program run into unreachable code.\n");
   return 2;
 }

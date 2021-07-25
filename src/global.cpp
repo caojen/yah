@@ -9,4 +9,6 @@ namespace yah {
   Warn warn;
   Fatal fatal;
   Time time;
+
+  ThreadPool<std::string> formatter;
 }

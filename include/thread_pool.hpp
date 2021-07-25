@@ -11,6 +11,23 @@
 #include "global.hpp"
 
 namespace yah {
+  extern Log log;
+  extern Endl endl;
+}
+
+namespace yah {
+  template <class T>
+  class ThreadPool;
+  
+  template <class T>
+  static void* thread_pool_main(void* __thread_pool) {
+    ThreadPool<T>* pool = (ThreadPool<T>*)__thread_pool;
+    // 从pool的queue中获取一个job
+    return NULL;
+  }
+}
+
+namespace yah {
   template<class T>
   class ThreadPool: public LogSpecial {
 
@@ -22,6 +39,7 @@ namespace yah {
 
     std::queue<T> queue;
     pthread_mutex_t mutex;
+    pthread_cond_t cond;
 
     std::vector<pthread_t> workers;
 
@@ -34,8 +52,8 @@ namespace yah {
       virtual std::string str() const;
 
       void thread_pool_init_thread();
-      void* thread_pool_main(void* null);
-
+      
+      void push(T job);
   };
 }
 
@@ -50,6 +68,8 @@ namespace yah {
     this->s += desc + "] ";
 
     this->num_worker = num_worker;
+    pthread_mutex_init(&this->mutex, NULL);
+    pthread_cond_init(&this->cond, NULL);
     this->thread_pool_init_thread();
   }
 
@@ -63,14 +83,12 @@ namespace yah {
     // 新建num_thread个线程，每个线程的主函数是thread_pool_main
     for(unsigned i = 0; i < this->num_worker; i++) {
       pthread_t pid;
-      pthread_create(&pid, NULL, this->thread_pool_main, NULL);
-      log << *this << "create pthread at " << pid << endl;
+      pthread_create(&pid, NULL, thread_pool_main<T>, this);
     }
   }
 
   template<class T>
-  void* ThreadPool<T>::thread_pool_main(void* null) {
-    log << *this << "thread pool main" << endl;
-    return NULL;
+  void ThreadPool<T>::push(T job) {
+    this->queue.push(job);
   }
 }
