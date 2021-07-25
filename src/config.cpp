@@ -35,6 +35,10 @@ void Config::reload() {
   std::ifstream ifs;
   ifs.open(this->config_file, std::ios::in);
 
+  if (ifs.is_open() == false) {
+    std::cout << "Unknown File: " << this->config_file;
+  }
+
   static std::array<std::string, 5> as_string = {
     "remote_address",
     "remote_ap",

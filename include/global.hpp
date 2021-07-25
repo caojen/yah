@@ -8,4 +8,10 @@
 namespace yah {
   extern Config config;
   extern Log log;
+
+  extern Endl endl;
+  extern Success success;
+  extern Warn warn;
+  extern Fatal fatal;
+  extern Time time;
 }

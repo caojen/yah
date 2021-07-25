@@ -1,20 +1,34 @@
 #include <iostream>
 #include <assert.h>
+#include <string.h>
 
 #include "dict.hpp"
 #include "config.hpp"
 #include "global.hpp"
+#include "check.hpp"
 
 int main(int argc, char** argv) {
-  std::cout << "Hello World" << std::endl;
+  if (argc < 2) {
+    goto usage;
+  }
 
-  yah::Dict dict("abc", "def");
-  std::cout << dict << std::endl;
-  std::vector<yah::Dict> vec;
-  vec.push_back(dict);
-  std::cout << yah::Dict::serialize(vec) << std::endl;
+  if(!strcmp(argv[1], "start")) {
+    std::string config_file = argv[2];
+    yah::config = yah::Config(config_file);
+    
+    if(yah::precheck() == false) {
+      goto exit;
+    }
 
-  yah::config = yah::Config("../yah.conf");
+  } else if(!strcmp(argv[1], "reload")) {
 
-  yah::log << "ok, logging...";
+  } else {
+    goto usage;
+  }
+
+
+usage:
+  printf("Usage: %s start {config_file} | reload\n", argv[0]);
+exit:
+  return 1;
 }

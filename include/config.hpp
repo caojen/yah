@@ -27,6 +27,11 @@ namespace yah {
       unsigned      num_send_msg        =     100;        // 发送者发送消息时的最大数量
       unsigned      msg_queue_size      =     10000;      // 消息队列大小
 
+      // 不在配置文件中能被配置的项目
+      std::string   airodump_path       =     "/usr/bin/airodump-ng";
+      std::string   airodump_name       =     "airodump-ng";
+      std::string   lockfile            =     "/var/run/yah.pid";
+
       Config();
       Config(const std::string& filename);
 

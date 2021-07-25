@@ -1,4 +1,12 @@
 #include "global.hpp"
 
-yah::Config yah::config;
-yah::Log yah::log;
+namespace yah {
+  Config config;
+  Log log;
+
+  Endl endl;
+  Success success;
+  Warn warn;
+  Fatal fatal;
+  Time time;
+}
