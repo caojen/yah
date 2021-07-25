@@ -1,9 +1,11 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <cerrno>
+#include <cstring>
 
 #include "check.hpp"
 #include "global.hpp"
+#include "log.hpp"
 
 int lockfile(int fd) {
     struct flock fl;
@@ -50,7 +52,7 @@ check_fatal:
   }
 
   bool check_airodump() {
-    return access(config.airodump_name.c_str(), X_OK) == 0;
+    return access(config.airodump_path.c_str(), X_OK) == 0;
   }
 
   bool check_lockfile() {

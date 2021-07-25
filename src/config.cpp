@@ -3,6 +3,8 @@
 #include <array>
 
 #include "config.hpp"
+#include "log.hpp"
+#include "global.hpp"
 
 using namespace yah;
 
@@ -65,4 +67,24 @@ void Config::reload() {
   }
 
   pthread_mutex_unlock(&this->config_mutex);
+}
+
+void Config::show(const Config& config) {
+  show_config_value(yah::log, config, config_file);
+  show_config_value(yah::log, config, remote_address);
+  show_config_value(yah::log, config, remote_port);
+  show_config_value(yah::log, config, remote_ap);
+  show_config_value(yah::log, config, remote_apstation);
+  show_config_value(yah::log, config, device);
+  show_config_value(yah::log, config, db);
+  show_config_value(yah::log, config, log);
+  show_config_value(yah::log, config, log_to_std);
+  show_config_value(yah::log, config, num_formatter);
+  show_config_value(yah::log, config, num_checker);
+  show_config_value(yah::log, config, num_sender);
+  show_config_value(yah::log, config, num_send_msg);
+  show_config_value(yah::log, config, msg_queue_size);
+  show_config_value(yah::log, config, airodump_path);
+  show_config_value(yah::log, config, airodump_name);
+  show_config_value(yah::log, config, lockfile);
 }

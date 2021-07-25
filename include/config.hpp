@@ -37,6 +37,9 @@ namespace yah {
 
       // 重载配置文件
       void reload();
+
+      // 输出所有内容
+      static void show(const Config& config);
   };
 }
 
@@ -45,3 +48,7 @@ namespace yah {
     ifs >> this->_target;                          \
   }                                                \
 } while(0)
+
+#define show_config_value(_log, _config, _key) do {               \
+  _log << "[Config] " << #_key << " = " << _config._key << endl;  \
+} while (0)
