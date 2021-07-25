@@ -6,7 +6,6 @@
 
 #include "config.hpp"
 #include "log.hpp"
-#include "thread_pool.hpp"
 
 namespace yah {
   extern Config config;
@@ -17,9 +16,4 @@ namespace yah {
   extern Warn warn;
   extern Fatal fatal;
   extern Time time;
-
-  template<class T>
-  class ThreadPool;
-
-  extern ThreadPool<std::string> formatter;
 }
