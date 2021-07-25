@@ -8,26 +8,27 @@ namespace yah {
   class Json;
 
   class Value {
-    // Json的Value可以是字符串、整数、浮点数、null、布尔值、Json
-      enum {STR, INT, FLOAT, NUL, BOOL, JSON} type;
+    // Json的Value可以是字符串、整数、浮点数、null、布尔值
+      enum {STR, INT, FLOAT, NUL, BOOL} type;
       std::string                             s;
       int                                     i;
       double                                  f;
       bool                                    b;
-      Json                                    j;
     public:
       Value(const std::string& s);
       Value(int i);
       Value(double f);
       Value();    // null
       Value(bool b);
-      Value(const Json& j);
 
       Value(const Value& v);
 
       // 将这个Value转成字符串输出
       // 如果Value是一个字符串，那么将其所有的双引号的前面添加转义字符
       std::string serialize() const;
+
+      // 比较函数
+      bool operator<(const Value& other) const;
   };
 
   class Json {

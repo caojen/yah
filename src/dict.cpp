@@ -28,10 +28,6 @@ namespace yah {
     this->b = b;
   }
 
-  Value::Value(const Json& j) {
-    this->j = j;
-  }
-
   Value::Value(const Value& v) {
     this->type = v.type;
     switch(this->type) {
@@ -53,9 +49,6 @@ namespace yah {
       case BOOL: {
         this->b = v.b;
         break;
-      }
-      case JSON: {
-        this->j = v.j;
       }
     }
   }
@@ -91,14 +84,38 @@ namespace yah {
         ostr << (this->b ? "true" : "false");
         goto output;
       }
-      case JSON: {
-        ostr << this->j.serialize();
-        goto output;
-      }
     }
 
     output:
       return ostr.str();
+  }
+
+  bool Value::operator<(const Value& other) const {
+    if(this->type < other.type) {
+      return true;
+    } else if(this->type > other.type) {
+      return false;
+    }
+
+    switch (this->type) {
+      case STR: {
+        return this->s < other.s;
+      }
+      case INT: {
+        return this->i < other.i;
+      }
+      case FLOAT: {
+        return this->f < other.f;
+      }
+      case NUL: {
+        return this < &other;
+      }
+      case BOOL: {
+        return this->b < other.b;
+      }
+    }
+
+    return this < &other;
   }
 
   Json::Json(JsonType type) {

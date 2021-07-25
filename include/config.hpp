@@ -26,6 +26,9 @@ namespace yah {
       unsigned      num_sender          =     1;          // 发送者的数量
       unsigned      num_send_msg        =     100;        // 发送者发送消息时的最大数量
       unsigned      msg_queue_size      =     10000;      // 消息队列大小
+      unsigned      num_cache_max       =     10000;      // 缓存最多条目
+      unsigned      ap_cache_timeout    =     86400;      // ap缓存失效时间（秒）
+      unsigned      apstation_cache_timeout = 600;        // apstatio缓存失效时间
 
       // 不在配置文件中能被配置的项目
       std::string   airodump_path       =     "/usr/bin/airodump-ng";
