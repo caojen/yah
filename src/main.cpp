@@ -6,6 +6,7 @@
 #include "config.hpp"
 #include "global.hpp"
 #include "check.hpp"
+#include "core.hpp"
 
 int main(int argc, char** argv) {
   if (argc < 2) {
@@ -21,6 +22,10 @@ int main(int argc, char** argv) {
       goto exit;
     }
 
+    yah::core_start();
+
+    goto unreachable;
+
   } else if(!strcmp(argv[1], "reload")) {
 
   } else {
@@ -32,4 +37,7 @@ usage:
   printf("Usage: %s start {config_file} | reload\n", argv[0]);
 exit:
   return 1;
+unreachable:
+  printf("Program run into unreachable code.");
+  return 2;
 }
