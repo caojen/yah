@@ -1,125 +1,174 @@
+#include <sstream>
+#include <iterator>
+
 #include "dict.hpp"
 
-using namespace yah;
-
-Dict::Dict(const std::string& key, const int& v) {
-  this->key = key;
-  this->v_int = v;
-  this->jsonType = Int;
-}
-
-Dict::Dict(const std::string& key, const double& v) {
-  this->key = key;
-  this->v_float = v;
-  this->jsonType = Float;
-}
-
-Dict::Dict(const std::string& key, const bool& v) {
-  this->key = key;
-  this->v_bool = v;
-  this->jsonType = Bool;
-}
-
-Dict::Dict(const std::string& key, const enum DictType& v) throw(std::bad_typeid) {
-  if (v == Null) {
-    this->key = key;
-    this->v_null = true;
-    this->jsonType = Null;
-  } else {
-    throw std::bad_typeid();
+namespace yah {
+  Value::Value(const std::string& s) {
+    this->type = STR;
+    this->s = s;
   }
-}
 
-Dict::Dict(const std::string& key, const std::string& v) {
-  this->key = key;
-  this->v_string = v;
-  this->jsonType = String;
-}
-
-enum Dict::DictType Dict::type() const {
-  return this->jsonType;
-}
-
-void Dict::set_key(const std::string& key) {
-  this->key = key;
-}
-
-void Dict::set_v(const int& v) {
-  this->v_int = v;
-  this->jsonType = Int;
-}
-
-void Dict::set_v(const double& v) {
-  this->v_float = v;
-  this->jsonType = Float;
-}
-
-void Dict::set_v(const bool& v) {
-  this->v_bool = v;
-  this->jsonType = Bool;
-}
-
-void Dict::set_v(const enum DictType& v) {
-  if(v == Null) {
-    this->v_null = true;
-    this->jsonType = Null;
-  } else {
-    throw std::bad_typeid();
+  Value::Value(int i) {
+    this->type = INT;
+    this->i = i;
   }
-}
 
-void Dict::set_v(const std::string& v) {
-  this->v_string = v;
-  this->jsonType = String;
-}
-
-std::string Dict::serialize() const {
-  std::ostringstream ostr;
-  // Bug：key中不能够有引号字符
-  ostr << "{\"" << this->key << "\":";
-  switch (this->jsonType) {
-    case Int: {
-      ostr << this->v_int;
-      break;
-    }
-    case Float: {
-      ostr << this->v_float;
-      break;
-    }
-    case Bool: {
-      ostr << (this->v_bool ? "true" : "false");
-      break;
-    }
-    case Null: {
-      ostr << "null";
-      break;
-    }
-    case String: {
-      ostr << "\"" << this->v_string << "\"";
-      break;
-    }
+  Value::Value(double f) {
+    this->type = FLOAT;
+    this->f = f;
   }
-  ostr << "}";
-  return ostr.str();
-}
 
-std::string Dict::serialize(const std::vector<Dict>& dicts) {
-  std::ostringstream str;
-  str << "[";
-  unsigned size = dicts.size();
-  for(unsigned i = 0; i < size; i++) {
-    str << dicts[i].serialize();
-    if (i != size - 1) {
-      str << ",";
+  Value::Value() {
+    this->type = NUL;
+  }
+
+  Value::Value(bool b) {
+    this->type = BOOL;
+    this->b = b;
+  }
+
+  Value::Value(const Json& j) {
+    this->j = j;
+  }
+
+  Value::Value(const Value& v) {
+    this->type = v.type;
+    switch(this->type) {
+      case STR: {
+        this->s = v.s;
+        break;
+      }
+      case INT: {
+        this->i = v.i;
+        break;
+      }
+      case FLOAT: {
+        this->f = v.f;
+        break;
+      }
+      case NUL: {
+        break;
+      }
+      case BOOL: {
+        this->b = v.b;
+        break;
+      }
+      case JSON: {
+        this->j = v.j;
+      }
     }
   }
 
-  str << "]";
+  std::string Value::serialize() const {
+    std::ostringstream ostr("");
 
-  return str.str();
-}
+    switch(this->type) {
+      case STR: {
 
-std::ostream& yah::operator<<(std::ostream& o, const yah::Dict& dict) {
-  o << dict.serialize();
-  return o;
+        for(auto& ch: this->s) {
+          if(ch == '"') {
+            ostr << "\\";
+          }
+          ostr << ch;
+        }
+
+        goto output;
+      }
+      case INT: {
+        ostr << this->i;
+        goto output;
+      }
+      case FLOAT: {
+        ostr << this->f;
+        goto output;
+      }
+      case NUL: {
+        ostr << "null";
+        goto output;
+      }
+      case BOOL: {
+        ostr << (this->b ? "true" : "false");
+        goto output;
+      }
+      case JSON: {
+        ostr << this->j.serialize();
+        goto output;
+      }
+    }
+
+    output:
+      return ostr.str();
+  }
+
+  Json::Json(JsonType type) {
+    this->type = type;
+  }
+
+  Json::Json(const Json& j) {
+    this->type = j.type;
+    switch(this->type) {
+      case ARRAY: {
+        this->vec = j.vec;
+        break;
+      }
+      case DICT: {
+        this->items = j.items;
+        break;
+      }
+    }
+  }
+
+  void Json::append(const Value& v) {
+    this->vec.push_back(v);
+  }
+
+  void Json::set(const std::string& s, const Value& v) {
+    this->items[s] = v;
+  }
+
+  Value Json::remove(const std::string& s) {
+    auto it = this->items.find(s);
+    if(it == this->items.end()) {
+      return Value();
+    } else {
+      Value ret = it->second;
+      this->items.erase(it);
+      return ret;
+    }
+  }
+
+  std::string Json::serialize() const {
+
+    std::ostringstream ostr("");
+    switch (this->type) {
+      case ARRAY: {
+        ostr << '[';
+        for(auto it = this->vec.begin(); it != this->vec.end(); ++it) {
+          ostr << it->serialize();
+          if(std::next(it) != this->vec.end()) {
+            ostr << ',';
+          }
+        }
+        ostr << ']';
+        break;
+      }
+
+      case DICT: {
+        ostr << '{';
+        for(auto it = this->items.begin(); it != this->items.end(); ++it) {
+          ostr << it->first.serialize();
+          ostr << ':';
+          ostr << it->second.serialize();
+          if(std::next(it) != this->items.end()) {
+            ostr << ',';
+          }
+          ostr << '}';
+        }
+        break;
+      }
+    }
+
+    return ostr.str();
+  }
 }

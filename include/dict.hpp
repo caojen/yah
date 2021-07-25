@@ -1,47 +1,50 @@
 #pragma once
 
-#include <vector>
 #include <string>
-#include <exception>
-#include <sstream>
-#include <iostream>
+#include <vector>
+#include <map>
 
 namespace yah {
+  class Json;
 
-  class Dict {
-    private:
-      std::string key;
-      
-      // Dict的值可能是整数，浮点数，布尔值，null，字符串
-      enum DictType { Int, Float, Bool, Null, String } jsonType;
-
-      int v_int;
-      double v_float;
-      bool v_bool;
-      bool v_null;
-      std::string v_string;
-
+  class Value {
+    // Json的Value可以是字符串、整数、浮点数、null、布尔值、Json
+      enum {STR, INT, FLOAT, NUL, BOOL, JSON} type;
+      std::string                             s;
+      int                                     i;
+      double                                  f;
+      bool                                    b;
+      Json                                    j;
     public:
-      Dict(const std::string& key, const int& v);
-      Dict(const std::string& key, const double& v);
-      Dict(const std::string& key, const bool& v);
-      Dict(const std::string& key, const enum DictType& v) throw (std::bad_typeid);
-      Dict(const std::string& key, const std::string& v);
+      Value(const std::string& s);
+      Value(int i);
+      Value(double f);
+      Value();    // null
+      Value(bool b);
+      Value(const Json& j);
 
-      // 返回这个json的值类型
-      enum DictType type() const;
-      // 重设这个json的key
-      void set_key(const std::string& key);
-      // 重设这个json的v
-      void set_v(const int& v);
-      void set_v(const double& v);
-      void set_v(const bool& v);
-      void set_v(const enum DictType& v);
-      void set_v(const std::string& v);
-      // 将这个json序列化
+      Value(const Value& v);
+
+      // 将这个Value转成字符串输出
+      // 如果Value是一个字符串，那么将其所有的双引号的前面添加转义字符
       std::string serialize() const;
-      // 将多个json序列化
-      static std::string serialize(const std::vector<Dict>& dicts);
-      friend std::ostream& operator<<(std::ostream& o, const Dict & dict);
+  };
+
+  class Json {
+    // Json可以是一个字典(String -> Value)，也可以是一个数组(Value)
+    public:
+      enum JsonType { ARRAY, DICT } type;
+      typedef enum JsonType JsonType;
+
+      Json(JsonType = ARRAY);
+      Json(const Json& j);
+
+      std::vector<Value> vec;
+      std::map<Value, Value> items;
+
+      void append(const Value& v);
+      void set(const std::string& s, const Value& value);
+      Value remove(const std::string& s);
+      std::string serialize() const;
   };
 }
