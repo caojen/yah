@@ -9,4 +9,7 @@ namespace yah {
   Warn warn;
   Fatal fatal;
   Time time;
+
+  Cache<std::string> ap_cache;
+  Cache<std::string> apstation_cache;
 }

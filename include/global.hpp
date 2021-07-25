@@ -6,6 +6,7 @@
 
 #include "config.hpp"
 #include "log.hpp"
+#include "cache.hpp"
 
 namespace yah {
   extern Config config;
@@ -16,4 +17,7 @@ namespace yah {
   extern Warn warn;
   extern Fatal fatal;
   extern Time time;
+
+  extern Cache<std::string> ap_cache;
+  extern Cache<std::string> apstation_cache;
 }
