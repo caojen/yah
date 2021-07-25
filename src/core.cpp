@@ -4,7 +4,7 @@
 #include "core.hpp"
 #include "move.hpp"
 #include "global.hpp"
-#include "yah_pty.h"
+#include "yah_pty.hpp"
 
 namespace yah {
   static inline void init_ap_cache() {
@@ -40,7 +40,7 @@ namespace yah {
 
     if(pid == 0) {
       // 子进程
-      execl(config.airodump_path, config.airodump_name, device_name.c_str(), "-C", "2412-2472,5180-5825", "-f", "10", "--berlin", "3", NULL);
+      execl(config.airodump_path.c_str(), config.airodump_name.c_str(), device_name.c_str(), "-C", "2412-2472,5180-5825", "-f", "10", "--berlin", "3", NULL);
     } else {
       return fd;
     }

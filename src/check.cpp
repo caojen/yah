@@ -6,7 +6,7 @@
 #include "check.hpp"
 #include "global.hpp"
 #include "log.hpp"
-#include "yah_exec.h"
+#include "yah_exec.hpp"
 #include <string.h>
 #include <stdio.h>
 
@@ -102,7 +102,13 @@ check_fatal:
   }
 
   bool check_wlan() {
-    
+    char name[64];
+    int r = get_airodump_device_name(name);
+
+    device_name = std::string(name);
+
+    log << success << "device name: " << name << endl;
+    return r == 0;
   }
 
   int get_airodump_device_name(char name[64]) {
@@ -123,16 +129,16 @@ check_fatal:
           char* tmp = right + 2;      // :\n, right is at ':'
           *right = 0;
           // run `ethtool -i ${left}`
-          char ethtool[YAH_MAX_ETHTOOL];
-          char ethtool_input[YAH_MAX_ETHTOOL];
-          snprintf(ethtool_input, YAH_MAX_ETHTOOL, "ethtool -i %s | awk 'NR==1{print $2}'", left);
-          if((err = yah_exec_shell(ethtool_input, ethtool, YAH_MAX_ETHTOOL)) != 0) {}
+          char ethtool[4096];
+          char ethtool_input[4096];
+          snprintf(ethtool_input, 4096, "ethtool -i %s | awk 'NR==1{print $2}'", left);
+          if((err = yah_exec_shell(ethtool_input, ethtool, 4096)) != 0) {}
           // yah_log("testing %s => %s", left, ethtool);
           int length = strlen(ethtool);
           ethtool[length - 1] = 0;
 
-          if(strcmp(ethtool, YAH_WLAN) == 0) {
-              snprintf(name, YAH_MAX_DEVICE_NAME, "%s", left);
+          if(strcmp(ethtool, config.wlan.c_str()) == 0) {
+              snprintf(name, 20, "%s", left);
               return 0;
           }
           right = left = tmp;

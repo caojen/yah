@@ -29,4 +29,6 @@ namespace yah {
 
   unsigned check_get_locking_pid();
 
+  int get_airodump_device_name(char name[64]);
+
 }

@@ -34,6 +34,7 @@ namespace yah {
       std::string   airodump_path       =     "/usr/bin/airodump-ng";
       std::string   airodump_name       =     "airodump-ng";
       std::string   lockfile            =     "/var/run/yah.pid";
+      std::string   wlan                =     "rtl8812au";
 
       Config();
       Config(const std::string& filename);
