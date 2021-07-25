@@ -4,8 +4,6 @@
 #include <sys/wait.h>
 
 #include "yah_exec.h"
-#include "yah_log.h"
-#include "yah_const.h"
 
 int
 yah_exec_shell(const char* command, char* output, int outputsz) {
@@ -29,7 +27,7 @@ yah_exec_shell(const char* command, char* output, int outputsz) {
         // snprintf(__command, YAH_MAXLINE + 2, "\"%s\"", command);
         // yah_log("generate command: %s", __command);
         // execl(YAH_SEHLL_PATH, YAH_SHELL, "-c", __command);
-        execl(YAH_SEHLL_PATH, YAH_SHELL, "-c", command, NULL);
+        execl("/bin/sh", "sh", "-c", command, NULL);
         exit(127);
     } else {
         /* parent process */
@@ -41,9 +39,9 @@ yah_exec_shell(const char* command, char* output, int outputsz) {
         // read until read return 0
         int n;
         int size = 0;
-        char buf[YAH_MAXLINE];
+        char buf[64];
         memset(output, 0, outputsz * sizeof(char));
-        while(size < outputsz - 1 && (n = read(fd[0], buf, YAH_MAXLINE)) != 0) {
+        while(size < outputsz - 1 && (n = read(fd[0], buf, 64)) != 0) {
             // copy buf append to output
             int copysz = n;
             if(size + copysz >= outputsz) {

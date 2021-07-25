@@ -6,8 +6,6 @@
 
 namespace yah {
 
-  void* formatter_do(Formatter* f);
-
   class Formatter {
     public:
       pthread_mutex_t               mutex;
@@ -19,7 +17,10 @@ namespace yah {
       Formatter();
       Formatter(unsigned num_workers);
 
-      void push(std::string& s);
+      void push(const std::string& s);
+      void raise();
       std::string pop();
   };
+
+  void* formatter_do(Formatter* f);
 }

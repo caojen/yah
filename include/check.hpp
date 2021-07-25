@@ -25,6 +25,8 @@ namespace yah {
 
   bool check_lockfile();
 
+  bool check_wlan();
+
   unsigned check_get_locking_pid();
 
 }

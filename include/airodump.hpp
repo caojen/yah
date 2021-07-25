@@ -6,6 +6,9 @@
 #include "dict.hpp"
 
 namespace yah {
+
+  const unsigned ESC = 27;
+
   class AirodumpData {
     public:
 
@@ -16,8 +19,11 @@ namespace yah {
 
       virtual void init(const std::string& s) = 0;
       virtual Json serialize() const = 0;
-      virtual bool in_cache() const;
-      virtual void sync_db();
+      virtual bool in_cache() const = 0;
+      virtual void sync_db() = 0;
+      virtual ~AirodumpData();
+
+      static AirodumpData* init_origin_line(const std::string& s);
   };
 
   class Ap: public AirodumpData {

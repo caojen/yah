@@ -7,6 +7,7 @@
 #include "config.hpp"
 #include "log.hpp"
 #include "cache.hpp"
+#include "formatter.hpp"
 
 namespace yah {
   extern Config config;
@@ -20,4 +21,7 @@ namespace yah {
 
   extern Cache<std::string> ap_cache;
   extern Cache<std::string> apstation_cache;
+
+  extern Formatter formatter;
+  extern std::string device_name;
 }
