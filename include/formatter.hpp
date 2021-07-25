@@ -22,5 +22,5 @@ namespace yah {
       std::string pop();
   };
 
-  void* formatter_do(Formatter* f);
+  void* formatter_do(void* __f);
 }

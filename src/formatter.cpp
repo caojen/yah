@@ -2,6 +2,7 @@
 
 #include "formatter.hpp"
 #include "airodump.hpp"
+#include "global.hpp"
 
 namespace yah {
   Formatter::Formatter() {}
@@ -13,9 +14,12 @@ namespace yah {
     pthread_cond_init(&this->cond, NULL);
 
     // 创建workers
+    pthread_t pid;
     for(unsigned i = 0; i < num_workers; i++) {
-
+      pthread_create(&pid, NULL, formatter_do, this);
     }
+
+    log << success << "Formatter init done. with size = " << this->num_workers << endl;
   }
 
   void Formatter::push(const std::string& s) {
@@ -32,7 +36,8 @@ namespace yah {
     return ret;
   }
 
-  void* formatter_do(Formatter* f) {
+  void* formatter_do(void* __f) {
+    Formatter* f = static_cast<Formatter*>(__f);
     while(1) {
       pthread_mutex_lock(&f->mutex);
       while(f->lines.empty()) {
