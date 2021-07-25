@@ -15,4 +15,5 @@ namespace yah {
 
   Formatter formatter;
   std::string device_name;
+  pid_t airodump_pid;
 }

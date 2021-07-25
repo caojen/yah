@@ -24,4 +24,5 @@ namespace yah {
 
   extern Formatter formatter;
   extern std::string device_name;
+  extern pid_t airodump_pid;
 }

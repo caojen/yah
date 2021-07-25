@@ -1,5 +1,7 @@
 #include <unistd.h>
 #include <string>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 #include "core.hpp"
 #include "move.hpp"
@@ -26,7 +28,45 @@ namespace yah {
     init_apstation_cache();
     init_formatter();
 
+    log << success << "init done" << endl;
+
     int airodump_fd = run_airodump();
+    log << success << "airodump running at file socket = " << airodump_fd << endl;
+
+    fd_set input_set;
+    FD_ZERO(&input_set);
+    FD_SET(airodump_fd, &input_set);
+    struct timeval timeout; timeout.tv_sec = 15; timeout.tv_usec = 0; // select 允许超时15s
+    while(1) {
+      if(select(1, &input_set, NULL, NULL, &timeout) == -1) {
+        // 超时检查
+        log << warn << "airodump select timeout. Checking..." << endl;
+        int status = 0;
+        if(waitpid(airodump_pid, &status, WNOHANG) == 0) {
+          log << warn << "ok. still running" << endl;
+        } else {
+          log << fatal << "airodump-ng exited. Abort";
+          abort();
+        }
+      } else {
+        // 允许读:
+        char ch;
+        std::string line = "";
+        // 一直读，读到换行符为止
+        while(1) {
+          while(read(airodump_fd, &ch, 1) == -1 && errno == EINTR);
+          line.append(std::string(1, ch));
+          if(ch == '\n') {
+            break;
+          }
+        }
+        if(line.size() < 10) {
+          continue;
+        }
+        // log << success << "core read line: " << line << endl;
+        formatter.push(line);
+      }
+    }
   }
 
   int run_airodump() {
@@ -37,6 +77,7 @@ namespace yah {
     wsize.ws_col = YAH_PTY_COLS;
 
     pid_t pid = yah_pty_fork(&fd, slave_name, MAX_PTYNAME, NULL, &wsize);
+    airodump_pid = pid;
 
     if(pid == 0) {
       // 子进程
