@@ -63,8 +63,10 @@ namespace yah {
         if(line.size() < 10) {
           continue;
         }
-        // log << success << "core read line: " << line << endl;
+        pthread_mutex_lock(&formatter.mutex);
         formatter.push(line);
+        pthread_mutex_unlock(&formatter.mutex);
+        formatter.raise();
       }
     }
   }
