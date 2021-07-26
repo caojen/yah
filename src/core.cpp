@@ -14,12 +14,8 @@ namespace yah {
   static inline void init_apstation_cache() {
     apstation_cache = Cache<std::string>(config.num_cache_max, config.apstation_cache_timeout);
   }
-  static inline void init_formatter() {
-    formatter = Formatter(config.num_formatter);
-  }
-  static inline void init_checker() {
-    checker = Checker(config.num_checker);
-  }
+  static inline void init_formatter();
+  static inline void init_checker();
   static inline void init_sender();
 }
 
@@ -65,14 +61,7 @@ namespace yah {
         if(line.size() < 10) {
           continue;
         }
-        pthread_mutex_lock(&formatter.mutex);
-        log << success << ctime << "[Core] Push line with size = " << line.size()
-          << " Current Formatter Queue Size = " << formatter.data.size() << endl;
-        formatter.push(line);
-        pthread_mutex_unlock(&formatter.mutex);
-        formatter.raise();
-        // 暂停10 + rand(1000)毫秒，让其他线程可以抢占这个锁
-        usleep(200000);
+        // TODO: 处理这个line
       }
     }
   }
