@@ -17,4 +17,5 @@ namespace yah {
   pid_t airodump_pid;
 
   Formatter formatter;
+  Checker checker;
 }

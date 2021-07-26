@@ -23,6 +23,7 @@ namespace yah {
   extern Cache<std::string> apstation_cache;
 
   extern Formatter formatter;
+  extern Checker checker;
   extern std::string device_name;
   extern pid_t airodump_pid;
 }

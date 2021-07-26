@@ -1,7 +1,6 @@
 #pragma once
 
 #include <queue>
-#include "move.hpp"
 
 namespace yah {
   template<class T>
@@ -15,7 +14,7 @@ namespace yah {
 
       Worker();
       Worker(unsigned num_workers);
-      virtual void push(const T&);
+      virtual void push(T&);
       void raise();
       virtual T pop();
   };
@@ -35,8 +34,8 @@ namespace yah {
   }
 
   template<class T>
-  void Worker<T>::push(const T& t) {
-    this->data.push(move(t));
+  void Worker<T>::push(T& t) {
+    this->data.push(std::move(t));
   }
 
   template<class T>

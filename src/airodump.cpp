@@ -144,6 +144,10 @@ output:
     return false;
   }
 
+  bool Ap::in_db() const {
+    return false;
+  }
+
   void Ap::sync_db() {
 
   }
@@ -188,6 +192,10 @@ output:
   }
 
   bool ApStation::in_cache() const {
+    return false;
+  }
+
+  bool ApStation::in_db() const {
     return false;
   }
 
