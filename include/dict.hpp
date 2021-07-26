@@ -20,6 +20,7 @@ namespace yah {
       Value(double f);
       Value();    // null
       Value(bool b);
+      Value(unsigned i);
 
       Value(const Value& v);
 

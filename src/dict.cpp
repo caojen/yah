@@ -28,6 +28,11 @@ namespace yah {
     this->b = b;
   }
 
+  Value::Value(unsigned i) {
+    this->type = INT;
+    this->i = i;
+  }
+
   Value::Value(const Value& v) {
     this->type = v.type;
     switch(this->type) {

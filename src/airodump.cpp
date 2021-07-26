@@ -41,6 +41,13 @@ namespace yah {
     return iter;
   }
 
+  static inline std::string parse_time(time_t t) {
+    char r[32] = { 0 };
+    struct tm* tm = localtime(&t);
+    strftime(r, 32, "%Y-%m-%d %H:%M:%S", tm);
+    return std::string(r);
+  }
+
   AirodumpData::~AirodumpData() {}
 
   AirodumpData* AirodumpData::init_origin_line(const std::string& s) {
@@ -119,10 +126,18 @@ output:
     this->create_time = time(NULL);
 
     this->specify = this->bssid;
+    this->mobile  = config.device;
   }
 
   Json Ap::serialize() const {
-    return Json();
+    auto ret = Json(Json::JsonType::DICT);
+    ret.set("id", this->id);
+    ret.set("mobile", this->mobile);
+    ret.set("bssid", this->bssid);
+    ret.set("comment", this->comment);
+    ret.set("create_time", parse_time(this->create_time));
+    ret.set("etl_time", parse_time(time(NULL)));
+    return ret;
   }
 
   bool Ap::in_cache() const {
@@ -152,10 +167,20 @@ output:
     this->create_time = time(NULL);
 
     this->specify = this->station;
+    this->mobile  = config.device;
   }
 
   Json ApStation::serialize() const {
-    return Json();
+    auto ret = Json(Json::JsonType::DICT);
+    ret.set("id", this->id);
+    ret.set("mobile", this->mobile);
+    ret.set("bssid", this->bssid);
+    ret.set("station", this->station);
+    ret.set("comment", this->comment);
+    ret.set("create_time", parse_time(this->create_time));
+    ret.set("etl_time", parse_time(time(NULL)));
+
+    return ret;
   }
 
   bool ApStation::in_cache() const {
