@@ -10,6 +10,8 @@ namespace yah {
   Fatal fatal;
   Time ctime;
 
+  DB db;
+
   Cache<std::string> ap_cache;
   Cache<std::string> apstation_cache;
 

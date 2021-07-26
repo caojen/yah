@@ -13,3 +13,4 @@ add_compile_options(-Wall -pthread -g)
 
 add_executable(yah ${SRC_LIST})
 target_link_libraries(yah pthread)
+target_link_libraries(yah sqlite3)

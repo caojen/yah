@@ -8,6 +8,7 @@
 #include "log.hpp"
 #include "cache.hpp"
 #include "formatter.hpp"
+#include "db.hpp"
 
 namespace yah {
   extern Config config;
@@ -18,6 +19,8 @@ namespace yah {
   extern Warn warn;
   extern Fatal fatal;
   extern Time ctime;
+
+  extern DB db;
 
   extern Cache<std::string> ap_cache;
   extern Cache<std::string> apstation_cache;
