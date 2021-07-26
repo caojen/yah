@@ -64,6 +64,7 @@ void Config::reload() {
     set_config_value(ifs, key, num_sender);
     set_config_value(ifs, key, num_send_msg);
     set_config_value(ifs, key, msg_queue_size);
+    set_config_value(ifs, key, sender_await);
   }
 
   pthread_mutex_unlock(&this->config_mutex);

@@ -32,7 +32,7 @@ namespace yah {
       std::string body = Json::serialize(v);
       log << "[Sender Body] " << body << endl;
     };
-    sender = new AutoPool<AirodumpData>(config.num_sender, config.num_send_msg, func, 1);
+    sender = new AutoPool<AirodumpData>(config.num_sender, config.num_send_msg, func, config.sender_await);
   }
 }
 
