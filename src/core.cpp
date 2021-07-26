@@ -43,7 +43,7 @@ namespace yah {
           .port(config.remote_port)
           .path(config.remote_ap)
           .body(body)
-          .header("Content-Type", "Application/json")
+          .header("Content-Type", std::string("Application/json"))
           .post();
         log << yah::ctime << "[Sender] Send Done. " << response.status() << endl;
       }
@@ -56,7 +56,7 @@ namespace yah {
           .port(config.remote_port)
           .path(config.remote_apstation)
           .body(body)
-          .header("Content-Type", "Application/json")
+          .header("Content-Type", std::string("Application/json"))
           .post();
         log << yah::ctime << "[Sender] Send Done. " << response.status() << endl;
       }

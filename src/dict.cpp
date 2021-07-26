@@ -58,19 +58,23 @@ namespace yah {
     }
   }
 
-  std::string Value::serialize() const {
+  std::string Value::serialize(bool string_append_quote) const {
     std::ostringstream ostr("");
 
     switch(this->type) {
       case STR: {
-        ostr << '"';
+        if(string_append_quote) {
+          ostr << '"';
+        }
         for(auto& ch: this->s) {
           if(ch == '"') {
             ostr << "\\";
           }
           ostr << ch;
         }
-        ostr << '"';
+        if(string_append_quote) {
+          ostr << '"';
+        }
 
         goto output;
       }

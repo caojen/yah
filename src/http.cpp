@@ -3,6 +3,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include <cstring>
+#include <netdb.h>
 
 #include "http.hpp"
 #include "global.hpp"
@@ -12,6 +13,14 @@ namespace yah {
 
   Request& Request::host(const std::string& h) {
     this->__host = h;
+    struct hostent* hostent = gethostbyname(h.c_str());
+    if(hostent != NULL) {
+      char* ip = inet_ntoa(*(struct in_addr*)hostent->h_addr);
+      this->__ip = std::string(ip);
+    } else {
+      this->__ip = "";
+    }
+    log << yah::ctime << "[GetHostByName] " << h << " => " << this->__ip << endl;
     return *this;
   }
 
@@ -38,12 +47,12 @@ namespace yah {
 
   Request& Request::body(const std::string& body) {
     this->__body = body;
-    return this->header("Content-Type", "text/plain");
+    return this->header("Content-Type", std::string("text/plain"));
   }
 
   Request& Request::body(const Json& json) {
     this->__body = json.serialize();
-    return this->header("Content-Type", "Application/json");
+    return this->header("Content-Type", std::string("Application/json"));
   }
 
   Response Request::post() {
@@ -51,9 +60,10 @@ namespace yah {
     auto tcp_break = "\r\n";
     ostr << "POST " << this->__path << " HTTP/1.0" << tcp_break;
 
-    this->__headers.set("Connection", "close");
+    this->__headers.set("Connection", std::string("close"));
+    this->__headers.set("Host", this->__host + ":" + std::to_string(this->__port));
     for(auto &pair: this->__headers.items) {
-      ostr << pair.first.serialize() << ": " << pair.second.serialize() << tcp_break;
+      ostr << pair.first.serialize(false) << ": " << pair.second.serialize(false) << tcp_break;
     }
 
     ostr << tcp_break;

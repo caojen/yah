@@ -27,7 +27,7 @@ namespace yah {
 
       // 将这个Value转成字符串输出
       // 如果Value是一个字符串，那么将其所有的双引号的前面添加转义字符
-      std::string serialize() const;
+      std::string serialize(bool string_append_quote = true) const;
 
       // 比较函数
       bool operator<(const Value& other) const;
