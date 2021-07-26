@@ -17,11 +17,11 @@ namespace yah {
 
       unsigned      device              =     0;          // 该设备号
 
-      std::string   db                  =     "";         // 本地数据库文件位置
-      std::string   log                 =     "";         // log文件位置
+      std::string   db                  =     "";         // 本地数据库文件位置, 不能通过reload配置，下同
+      std::string   log                 =     "";         // log文件位置 TODO: 目前是将所有log输出到标准输出
       bool          log_to_std          =     false;      // 是否将log内容输出到标准输出中
 
-      unsigned      num_formatter       =     10;         // 处理行的线程数量，将行格式化成结构体，不能通过reload配置，下同
+      unsigned      num_formatter       =     10;         // 处理行的线程数量，将行格式化成结构体
       unsigned      num_checker         =     10;         // 检查结构体是否应该被保存，线程数量
       unsigned      num_sender          =     1;          // 发送者的数量
       unsigned      num_send_msg        =     100;        // 发送者发送消息时的最大数量
