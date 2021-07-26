@@ -44,6 +44,7 @@ namespace yah {
     public:
       std::string bssid;
       std::string station;
+      std::string comment;
       time_t create_time;
 
       ApStation(const std::string& s);

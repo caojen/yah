@@ -117,8 +117,8 @@ output:
     this->bssid = s.substr(first_begin - s.begin(), len);
     this->comment = s;
     this->create_time = time(NULL);
-    log << "[Ap] " << this->bssid << endl;
-    log << "[Ap] " << s << endl;
+
+    this->specify = this->bssid;
   }
 
   Json Ap::serialize() const {
@@ -138,7 +138,20 @@ output:
   }
 
   void ApStation::init(const std::string& s) {
+    auto first_begin = get_part_begin(s, 0);
+    auto first_end   = get_part_end(first_begin);
+    unsigned len = first_end - first_begin;
+    this->bssid = s.substr(first_begin - s.begin(), len);
 
+    auto second_begin = get_part_begin(s, 1);
+    auto second_end = get_part_end(second_begin);
+    len = second_end - second_begin;
+    this->station = s.substr(second_begin - s.begin(), len);
+
+    this->comment = s;
+    this->create_time = time(NULL);
+
+    this->specify = this->station;
   }
 
   Json ApStation::serialize() const {
