@@ -39,7 +39,7 @@ namespace yah {
       enum JsonType { ARRAY, DICT } type;
       typedef enum JsonType JsonType;
 
-      Json(JsonType = ARRAY);
+      Json(JsonType = DICT);
       Json(const Json& j);
 
       std::vector<Value> vec;
