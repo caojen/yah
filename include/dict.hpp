@@ -50,6 +50,8 @@ namespace yah {
       Value remove(const std::string& s);
       std::string serialize() const;
 
+      static std::string serialize(const std::vector<Json>& vec);
+
       friend std::ostream& operator<<(std::ostream& o, const Json& j);
   };
 }

@@ -24,6 +24,13 @@ namespace yah {
   static inline void init_sender() {
     auto func = [](const std::vector<std::unique_ptr<AirodumpData>>& vec) {
       log << "[Sender] " << vec.size() << endl;
+      std::vector<Json> v;
+      for(auto& item: vec) {
+        v.push_back(item->serialize());
+      }
+
+      std::string body = Json::serialize(v);
+      log << "[Sender Body] " << body << endl;
     };
     sender = new AutoPool<AirodumpData>(config.num_sender, config.num_send_msg, func, 1);
   }

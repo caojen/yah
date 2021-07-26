@@ -195,6 +195,19 @@ namespace yah {
     return ostr.str();
   }
 
+  std::string Json::serialize(const std::vector<Json>& vec) {
+    std::ostringstream ostr("");
+    ostr << "[";
+    for(auto it = vec.begin(); it != vec.end(); ++it) {
+      ostr << it->serialize();
+      if(std::next(it) != vec.end()) {
+        ostr << ",";
+      }
+    }
+    ostr << "]";
+    return ostr.str();
+  }
+
   std::ostream& operator<<(std::ostream& o, const Json& j) {
     o << j.serialize();
     return o;
