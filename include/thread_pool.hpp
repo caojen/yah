@@ -77,7 +77,7 @@ namespace yah {
         }
       }
 
-      void push(std::unique_ptr<T>& one_data) {
+      void push(std::unique_ptr<T> one_data) {
         std::lock_guard<std::mutex> lk(this->mutex);
         this->data.push(std::move(one_data));
         this->cv.notify_one();

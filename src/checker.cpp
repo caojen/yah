@@ -11,6 +11,7 @@ namespace yah {
     if(!this->ptr->in_cache() && !this->ptr->in_db()) {
       this->ptr->sync_db();
       // 持久化完成，交给sender
+      sender->push(std::move(this->ptr));
     }
   }
 }
