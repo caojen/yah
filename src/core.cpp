@@ -62,6 +62,7 @@ namespace yah {
           continue;
         }
         // TODO: 处理这个line
+        log << success << "[core] " << line << endl;
       }
     }
   }
