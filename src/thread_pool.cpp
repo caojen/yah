@@ -8,7 +8,6 @@ namespace yah {
   ThreadPool::ThreadPool(size_t num_workers) {
     for(size_t i = 0; i < num_workers; i++) {
       std::thread thread([this]() {
-        auto pid = std::this_thread::get_id();
         while(1) {
           std::unique_lock<std::mutex> lk(this->mutex);
           cv.wait(lk, [this] { return !this->jobs.empty(); });

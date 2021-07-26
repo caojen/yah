@@ -43,20 +43,58 @@ namespace yah {
   class AutoPool {
     public:
       // 什么都不做的构造函数
-      AutoPool();
+      AutoPool() {}
 
       // 指明工作线程数量
-      // 指明每次工作最大处理数量
+      // 指明每次获取数量
       // 指明工作内容
-      AutoPool(size_t num_workers, size_t num_per_time, std::function<void(void)> func);
+      // 指明每次工作后休眠时间（秒）
+      AutoPool(size_t num_workers, size_t num, std::function<void(
+        const std::vector<std::unique_ptr<T>>&
+      )> func, size_t s) {
+        this->num = num;
+        this->func = func;
+        this->s = s;
 
-      void push(std::unique_ptr<T>& one_data);
+        for(size_t i = 0; i < num_workers; i++) {
+          std::thread thread([this] () {
+            while(1) {
+              std::unique_lock<std::mutex> lk(this->mutex);
+              cv.wait(lk, [this] { return !this->data.empty(); });
+              std::vector<std::unique_ptr<T>> vec;
+              size_t n = this->num;
+              while(n-- && !this->data.empty()) {
+                vec.push_back(std::move(this->data.front()));
+                this->data.pop();
+              }
+              if(!vec.empty()) {
+                this->func(vec);
+              }
+              std::this_thread::sleep_for(std::chrono::seconds(this->s));
+            }
+          });
+          thread.detach();
+        }
+      }
+
+      void push(std::unique_ptr<T>& one_data) {
+        std::lock_guard<std::mutex> lk(this->mutex);
+        this->data.push(std::move(one_data));
+        this->cv.notify_one();
+      }
     private:
       std::queue<std::unique_ptr<T>>        data;
       // 多线程控制互斥锁
       std::mutex                            mutex;
       // 条件变量
       std::condition_variable               cv;
+
+      size_t                                num;
+
+      std::function<void(std::vector<std::unique_ptr<T>>&)> func;
+
+      size_t                                s;
+
   };
 
   class Job {

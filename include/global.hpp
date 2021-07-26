@@ -9,6 +9,7 @@
 #include "cache.hpp"
 #include "db.hpp"
 #include "thread_pool.hpp"
+#include "airodump.hpp"
 
 namespace yah {
   extern Config config;
@@ -30,5 +31,5 @@ namespace yah {
 
   extern ThreadPool* formatter;
   extern ThreadPool* checker;
-  extern ThreadPool* sender;
+  extern AutoPool<AirodumpData>* sender;
 }

@@ -22,7 +22,10 @@ namespace yah {
     checker = new ThreadPool(config.num_checker);
   }
   static inline void init_sender() {
-    sender = new ThreadPool(config.num_sender);
+    auto func = [](const std::vector<std::unique_ptr<AirodumpData>>& vec) {
+      log << "[Sender] " << vec.size() << endl;
+    };
+    sender = new AutoPool<AirodumpData>(config.num_sender, config.num_send_msg, func, 1);
   }
 }
 
@@ -32,6 +35,7 @@ namespace yah {
     init_apstation_cache();
     init_formatter();
     init_checker();
+    init_sender();
 
     log << success << "init done" << endl;
 
