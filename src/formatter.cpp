@@ -11,9 +11,8 @@ namespace yah {
     if(airodump != nullptr) {
       std::unique_ptr<AirodumpData> ptr(airodump);
       // 格式化完成，将这个ptr交给checker
-
       std::unique_ptr<Job> c(new Checker(ptr));
-      log << "[Formatter] Done " << ptr->serialize() << endl;
+      
       checker->push(c);
     }
   }

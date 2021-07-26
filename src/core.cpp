@@ -21,7 +21,9 @@ namespace yah {
   static inline void init_checker() {
     checker = new ThreadPool(config.num_checker);
   }
-  static inline void init_sender();
+  static inline void init_sender() {
+    sender = new ThreadPool(config.num_sender);
+  }
 }
 
 namespace yah {
@@ -66,7 +68,6 @@ namespace yah {
         if(line.size() < 10) {
           continue;
         }
-        log << success << "[core] " << line << endl;
 
         std::unique_ptr<Job> ptr(new Formatter(line));
         formatter->push(ptr);

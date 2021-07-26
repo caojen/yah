@@ -30,4 +30,5 @@ namespace yah {
 
   extern ThreadPool* formatter;
   extern ThreadPool* checker;
+  extern ThreadPool* sender;
 }

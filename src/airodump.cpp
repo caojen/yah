@@ -172,17 +172,11 @@ output:
   }
 
   void Ap::sync_db() {
-    log << "1" << endl;
     char* sql = sqlite3_mprintf("INSERT INTO ap(bssid, comment, create_time) VALUES('%q', '%q', %d)", this->bssid.c_str(), this->comment.c_str(), this->create_time);
-    log << "2" << endl;
     db.lock();
-    log << "3" << endl;
     sqlite3_exec(db.db, sql, NULL, NULL, NULL);
-    log << "4" << endl;
     this->id = sqlite3_last_insert_rowid(db.db);
-    log << "5" << endl;
     db.unlock();
-    log << "6" << endl;
   }
 
   Ap::~Ap() {
@@ -252,17 +246,11 @@ output:
   }
 
   void ApStation::sync_db() {
-    log << "21" << endl;
     char* sql = sqlite3_mprintf("INSERT INTO apstation(bssid, station, comment, create_time) VALUES('%q', '%q', '%q', %d)", this->bssid.c_str(), this->station.c_str(), this->comment.c_str(), this->create_time);
-    log << "22" << endl;
     db.lock();
-    log << "23" << endl;
     sqlite3_exec(db.db, sql, NULL, NULL, NULL);
-    log << "24" << endl;
     this->id = sqlite3_last_insert_rowid(db.db);
-    log << "25" << endl;
     db.unlock();
-    log << "26" << endl;
   }
 
   ApStation::~ApStation() {

@@ -8,7 +8,7 @@
 #include "check.hpp"
 #include "core.hpp"
 
-#if True
+#if 1
 
 int main(int argc, char** argv) {
   if (argc < 2) {

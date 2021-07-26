@@ -20,4 +20,5 @@ namespace yah {
 
   ThreadPool* formatter;
   ThreadPool* checker;
+  ThreadPool* sender;
 }
