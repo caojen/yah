@@ -7,6 +7,7 @@
 #include "global.hpp"
 #include "yah_pty.hpp"
 #include "formatter.hpp"
+#include "http.hpp"
 
 namespace yah {
   static inline void init_ap_cache() {
@@ -24,13 +25,41 @@ namespace yah {
   static inline void init_sender() {
     auto func = [](const std::vector<std::unique_ptr<AirodumpData>>& vec) {
       log << "[Sender] " << yah::ctime << vec.size() << endl;
-      std::vector<Json> v;
+      std::vector<Json> ap;
+      std::vector<Json> apstation;
       for(auto& item: vec) {
-        v.push_back(item->serialize());
+        if(item->is_ap()) {
+          ap.push_back(item->serialize());
+        } else if(item->is_apstation()) {
+          apstation.push_back(item->serialize());
+        }
       }
+      {
+        std::string body = Json::serialize(ap);
+        log << yah::ctime << "[Sender Ap Body] " << body << endl;
 
-      std::string body = Json::serialize(v);
-      log << "[Sender Body] " << body << endl;
+        Response response = Request()
+          .host(config.remote_address)
+          .port(config.remote_port)
+          .path(config.remote_ap)
+          .body(body)
+          .header("Content-Type", "Application/json")
+          .post();
+        log << yah::ctime << "[Sender] Send Done. " << response.status() << endl;
+      }
+      {
+        std::string body = Json::serialize(apstation);
+        log << yah::ctime << "[Sender ApStation Body] " << body << endl;
+
+        Response response = Request()
+          .host(config.remote_address)
+          .port(config.remote_port)
+          .path(config.remote_apstation)
+          .body(body)
+          .header("Content-Type", "Application/json")
+          .post();
+        log << yah::ctime << "[Sender] Send Done. " << response.status() << endl;
+      }
     };
     sender = new AutoPool<AirodumpData>(config.num_sender, config.num_send_msg, func, config.sender_await);
   }

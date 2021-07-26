@@ -23,6 +23,8 @@ namespace yah {
       virtual bool in_cache() const = 0;
       virtual bool in_db() const = 0;
       virtual void sync_db() = 0;
+      virtual bool is_ap() const = 0;
+      virtual bool is_apstation() const = 0;
 
       AirodumpData(std::string& remote);
       virtual ~AirodumpData();
@@ -43,6 +45,8 @@ namespace yah {
       bool in_cache() const;
       bool in_db() const;
       void sync_db();
+      bool is_ap() const { return true; }
+      bool is_apstation() const { return false; }
 
       ~Ap();
   };
@@ -61,6 +65,8 @@ namespace yah {
       bool in_cache() const;
       bool in_db() const;
       void sync_db();
+      bool is_ap() const { return false; }
+      bool is_apstation() const { return true; }
 
       ~ApStation();
   };
