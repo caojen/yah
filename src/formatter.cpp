@@ -32,6 +32,7 @@ namespace yah {
       auto airodump = AirodumpData::init_origin_line(s);
       
       if(airodump != nullptr) {
+        log << "[Formatter] " << airodump->serialize() << endl;
         std::unique_ptr<AirodumpData> ptr(airodump);
         // 将这个指针丢给checker
         pthread_mutex_lock(&checker.mutex);

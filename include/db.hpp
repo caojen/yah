@@ -15,5 +15,8 @@ namespace yah {
       DB();
       DB(std::string path);
       ~DB();
+
+      void lock();
+      void unlock();
   };
 }

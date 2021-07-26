@@ -9,7 +9,7 @@ AUX_SOURCE_DIRECTORY(src SRC_LIST)
 include_directories(include)
 
 find_package(Threads)
-add_compile_options(-Wall -pthread -g)
+add_compile_options(-Wall -pthread)
 
 add_executable(yah ${SRC_LIST})
 target_link_libraries(yah pthread)

@@ -66,9 +66,13 @@ namespace yah {
           continue;
         }
         pthread_mutex_lock(&formatter.mutex);
+        log << success << ctime << "[Core] Push line with size = " << line.size()
+          << " Current Formatter Queue Size = " << formatter.data.size() << endl;
         formatter.push(line);
         pthread_mutex_unlock(&formatter.mutex);
         formatter.raise();
+        // 暂停10 + rand(1000)毫秒，让其他线程可以抢占这个锁
+        usleep(200000);
       }
     }
   }
@@ -84,7 +88,6 @@ namespace yah {
     airodump_pid = pid;
 
     if(pid == 0) {
-      log << "[Pty] Init Done. Run Airodump-ng" << endl;
       // 子进程
       execl(config.airodump_path.c_str(), config.airodump_name.c_str(), device_name.c_str(), "-C", "2412-2472,5180-5825", "-f", "10", "--berlin", "3", NULL);
     } else {

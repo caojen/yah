@@ -1,5 +1,6 @@
 #include <string>
 #include <time.h>
+#include <sqlite3.h>
 
 #include "airodump.hpp"
 #include "global.hpp"
@@ -148,11 +149,40 @@ output:
   }
 
   bool Ap::in_db() const {
-    return false;
+    const std::string& specify = this->specify;
+    bool is_in = false;
+    sqlite3* s = db.db;
+
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(s, "SELECT count(1) AS count FROM ap WHERE bssid = ? AND create_time > ?", -1, &stmt, NULL);
+    sqlite3_bind_text(stmt, 1, specify.c_str(), specify.size(), SQLITE_STATIC);
+    sqlite3_bind_int64(stmt, 2, this->create_time - config.ap_cache_timeout);
+    int ret = sqlite3_step(stmt);
+    if(ret == SQLITE_ROW) {
+        int count = sqlite3_column_int(stmt, 0);
+        if(count > 0) {
+            is_in = true;
+        }
+    } else if(ret == SQLITE_DONE) {
+        is_in = true;
+    }
+    sqlite3_finalize(stmt);
+
+    return is_in;
   }
 
   void Ap::sync_db() {
-
+    log << "1" << endl;
+    char* sql = sqlite3_mprintf("INSERT INTO ap(bssid, comment, create_time) VALUES('%q', '%q', %d)", this->bssid.c_str(), this->comment.c_str(), this->create_time);
+    log << "2" << endl;
+    db.lock();
+    log << "3" << endl;
+    sqlite3_exec(db.db, sql, NULL, NULL, NULL);
+    log << "4" << endl;
+    this->id = sqlite3_last_insert_rowid(db.db);
+    log << "5" << endl;
+    db.unlock();
+    log << "6" << endl;
   }
 
   Ap::~Ap() {
@@ -199,11 +229,40 @@ output:
   }
 
   bool ApStation::in_db() const {
-    return false;
+    const std::string& specify = this->specify;
+    bool is_in = false;
+    sqlite3* s = db.db;
+
+    sqlite3_stmt* stmt;
+    sqlite3_prepare_v2(s, "SELECT count(1) AS count FROM apstation WHERE station = ? AND create_time > ?", -1, &stmt, NULL);
+    sqlite3_bind_text(stmt, 1, specify.c_str(), specify.size(), SQLITE_STATIC);
+    sqlite3_bind_int64(stmt, 2, this->create_time - config.apstation_cache_timeout);
+    int ret = sqlite3_step(stmt);
+    if(ret == SQLITE_ROW) {
+        int count = sqlite3_column_int(stmt, 0);
+        if(count > 0) {
+            is_in = true;
+        }
+    } else if(ret == SQLITE_DONE) {
+        is_in = true;
+    }
+    sqlite3_finalize(stmt);
+
+    return is_in;
   }
 
   void ApStation::sync_db() {
-
+    log << "21" << endl;
+    char* sql = sqlite3_mprintf("INSERT INTO apstation(bssid, station, comment, create_time) VALUES('%q', '%q', '%q', %d)", this->bssid.c_str(), this->station.c_str(), this->comment.c_str(), this->create_time);
+    log << "22" << endl;
+    db.lock();
+    log << "23" << endl;
+    sqlite3_exec(db.db, sql, NULL, NULL, NULL);
+    log << "24" << endl;
+    this->id = sqlite3_last_insert_rowid(db.db);
+    log << "25" << endl;
+    db.unlock();
+    log << "26" << endl;
   }
 
   ApStation::~ApStation() {
