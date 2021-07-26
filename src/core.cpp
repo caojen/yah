@@ -23,8 +23,6 @@ namespace yah {
   void core_start() {
     init_ap_cache();
     init_apstation_cache();
-    init_formatter();
-    init_checker();
 
     log << success << "init done" << endl;
 

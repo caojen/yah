@@ -8,6 +8,8 @@
 #include <thread>
 #include <memory>
 #include <mutex>
+#include <queue>
+#include <condition_variable>
 
 namespace yah {
   class Job;
@@ -22,6 +24,20 @@ namespace yah {
       ThreadPool(size_t num_workers);
 
       // 将一个工作推入到线程中
-      void push();
+      void push(std::unique_ptr<Job>& job);
+    
+    private:
+      // 含有所有任务的队列
+      std::queue<std::unique_ptr<Job>>        jobs;
+      // 多线程控制互斥锁
+      std::mutex                              mutex;
+      // 条件变量
+      std::condition_variable                 cv;
+  };
+
+  class Job {
+    public:
+      virtual void run() = 0;
+      virtual ~Job() {}
   };
 }
