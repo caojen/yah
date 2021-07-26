@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 
 #include "http.hpp"
+#include "global.hpp"
 
 namespace yah {
   Request::Request() {}
@@ -59,6 +60,8 @@ namespace yah {
 
     std::string text = ostr.str();
 
+    log << ctime << "[Http] Generate Body:" << endl << text << endl;
+
     // send text to ip this->__ip;
 
     // connect
@@ -68,15 +71,26 @@ namespace yah {
     serv_addr.sin_family = PF_INET;
     inet_aton(this->__ip.c_str(), &serv_addr.sin_addr);
     serv_addr.sin_port = htons(this->__port);
-    // send
-    connect(fd, (struct sockaddr*)&serv_addr,sizeof(serv_addr));
-    write(fd, text.c_str(), text.size());
-    // receive response
+
+    std::string r = "";
     char response[1024] = { 0 };
+    // send
+    if(connect(fd, (struct sockaddr*)&serv_addr,sizeof(serv_addr)) < 0) {
+      log << yah::ctime << "[Http] socker.connect error" << endl;
+      goto error;
+    }
+    if(write(fd, text.c_str(), text.size()) == -1) {
+      log << yah::ctime << "[Http] socket.write error" << endl;
+      goto error;
+    }
+    // receive response
     read(fd, response, 1024);
     // return response
-    std::string r(response);
+    r = std::string(response);
+    log << yah::ctime << "[Http] Receive " << r << endl;
     return Response(r);
+  error:
+    return Response();
   }
 
   Response::Response(const std::string& text) {
