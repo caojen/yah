@@ -144,7 +144,7 @@ output:
   }
 
   bool Ap::in_cache() const {
-    return false;
+    return ap_cache.insert(this->specify);
   }
 
   bool Ap::in_db() const {
@@ -195,7 +195,7 @@ output:
   }
 
   bool ApStation::in_cache() const {
-    return false;
+    return apstation_cache.insert(this->specify);
   }
 
   bool ApStation::in_db() const {

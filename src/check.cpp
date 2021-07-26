@@ -48,6 +48,10 @@ namespace yah {
       log << fatal << "... no" << endl;
       goto check_fatal;
     }
+
+    log << check << "init sql..." << endl;
+    check_init_sql();
+    log << check << "sql init done." << endl;
     return true;
 
 check_fatal:
@@ -82,6 +86,13 @@ check_fatal:
     }
 
     return true;
+  }
+
+  void check_init_sql() {
+    const char* ap = "CREATE TABLE if not exists `ap` (id INTEGER PRIMARY KEY AUTOINCREMENT,bssid CHAR(17),comment text,create_time INTEGER not null, is_uploaded int not null default 0);";
+    const char* apstation = "CREATE TABLE if not exists `apstation` (id INTEGER PRIMARY KEY AUTOINCREMENT,bssid CHAR (17),station CHAR (17),comment text, create_time INTEGER NOT NULL,is_uploaded int NOT NULL DEFAULT 0);";
+
+    // TODO: 初始化全局变量db，并且使用上面的语句应用到db上
   }
 
   unsigned check_get_locking_pid() {
