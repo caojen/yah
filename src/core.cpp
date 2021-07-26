@@ -17,7 +17,9 @@ namespace yah {
   static inline void init_formatter() {
     formatter = Formatter(config.num_formatter);
   }
-  static inline void init_checker();
+  static inline void init_checker() {
+    checker = Checker(config.num_checker);
+  }
   static inline void init_sender();
 }
 
@@ -26,6 +28,7 @@ namespace yah {
     init_ap_cache();
     init_apstation_cache();
     init_formatter();
+    init_checker();
 
     log << success << "init done" << endl;
 

@@ -1,5 +1,7 @@
 #include <memory>
 
+#include <unistd.h>
+
 #include "formatter.hpp"
 #include "airodump.hpp"
 #include "global.hpp"
@@ -23,15 +25,23 @@ namespace yah {
     while(1) {
       pthread_mutex_lock(&f.mutex);
       while(f.data.empty()) {
+        log << "[Formatter sleep]" << endl;
         pthread_cond_wait(&f.cond, &f.mutex);
+        log << "[Formatter await]" << endl;
       }
+      log << "[Formatter break]" << endl;
       std::string s = f.pop();
       pthread_mutex_unlock(&f.mutex);
       auto airodump = AirodumpData::init_origin_line(s);
+      
       if(airodump != nullptr) {
         std::unique_ptr<AirodumpData> ptr(airodump);
         // 将这个指针丢给checker
+        log << "[Formatter] " << ptr->serialize() << endl;
+        pthread_mutex_lock(&checker.mutex);
         checker.push(ptr);
+        pthread_mutex_unlock(&checker.mutex);
+        checker.raise();
       }
     }
 
