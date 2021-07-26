@@ -4,6 +4,8 @@
 #include <string>
 #include <pthread.h>
 
+#include "checker.hpp"
+
 namespace yah {
 
   class Formatter {
