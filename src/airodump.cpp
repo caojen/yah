@@ -48,6 +48,8 @@ namespace yah {
     return std::string(r);
   }
 
+  AirodumpData::AirodumpData(std::string& remote): remote(remote) {}
+
   AirodumpData::~AirodumpData() {}
 
   AirodumpData* AirodumpData::init_origin_line(const std::string& s) {
@@ -113,8 +115,9 @@ output:
     return ret;
   }
 
-  Ap::Ap(const std::string& s) {
+  Ap::Ap(const std::string& s): AirodumpData(config.remote_ap) {
     this->init(s);
+    this->remote = config.remote_ap;
   }
 
   void Ap::init(const std::string& s) {
@@ -156,7 +159,7 @@ output:
     // log << "[ApDeleted]" << endl;
   }
 
-  ApStation::ApStation(const std::string& s) {
+  ApStation::ApStation(const std::string& s): AirodumpData(config.remote_apstation) {
     this->init(s);
   }
 

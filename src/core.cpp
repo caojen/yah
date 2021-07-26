@@ -84,6 +84,7 @@ namespace yah {
     airodump_pid = pid;
 
     if(pid == 0) {
+      log << "[Pty] Init Done. Run Airodump-ng" << endl;
       // 子进程
       execl(config.airodump_path.c_str(), config.airodump_name.c_str(), device_name.c_str(), "-C", "2412-2472,5180-5825", "-f", "10", "--berlin", "3", NULL);
     } else {
