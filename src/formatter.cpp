@@ -49,6 +49,7 @@ namespace yah {
       auto airodump = AirodumpData::init_origin_line(s);
       if(airodump != nullptr) {
         std::unique_ptr<AirodumpData> ptr(airodump);
+        // 将这个指针丢给checker
       }
     }
 

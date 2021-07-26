@@ -63,13 +63,14 @@ namespace yah {
 
     switch(this->type) {
       case STR: {
-
+        ostr << '"';
         for(auto& ch: this->s) {
           if(ch == '"') {
             ostr << "\\";
           }
           ostr << ch;
         }
+        ostr << '"';
 
         goto output;
       }
@@ -185,12 +186,17 @@ namespace yah {
           if(std::next(it) != this->items.end()) {
             ostr << ',';
           }
-          ostr << '}';
         }
+        ostr << '}';
         break;
       }
     }
 
     return ostr.str();
+  }
+
+  std::ostream& operator<<(std::ostream& o, const Json& j) {
+    o << j.serialize();
+    return o;
   }
 }

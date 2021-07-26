@@ -38,6 +38,8 @@ namespace yah {
       Json serialize() const;
       bool in_cache() const;
       void sync_db();
+
+      ~Ap();
   };
 
   class ApStation: public AirodumpData {
@@ -53,5 +55,7 @@ namespace yah {
       Json serialize() const;
       bool in_cache() const;
       void sync_db();
+
+      ~ApStation();
   };
 }

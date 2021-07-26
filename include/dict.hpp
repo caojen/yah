@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <iostream>
 
 namespace yah {
   class Json;
@@ -48,5 +49,7 @@ namespace yah {
       void set(const std::string& s, const Value& value);
       Value remove(const std::string& s);
       std::string serialize() const;
+
+      friend std::ostream& operator<<(std::ostream& o, const Json& j);
   };
 }

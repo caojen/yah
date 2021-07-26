@@ -148,6 +148,10 @@ output:
 
   }
 
+  Ap::~Ap() {
+    // log << "[ApDeleted]" << endl;
+  }
+
   ApStation::ApStation(const std::string& s) {
     this->init(s);
   }
@@ -189,5 +193,9 @@ output:
 
   void ApStation::sync_db() {
 
+  }
+
+  ApStation::~ApStation() {
+    // log << "[ApStationDeleted]" << endl;
   }
 }
