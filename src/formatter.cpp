@@ -31,6 +31,7 @@ namespace yah {
       if(airodump != nullptr) {
         std::unique_ptr<AirodumpData> ptr(airodump);
         // 将这个指针丢给checker
+        checker.push(ptr);
       }
     }
 

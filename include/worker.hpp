@@ -45,8 +45,8 @@ namespace yah {
 
   template<class T>
   T Worker<T>::pop() {
-    T ret = move(this->data.front());
+    T ret = std::move(this->data.front());
     this->data.pop();
-    return move(ret);
+    return std::move(ret);
   }
 }
