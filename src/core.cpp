@@ -23,7 +23,7 @@ namespace yah {
   }
   static inline void init_sender() {
     auto func = [](const std::vector<std::unique_ptr<AirodumpData>>& vec) {
-      log << "[Sender] " << vec.size() << endl;
+      log << "[Sender] " << yah::ctime << vec.size() << endl;
       std::vector<Json> v;
       for(auto& item: vec) {
         v.push_back(item->serialize());
