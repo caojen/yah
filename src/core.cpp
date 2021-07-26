@@ -6,6 +6,7 @@
 #include "core.hpp"
 #include "global.hpp"
 #include "yah_pty.hpp"
+#include "formatter.hpp"
 
 namespace yah {
   static inline void init_ap_cache() {
@@ -14,8 +15,12 @@ namespace yah {
   static inline void init_apstation_cache() {
     apstation_cache = Cache<std::string>(config.num_cache_max, config.apstation_cache_timeout);
   }
-  static inline void init_formatter();
-  static inline void init_checker();
+  static inline void init_formatter() {
+    formatter = new ThreadPool(config.num_formatter);
+  }
+  static inline void init_checker() {
+    checker = new ThreadPool(config.num_checker);
+  }
   static inline void init_sender();
 }
 
@@ -23,6 +28,8 @@ namespace yah {
   void core_start() {
     init_ap_cache();
     init_apstation_cache();
+    init_formatter();
+    init_checker();
 
     log << success << "init done" << endl;
 
@@ -59,8 +66,10 @@ namespace yah {
         if(line.size() < 10) {
           continue;
         }
-        // TODO: 处理这个line
         log << success << "[core] " << line << endl;
+
+        std::unique_ptr<Job> ptr(new Formatter(line));
+        formatter->push(ptr);
       }
     }
   }

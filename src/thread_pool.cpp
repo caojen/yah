@@ -1,7 +1,6 @@
 #include <chrono>
 
 #include "thread_pool.hpp"
-#include "global.hpp"
 
 namespace yah {
   ThreadPool::ThreadPool() {}

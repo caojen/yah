@@ -17,4 +17,7 @@ namespace yah {
 
   std::string device_name;
   pid_t airodump_pid;
+
+  ThreadPool* formatter;
+  ThreadPool* checker;
 }

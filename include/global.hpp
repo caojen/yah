@@ -8,6 +8,7 @@
 #include "log.hpp"
 #include "cache.hpp"
 #include "db.hpp"
+#include "thread_pool.hpp"
 
 namespace yah {
   extern Config config;
@@ -26,4 +27,7 @@ namespace yah {
 
   extern std::string device_name;
   extern pid_t airodump_pid;
+
+  extern ThreadPool* formatter;
+  extern ThreadPool* checker;
 }
