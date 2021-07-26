@@ -4,24 +4,15 @@
 #include <string>
 #include <pthread.h>
 
+#include "worker.hpp"
 #include "checker.hpp"
 
 namespace yah {
 
-  class Formatter {
+  class Formatter: public Worker<std::string> {
     public:
-      pthread_mutex_t               mutex;
-      pthread_cond_t                cond;
-
-      std::queue<std::string>       lines;
-      unsigned                      num_workers;
-      
       Formatter();
       Formatter(unsigned num_workers);
-
-      void push(const std::string& s);
-      void raise();
-      std::string pop();
   };
 
   void* formatter_do(void* __f);

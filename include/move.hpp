@@ -11,4 +11,9 @@ namespace yah {
   std::unique_ptr<T> move(std::unique_ptr<T>& s) {
     return s.move();
   }
+
+  // template<class T>
+  // T move(T& t) {
+  //   return t.move();
+  // }
 }

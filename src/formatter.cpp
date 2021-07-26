@@ -7,14 +7,9 @@
 namespace yah {
   Formatter::Formatter() {}
 
-  Formatter::Formatter(unsigned num_workers) {
-    this->num_workers = num_workers;
-    this->lines = std::queue<std::string>();
-
-    pthread_mutex_init(&this->mutex, NULL);
-    pthread_cond_init(&this->cond, NULL);
-
-    // 创建workers
+  Formatter::Formatter(unsigned num_workers)
+    : Worker(num_workers) {
+    // 创建workers线程
     pthread_t pid;
     for(unsigned i = 0; i < num_workers; i++) {
       pthread_create(&pid, NULL, formatter_do, NULL);
@@ -23,25 +18,11 @@ namespace yah {
     log << success << "Formatter init done, with size = " << this->num_workers << endl;
   }
 
-  void Formatter::push(const std::string& s) {
-    this->lines.push(s);
-  }
-
-  void Formatter::raise() {
-    pthread_cond_signal(&this->cond);
-  }
-
-  std::string Formatter::pop() {
-    std::string ret = this->lines.front();
-    this->lines.pop();
-    return ret;
-  }
-
   void* formatter_do(void* __f) {
     Formatter& f = formatter;
     while(1) {
       pthread_mutex_lock(&f.mutex);
-      while(f.lines.empty()) {
+      while(f.data.empty()) {
         pthread_cond_wait(&f.cond, &f.mutex);
       }
       std::string s = f.pop();
