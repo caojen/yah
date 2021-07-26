@@ -17,7 +17,7 @@ namespace yah {
   extern Success success;
   extern Warn warn;
   extern Fatal fatal;
-  extern Time time;
+  extern Time ctime;
 
   extern Cache<std::string> ap_cache;
   extern Cache<std::string> apstation_cache;

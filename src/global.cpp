@@ -8,7 +8,7 @@ namespace yah {
   Success success;
   Warn warn;
   Fatal fatal;
-  Time time;
+  Time ctime;
 
   Cache<std::string> ap_cache;
   Cache<std::string> apstation_cache;
