@@ -32,4 +32,5 @@ namespace yah {
   extern ThreadPool* formatter;
   extern ThreadPool* checker;
   extern AutoPool<AirodumpData>* sender;
+  extern AutoPool<AirodumpData>* updater;
 }

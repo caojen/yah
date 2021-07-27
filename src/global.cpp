@@ -21,4 +21,5 @@ namespace yah {
   ThreadPool* formatter;
   ThreadPool* checker;
   AutoPool<AirodumpData>* sender;
+  AutoPool<AirodumpData>* updater;
 }
