@@ -1,3 +1,4 @@
+#include <signal.h>
 #include <iostream>
 #include <assert.h>
 #include <string.h>
@@ -7,8 +8,6 @@
 #include "global.hpp"
 #include "check.hpp"
 #include "core.hpp"
-
-#if 1
 
 int main(int argc, char** argv) {
   if (argc < 2) {
@@ -32,12 +31,22 @@ int main(int argc, char** argv) {
 
   } else if(!strcmp(argv[1], "reload")) {
     yah::log << yah::ctime << "Reload" << yah::endl;
+
+    if(yah::check_is_root() == false) {
+      yah::log << yah::ctime << "You should be root." << yah::endl;
+      abort();
+    }
     // 获得当前正在运行的进程
     yah::log << yah::ctime << "Check Lockfile..." << yah::endl;
     if(yah::check_lockfile() == false) {
       yah::log << yah::ctime << yah::success << yah::endl;
       auto pid = yah::check_get_locking_pid();
       yah::log << yah::ctime << yah::success << "Get Pid = " << pid << yah::endl;
+      yah::log << yah::ctime << "Send SIGHUP" << yah::endl;
+      kill(pid, SIGHUP);
+    } else {
+      yah::log << yah::fatal << "It Seems that no process is running. Abort." << yah::endl;
+      abort();
     }
 
     return 0;
@@ -52,39 +61,5 @@ exit:
   return 1;
 unreachable:
   printf("Program run into unreachable code.\n");
-  return 2;
+  abort();
 }
-
-#else
-
-#include "thread_pool.hpp"
-
-using namespace yah;
-
-class MyJob: public Job {
-  public:
-    int i;
-    MyJob(int i = 0) {
-      this->i = i;
-    }
-    void run() {
-      std::cout << i << std::endl;
-    }
-    ~MyJob() {
-      std::cout << i << ": deleted" << std::endl;
-    }
-};
-
-int main() {
-  ThreadPool tp(3);
-  std::this_thread::sleep_for(std::chrono::seconds(3));
-  int i = 0;
-  while(1) {
-    std::unique_ptr<Job> myJob(new MyJob(i));
-    i++;
-    tp.push(myJob);
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-  }
-}
-
-#endif
