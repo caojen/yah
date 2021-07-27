@@ -148,6 +148,8 @@ namespace yah {
       sender->push(std::move(up));
     }
     sqlite3_finalize(stmt);
+
+    log << yah::ctime << "[OldData] Finished" << endl;
   }
 }
 
