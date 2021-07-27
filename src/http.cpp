@@ -62,7 +62,7 @@ namespace yah {
 
     this->__headers.set("Connection", std::string("close"));
     this->__headers.set("Host", this->__host + ":" + std::to_string(this->__port));
-    this->__headers.set("User-Agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Mobile Safari/537.36");
+    this->__headers.set("User-Agent", std::string("Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Mobile Safari/537.36"));
     if(this->__body.size() > 0) {
       this->__headers.set("Content-Length", this->__body.size());
     }
@@ -76,10 +76,7 @@ namespace yah {
 
     std::string text = ostr.str();
 
-    log << ctime << "[Http] Generate Body:" << endl << text << endl;
-
     // send text to ip this->__ip;
-
     // connect
     int fd = socket(PF_INET, SOCK_STREAM, 0);
     struct sockaddr_in serv_addr;
@@ -103,7 +100,6 @@ namespace yah {
     read(fd, response, 10240);
     // return response
     r = std::string(response);
-    log << yah::ctime << "[Http] Receive " << r << endl;
     return Response(r);
   error:
     return Response();

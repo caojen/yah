@@ -37,11 +37,11 @@ namespace yah {
       }
       if(!ap.empty()) {
         std::string data = Json::serialize(ap);
-        log << yah::ctime << "[Sender Ap Body] " << data << endl;
+        // log << yah::ctime << "[Sender Ap Body] " << data << endl;
 
         Encode encoder(data);
         std::string body = encoder.encode();
-        log << yah::ctime << "[Sender Ap Encoded] " << body << endl;
+        // log << yah::ctime << "[Sender Ap Encoded] " << body << endl;
         Json json; json.set("data", body);
         Response response = Request()
           .host(config.remote_address)
@@ -50,15 +50,15 @@ namespace yah {
           .body(json.serialize())
           .header("Content-Type", std::string("Application/json"))
           .post();
-        log << yah::ctime << "[Sender] Send Done. " << response.status() << endl;
+        log << yah::ctime << "[Sender] Ap Send Done. (" << ap.size() << ")" << response.status() << endl;
       }
       if(!apstation.empty()) {
         std::string data = Json::serialize(apstation);
-        log << yah::ctime << "[Sender ApStation Body] " << data << endl;
+        // log << yah::ctime << "[Sender ApStation Body] " << data << endl;
 
         Encode encoder(data);
         std::string body = encoder.encode();
-        log << yah::ctime << "[Sender Ap Encoded] " << body << endl;
+        // log << yah::ctime << "[Sender Ap Encoded] " << body << endl;
         Json json; json.set("data", body);
 
         Response response = Request()
@@ -68,7 +68,7 @@ namespace yah {
           .body(json.serialize())
           .header("Content-Type", std::string("Application/json"))
           .post();
-        log << yah::ctime << "[Sender] Send Done. " << response.status() << endl;
+        log << yah::ctime << "[Sender] Apstation Send Done. (" << apstation.size() << ")" << response.status() << endl;
       }
     };
     sender = new AutoPool<AirodumpData>(config.num_sender, config.num_send_msg, func, config.sender_await);
