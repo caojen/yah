@@ -59,13 +59,16 @@ namespace yah {
         for(size_t i = 0; i < num_workers; i++) {
           std::thread thread([this] () {
             while(1) {
-              std::unique_lock<std::mutex> lk(this->mutex);
-              cv.wait(lk, [this] { return !this->data.empty(); });
               std::vector<std::unique_ptr<T>> vec;
-              size_t n = this->num;
-              while(n-- && !this->data.empty()) {
-                vec.push_back(std::move(this->data.front()));
-                this->data.pop();
+              {
+                std::unique_lock<std::mutex> lk(this->mutex);
+                cv.wait(lk, [this] { return !this->data.empty(); });
+                
+                size_t n = this->num;
+                while(n-- && !this->data.empty()) {
+                  vec.push_back(std::move(this->data.front()));
+                  this->data.pop();
+                }
               }
               if(!vec.empty()) {
                 this->func(vec);
