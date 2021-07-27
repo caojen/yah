@@ -35,8 +35,9 @@ namespace yah {
         }
       }
       {
-        std::string body = Json::serialize(ap);
-        log << yah::ctime << "[Sender Ap Body] " << body << endl;
+        std::string body = "";
+        std::string data = Json::serialize(ap);
+        log << yah::ctime << "[Sender Ap Body] " << data << endl;
 
         Response response = Request()
           .host(config.remote_address)
@@ -48,7 +49,8 @@ namespace yah {
         log << yah::ctime << "[Sender] Send Done. " << response.status() << endl;
       }
       {
-        std::string body = Json::serialize(apstation);
+        std::string body = "";
+        std::string data = Json::serialize(apstation);
         log << yah::ctime << "[Sender ApStation Body] " << body << endl;
 
         Response response = Request()
