@@ -24,7 +24,7 @@ namespace yah {
     checker = new ThreadPool(config.num_checker);
   }
   static inline void init_sender() {
-    auto func = [](const std::vector<std::unique_ptr<AirodumpData>>& vec) {
+    auto func = [](std::vector<std::unique_ptr<AirodumpData>>& vec) {
       log << "[Sender] " << yah::ctime << vec.size() << endl;
       std::vector<Json> ap;
       std::vector<Json> apstation;
@@ -70,13 +70,20 @@ namespace yah {
           .post();
         log << yah::ctime << "[Sender] Apstation Send Done. (" << apstation.size() << ")" << response.status() << endl;
       }
+
+      // 将这个数据丢给updater
+      for(auto& v: vec) {
+        updater->push(std::move(v));
+      }
     };
     sender = new AutoPool<AirodumpData>(config.num_sender, config.num_send_msg, func, config.sender_await);
   }
 
   static inline void init_updater() {
-    auto func = []() {};
-    updater = new AutoPool<AirodumpData>(1, 100, func, 5);
+    auto func = [](std::vector<std::unique_ptr<AirodumpData>>& vec) {
+      log << "[Updater] receive size = " << vec.size() << endl;
+    };
+    updater = new AutoPool<AirodumpData>(1, 100, func, 10);
   }
 }
 

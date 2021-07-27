@@ -50,7 +50,7 @@ namespace yah {
       // 指明工作内容
       // 指明每次工作后休眠时间（秒）
       AutoPool(size_t num_workers, size_t num, std::function<void(
-        const std::vector<std::unique_ptr<T>>&
+        std::vector<std::unique_ptr<T>>&
       )> func, size_t s) {
         this->num = num;
         this->func = func;
