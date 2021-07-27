@@ -7,6 +7,7 @@ ifneq ($(shell id -u), 0)
 	@echo "You must be root to perform this action."
 else
 	mkdir -p ./build
+	mkdir -p /data/yah
 	cd ${ROOT_DIR}/build && cmake ${ROOT_DIR} && make && cd -
 	cp ${ROOT_DIR}/yah /usr/bin/yah
 
