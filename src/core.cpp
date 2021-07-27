@@ -160,10 +160,10 @@ namespace yah {
     init_sender();
     init_updater();
 
-    log << success << "init done" << endl;
+    log << yah::ctime << success << "init done" << endl;
 
     int airodump_fd = run_airodump();
-    log << success << "airodump running at file socket = " << airodump_fd << endl;
+    log << yah::ctime << success << "airodump running at file socket = " << airodump_fd << endl;
 
     fd_set input_set;
     FD_ZERO(&input_set);

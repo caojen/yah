@@ -16,6 +16,8 @@ int main(int argc, char** argv) {
   }
 
   if(!strcmp(argv[1], "start")) {
+    yah::log << yah::ctime << "Program starting..." << yah::endl;
+    
     std::string config_file = argv[2];
     yah::config = yah::Config(config_file);
     yah::Config::show(yah::config);
