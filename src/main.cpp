@@ -8,6 +8,7 @@
 #include "global.hpp"
 #include "check.hpp"
 #include "core.hpp"
+#include "signal.hpp"
 
 int main(int argc, char** argv) {
   if (argc < 2) {
@@ -27,6 +28,9 @@ int main(int argc, char** argv) {
     if(yah::precheck() == false) {
       goto exit;
     }
+
+    // 注册信号
+    yah::SignalHandler::handle();
 
     yah::core_start();
 
