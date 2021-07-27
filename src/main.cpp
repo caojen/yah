@@ -15,6 +15,9 @@ int main(int argc, char** argv) {
   }
 
   if(!strcmp(argv[1], "start")) {
+    if(argc < 3) {
+      goto usage;
+    }
     yah::log << yah::ctime << "Program starting..." << yah::endl;
     
     std::string config_file = argv[2];
