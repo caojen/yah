@@ -31,7 +31,16 @@ int main(int argc, char** argv) {
     goto unreachable;
 
   } else if(!strcmp(argv[1], "reload")) {
+    yah::log << yah::ctime << "Reload" << yah::endl;
+    // 获得当前正在运行的进程
+    yah::log << yah::ctime << "Check Lockfile..." << yah::endl;
+    if(yah::check_lockfile()) {
+      yah::log << yah::ctime << yah::success << yah::endl;
+      auto pid = yah::check_get_locking_pid();
+      yah::log << yah::ctime << yah::success << "Get Pid = " << pid << yah::endl;
+    }
 
+    return 0;
   } else {
     goto usage;
   }
