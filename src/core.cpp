@@ -73,6 +73,11 @@ namespace yah {
     };
     sender = new AutoPool<AirodumpData>(config.num_sender, config.num_send_msg, func, config.sender_await);
   }
+
+  static inline void init_updater() {
+    auto func = []() {};
+    updater = new AutoPool<AirodumpData>(1, 100, func, 5);
+  }
 }
 
 namespace yah {
@@ -82,6 +87,7 @@ namespace yah {
     init_formatter();
     init_checker();
     init_sender();
+    init_updater();
 
     log << success << "init done" << endl;
 
