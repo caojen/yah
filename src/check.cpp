@@ -86,6 +86,12 @@ check_fatal:
       return false;
     }
 
+    long pid = getpid();
+    ftruncate(fd, 0);
+    char buf[16];
+    sprintf(buf, "%ld", pid);
+    write(fd, buf, strlen(buf) + 1);
+
     return true;
   }
 
