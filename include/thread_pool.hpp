@@ -29,6 +29,9 @@ namespace yah {
 
       // 将一个工作推入到线程中
       void push(std::unique_ptr<Job>& job);
+
+      // 获取该锁，用于控制线程工作
+      std::mutex& get_mutex();
     
     private:
       // 含有所有任务的队列
@@ -59,13 +62,16 @@ namespace yah {
         for(size_t i = 0; i < num_workers; i++) {
           std::thread thread([this] () {
             while(1) {
-              std::unique_lock<std::mutex> lk(this->mutex);
-              cv.wait(lk, [this] { return !this->data.empty(); });
               std::vector<std::unique_ptr<T>> vec;
-              size_t n = this->num;
-              while(n-- && !this->data.empty()) {
-                vec.push_back(std::move(this->data.front()));
-                this->data.pop();
+              {
+                std::unique_lock<std::mutex> lk(this->mutex);
+                cv.wait(lk, [this] { return !this->data.empty(); });
+                
+                size_t n = this->num;
+                while(n-- && !this->data.empty()) {
+                  vec.push_back(std::move(this->data.front()));
+                  this->data.pop();
+                }
               }
               if(!vec.empty()) {
                 this->func(vec);
