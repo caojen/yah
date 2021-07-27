@@ -29,6 +29,9 @@ namespace yah {
 
       // 将一个工作推入到线程中
       void push(std::unique_ptr<Job>& job);
+
+      // 获取该锁，用于控制线程工作
+      std::mutex& get_mutex();
     
     private:
       // 含有所有任务的队列

@@ -25,4 +25,8 @@ namespace yah {
     this->jobs.push(std::move(job));
     this->cv.notify_one();
   }
+
+  std::mutex& ThreadPool::get_mutex() {
+    return this->mutex;
+  }
 }
