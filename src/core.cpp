@@ -28,6 +28,10 @@ namespace yah {
       log << "[Sender] " << yah::ctime << vec.size() << endl;
       std::vector<Json> ap;
       std::vector<Json> apstation;
+
+      bool ap_success = false;
+      bool apstation_success = false;
+
       for(auto& item: vec) {
         if(item->is_ap()) {
           ap.push_back(item->serialize());
@@ -37,12 +41,11 @@ namespace yah {
       }
       if(!ap.empty()) {
         std::string data = Json::serialize(ap);
-        // log << yah::ctime << "[Sender Ap Body] " << data << endl;
 
         Encode encoder(data);
         std::string body = encoder.encode();
-        // log << yah::ctime << "[Sender Ap Encoded] " << body << endl;
         Json json; json.set("data", body);
+
         Response response = Request()
           .host(config.remote_address)
           .port(config.remote_port)
@@ -50,15 +53,14 @@ namespace yah {
           .body(json.serialize())
           .header("Content-Type", std::string("Application/json"))
           .post();
-        log << yah::ctime << "[Sender] Ap Send Done. (" << ap.size() << ")" << response.status() << endl;
+        log << yah::ctime << "[Sender] Ap Send Done. (" << ap.size() << ") -- " << response.status() << endl;
+        ap_success = response.status() < 400;
       }
       if(!apstation.empty()) {
         std::string data = Json::serialize(apstation);
-        // log << yah::ctime << "[Sender ApStation Body] " << data << endl;
 
         Encode encoder(data);
         std::string body = encoder.encode();
-        // log << yah::ctime << "[Sender Ap Encoded] " << body << endl;
         Json json; json.set("data", body);
 
         Response response = Request()
@@ -68,12 +70,17 @@ namespace yah {
           .body(json.serialize())
           .header("Content-Type", std::string("Application/json"))
           .post();
-        log << yah::ctime << "[Sender] Apstation Send Done. (" << apstation.size() << ")" << response.status() << endl;
+        log << yah::ctime << "[Sender] Apstation Send Done. (" << apstation.size() << ") -- " << response.status() << endl;
+        apstation_success = response.status() < 400;
       }
-
-      // 将这个数据丢给updater
+      
       for(auto& v: vec) {
-        updater->push(std::move(v));
+        if(v->is_ap() && ap_success) {
+          updater->push(std::move(v));
+        }
+        if(v->is_apstation() && apstation_success) {
+          updater->push(std::move(v));
+        }
       }
     };
     sender = new AutoPool<AirodumpData>(config.num_sender, config.num_send_msg, func, config.sender_await);
@@ -81,7 +88,25 @@ namespace yah {
 
   static inline void init_updater() {
     auto func = [](std::vector<std::unique_ptr<AirodumpData>>& vec) {
-      log << "[Updater] receive size = " << vec.size() << endl;
+      log << ctime << "[Updater] Receive Size = " << vec.size() << endl;
+
+      for(auto& item: vec) {
+        auto& id = item->id;
+        
+        sqlite3_stmt* stmt;
+        if(item->is_ap()) {
+          sqlite3_prepare_v2(db.db, "UPDATE ap SET is_uploaded = 1 WHERE id = ?", -1, &stmt, NULL);
+        } else {
+          sqlite3_prepare_v2(db.db, "UPDATE apstation SET is_uploaded = 1 WHERE id = ?", -1, &stmt, NULL);
+        }
+        sqlite3_bind_int(stmt, 1, id);
+        if(sqlite3_step(stmt) != SQLITE_DONE) {
+          log << ctime << "[Updater] " << fatal << (item->is_ap() ? "Ap" : "ApStation") << " " << id << endl;
+        } else {
+          log << ctime << "[Updater] " << success << (item->is_ap() ? "Ap" : "ApStation") << " " << id << endl;
+        }
+        sqlite3_finalize(stmt);
+      }
     };
     updater = new AutoPool<AirodumpData>(1, 100, func, 10);
   }
