@@ -7,7 +7,7 @@ ifneq ($(shell id -u), 0)
 	@echo "You must be root to perform this action."
 else
 	mkdir -p ./build
-	cd ${ROOT_DIR}/build && cmake .. && make && cd -
+	cd ${ROOT_DIR}/build && cmake ${ROOT_DIR} && make && cd -
 	cp ${ROOT_DIR}/yah /usr/bin/yah
 
 	systemctl daemon-reload
