@@ -25,7 +25,7 @@ namespace yah {
   }
   static inline void init_sender() {
     auto func = [](std::vector<std::unique_ptr<AirodumpData>>& vec) {
-      log << "[Sender] " << yah::ctime << vec.size() << endl;
+      log << yah::ctime << "[Sender] Receive Size" << vec.size() << endl;
       std::vector<Json> ap;
       std::vector<Json> apstation;
 
@@ -77,8 +77,7 @@ namespace yah {
       for(auto& v: vec) {
         if(v->is_ap() && ap_success) {
           updater->push(std::move(v));
-        }
-        if(v->is_apstation() && apstation_success) {
+        } else if(v->is_apstation() && apstation_success) {
           updater->push(std::move(v));
         }
       }
