@@ -8,6 +8,7 @@
 #include "yah_pty.hpp"
 #include "formatter.hpp"
 #include "http.hpp"
+#include "encode.hpp"
 
 namespace yah {
   static inline void init_ap_cache() {
@@ -35,29 +36,36 @@ namespace yah {
         }
       }
       {
-        std::string body = "";
         std::string data = Json::serialize(ap);
         log << yah::ctime << "[Sender Ap Body] " << data << endl;
 
+        Encode encoder(data);
+        std::string body = encoder.encode();
+        log << yah::ctime << "[Sender Ap Encoded] " << body << endl;
+        Json json; json.set("data", body);
         Response response = Request()
           .host(config.remote_address)
           .port(config.remote_port)
           .path(config.remote_ap)
-          .body(body)
+          .body(json.serialize())
           .header("Content-Type", std::string("Application/json"))
           .post();
         log << yah::ctime << "[Sender] Send Done. " << response.status() << endl;
       }
       {
-        std::string body = "";
         std::string data = Json::serialize(apstation);
-        log << yah::ctime << "[Sender ApStation Body] " << body << endl;
+        log << yah::ctime << "[Sender ApStation Body] " << data << endl;
+
+        Encode encoder(data);
+        std::string body = encoder.encode();
+        log << yah::ctime << "[Sender Ap Encoded] " << body << endl;
+        Json json; json.set("data", body);
 
         Response response = Request()
           .host(config.remote_address)
           .port(config.remote_port)
           .path(config.remote_apstation)
-          .body(body)
+          .body(json.serialize())
           .header("Content-Type", std::string("Application/json"))
           .post();
         log << yah::ctime << "[Sender] Send Done. " << response.status() << endl;
