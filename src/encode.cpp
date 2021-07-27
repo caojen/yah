@@ -15,7 +15,7 @@ namespace yah {
   int mod_table[] = {0, 2, 1};
 
   char *
-  base64_encode(const unsigned char *data, size_t input_length) {
+  base64_encode(const unsigned char *data, int input_length) {
     int output_length;
     output_length = 4 * ((input_length + 2) / 3);
 

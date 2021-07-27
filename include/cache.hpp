@@ -54,7 +54,7 @@ namespace yah {
       std::list<Item>& list = iter->second;
       auto it = list.begin();
       while(it != list.end()) {
-        if(now - it->create_time >= this->timeout) {
+        if(now - it->create_time >= static_cast<long int>(this->timeout)) {
           it = list.erase(it);
         } else if(it->data == data) {
           it->create_time = now;
