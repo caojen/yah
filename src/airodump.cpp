@@ -116,9 +116,10 @@ output:
     return ret;
   }
 
+  Ap::Ap(): AirodumpData(config.remote_ap) {}
+
   Ap::Ap(const std::string& s): AirodumpData(config.remote_ap) {
     this->init(s);
-    this->remote = config.remote_ap;
   }
 
   void Ap::init(const std::string& s) {
@@ -182,6 +183,8 @@ output:
   Ap::~Ap() {
     // log << "[ApDeleted]" << endl;
   }
+
+  ApStation::ApStation(): AirodumpData(config.remote_apstation) {}
 
   ApStation::ApStation(const std::string& s): AirodumpData(config.remote_apstation) {
     this->init(s);

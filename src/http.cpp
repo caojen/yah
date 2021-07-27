@@ -64,7 +64,7 @@ namespace yah {
     this->__headers.set("Host", this->__host + ":" + std::to_string(this->__port));
     this->__headers.set("User-Agent", std::string("Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Mobile Safari/537.36"));
     if(this->__body.size() > 0) {
-      this->__headers.set("Content-Length", this->__body.size());
+      this->__headers.set("Content-Length", (int)this->__body.size());
     }
     
     for(auto &pair: this->__headers.items) {

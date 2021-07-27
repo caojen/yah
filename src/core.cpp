@@ -76,9 +76,18 @@ namespace yah {
       
       for(auto& v: vec) {
         if(v->is_ap() && ap_success) {
-          updater->push(std::move(v));
+          if(ap_success) {
+            updater->push(std::move(v));
+          } else {
+            log << yah::ctime << "[Sender] Ap Send Failed. Repush to Sender " << v->id << endl;
+          }
         } else if(v->is_apstation() && apstation_success) {
-          updater->push(std::move(v));
+          if(apstation_success) {
+            updater->push(std::move(v));
+          } else {
+            log << yah::ctime << "[Sender] Apstation Send Failed. Repush to Sender " << v->id << endl;
+            sender->push(std::move(v));
+          }
         }
       }
     };
@@ -108,6 +117,37 @@ namespace yah {
       }
     };
     updater = new AutoPool<AirodumpData>(1, 100, func, 10);
+
+    // 从数据库中获取旧的数据，db.db和sender已经在check阶段初始化了
+
+    sqlite3_stmt* stmt = nullptr;
+    sqlite3_prepare_v2(db.db, "SELECT id, bssid, comment, create_time FROM ap WHERE is_uploaded = 0", -1, &stmt, NULL);
+    while(sqlite3_step(stmt) != SQLITE_DONE) {
+      auto ptr = new Ap();
+      ptr->id = sqlite3_column_int(stmt, 0);
+      ptr->bssid = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+      ptr->comment = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+      ptr->create_time = sqlite3_column_int64(stmt, 3);
+      log << yah::ctime << "[OldData] Ap " << ptr->id << endl;
+      std::unique_ptr<AirodumpData> up(ptr);
+      sender->push(std::move(up));
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_prepare_v2(db.db, "SELECT id, bssid, station, comment, create_time FROM apstation WHERE is_uploaded = 0", -1, &stmt, NULL);
+    while(sqlite3_step(stmt) != SQLITE_DONE) {
+      auto ptr = new ApStation();
+      ptr->id = sqlite3_column_int(stmt, 0);
+      ptr->bssid = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+      ptr->station = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+      ptr->comment = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+      ptr->create_time = sqlite3_column_int64(stmt, 4);
+
+      log << yah::ctime << "[OldData] ApStation " << ptr->id << endl;
+      std::unique_ptr<AirodumpData> up(ptr);
+      sender->push(std::move(up));
+    }
+    sqlite3_finalize(stmt);
   }
 }
 
@@ -175,6 +215,7 @@ namespace yah {
     if(pid == 0) {
       // 子进程
       execl(config.airodump_path.c_str(), config.airodump_name.c_str(), device_name.c_str(), "-C", "2412-2472,5180-5825", "-f", "10", "--berlin", "3", NULL);
+      return 127;
     } else {
       return fd;
     }

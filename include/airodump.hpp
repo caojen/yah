@@ -38,6 +38,7 @@ namespace yah {
       std::string comment;
       time_t create_time;
 
+      Ap();
       Ap(const std::string& s);
 
       void init(const std::string& s);
@@ -58,6 +59,7 @@ namespace yah {
       std::string comment;
       time_t create_time;
 
+      ApStation();
       ApStation(const std::string& s);
       
       void init(const std::string& s);
