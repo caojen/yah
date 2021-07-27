@@ -35,7 +35,7 @@ namespace yah {
           apstation.push_back(item->serialize());
         }
       }
-      {
+      if(!ap.empty()) {
         std::string data = Json::serialize(ap);
         log << yah::ctime << "[Sender Ap Body] " << data << endl;
 
@@ -52,7 +52,7 @@ namespace yah {
           .post();
         log << yah::ctime << "[Sender] Send Done. " << response.status() << endl;
       }
-      {
+      if(!apstation.empty()) {
         std::string data = Json::serialize(apstation);
         log << yah::ctime << "[Sender ApStation Body] " << data << endl;
 

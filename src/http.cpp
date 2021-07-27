@@ -62,6 +62,11 @@ namespace yah {
 
     this->__headers.set("Connection", std::string("close"));
     this->__headers.set("Host", this->__host + ":" + std::to_string(this->__port));
+    this->__headers.set("User-Agent", "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Mobile Safari/537.36");
+    if(this->__body.size() > 0) {
+      this->__headers.set("Content-Length", this->__body.size());
+    }
+    
     for(auto &pair: this->__headers.items) {
       ostr << pair.first.serialize(false) << ": " << pair.second.serialize(false) << tcp_break;
     }
@@ -84,7 +89,7 @@ namespace yah {
     serv_addr.sin_port = htons(this->__port);
 
     std::string r = "";
-    char response[1024] = { 0 };
+    char response[10240] = { 0 };
     // send
     if(connect(fd, (struct sockaddr*)&serv_addr,sizeof(serv_addr)) < 0) {
       log << yah::ctime << "[Http] socker.connect error" << endl;
@@ -95,7 +100,7 @@ namespace yah {
       goto error;
     }
     // receive response
-    read(fd, response, 1024);
+    read(fd, response, 10240);
     // return response
     r = std::string(response);
     log << yah::ctime << "[Http] Receive " << r << endl;
