@@ -48,9 +48,10 @@ namespace yah {
     time_t now = time(NULL);
     HashKey hashKey = hash(data);
 
-    if(pool.find(hashKey) != pool.end()) {
+    auto iter = pool.find(hashKey);
+    if(iter != pool.end()) {
       // HashKey存在，检查
-      std::list<Item>& list = pool[hashKey];
+      std::list<Item>& list = iter->second;
       auto it = list.begin();
       while(it != list.end()) {
         if(now - it->create_time >= this->timeout) {
