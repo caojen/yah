@@ -9,8 +9,10 @@ AUX_SOURCE_DIRECTORY(src SRC_LIST)
 include_directories(include)
 
 find_package(Threads)
+find_package(ZLIB)
 add_compile_options(-Wall -pthread -g)
 
 add_executable(yah ${SRC_LIST})
 target_link_libraries(yah pthread)
 target_link_libraries(yah sqlite3)
+target_link_libraries(yah z)
