@@ -1,165 +1,25 @@
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
-SRC_DIR:=${ROOT_DIR}/src
-OBJ_DIR:=${ROOT_DIR}/obj
-CJSON_DIR:=${ROOT_DIR}/src/cjson
-CJSON_OBJ_DIR:=${ROOT_DIR}/src/cjson/obj
-CJSON_LIB_DIR:=${ROOT_DIR}/src/cjson/lib
-BIN_DIR:=${ROOT_DIR}/bin
-CC:=gcc
-# DEBUG:=-D DEBUG
-DEBUG:=
-PTHREADF:=-lpthread
-SQLITEF:=-lsqlite3
-ZLIB:=-lz
-TEST:=-D TEST -D DEBUG -g
-CFLAG:=-I${SRC_DIR} \
-	-I${CJSON_LIB_DIR} \
-	-I${CJSON_LIB_DIR}/basic \
-	-Wall \
-	-D _GNU_SOURCE ${DEBUG} -O2 \
-	${PTHREADF} ${SQLITEF} ${ZLIB}
 
-HEADER = ${SRC_DIR}/yah_config.h ${SRC_DIR}/yah_const.h ${SRC_DIR}/yah_daemon.h \
-	${SRC_DIR}/yah_error.h ${SRC_DIR}/yah_log.h ${SRC_DIR}/yah.h \
-	${SRC_DIR}/yah_signal.h ${SRC_DIR}/yah_thread_pool_job.h ${SRC_DIR}/yah_thread_pool_worker.h \
-	${SRC_DIR}/yah_thread_pool_manager.h ${SRC_DIR}/yah_thread_pool.h ${SRC_DIR}/yah_core.h \
-	${SRC_DIR}/yah_pty.h ${SRC_DIR}/yah_exec.h ${SRC_DIR}/yah_airodump.h ${SRC_DIR}/yah_mem.h \
-	${SRC_DIR}/yah_string.h ${SRC_DIR}/yah_lru.h ${SRC_DIR}/yah_sqlite3.h \
-	${SRC_DIR}/yah_http.h ${SRC_DIR}/yah_json.h ${SRC_DIR}/yah_base64.h \
-	${SRC_DIR}/yah_jobs.h ${SRC_DIR}/yah_customer.h
-
-OBJS:=${OBJ_DIR}/yah.o ${OBJ_DIR}/yah_log.o ${OBJ_DIR}/yah_config.o \
-	${OBJ_DIR}/yah_daemon.o ${OBJ_DIR}/yah_signal.o ${OBJ_DIR}/yah_thread_pool_job.o \
-	${OBJ_DIR}/yah_thread_pool_worker.o ${OBJ_DIR}/yah_thread_pool_manager.o \
-	${OBJ_DIR}/yah_thread_pool.o ${OBJ_DIR}/yah_core.o ${OBJ_DIR}/yah_pty.o \
-	${OBJ_DIR}/yah_exec.o ${OBJ_DIR}/yah_airodump.o ${OBJ_DIR}/yah_mem.o \
-	${OBJ_DIR}/yah_string.o ${OBJ_DIR}/yah_lru.o ${OBJ_DIR}/yah_sqlite3.o \
-	${OBJ_DIR}/yah_http.o ${OBJ_DIR}/yah_json.o ${OBJ_DIR}/yah_base64.o \
-	${OBJ_DIR}/yah_jobs.o ${OBJ_DIR}/yah_customer.o
-
-CJSON_OBJS:=${CJSON_OBJ_DIR}/cjson_array.o ${CJSON_OBJ_DIR}/cjson_bool.o	\
-	${CJSON_OBJ_DIR}/cjson_null.o ${CJSON_OBJ_DIR}/cjson_number.o \
-	${CJSON_OBJ_DIR}/cjson_object.o ${CJSON_OBJ_DIR}/cjson_string.o
-
-.PHONY: test clean all yah install uninstall cjson
-
-all: yah
-
-yah: ${BIN_DIR}/yah
-	@echo \> build succeed
-
-${BIN_DIR}/yah: ${OBJS}
-	cd ${CJSON_DIR} && ${MAKE} && cd -
-	$(CC) $(CFLAG) $^ ${CJSON_OBJS} -o $@
-
-${OBJ_DIR}/yah.o: ${SRC_DIR}/yah.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_log.o: ${SRC_DIR}/yah_log.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_config.o: ${SRC_DIR}/yah_config.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_daemon.o: ${SRC_DIR}/yah_daemon.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_signal.o: ${SRC_DIR}/yah_signal.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_thread_pool_job.o: ${SRC_DIR}/yah_thread_pool_job.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_thread_pool_worker.o: ${SRC_DIR}/yah_thread_pool_worker.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_thread_pool_manager.o: ${SRC_DIR}/yah_thread_pool_manager.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_thread_pool.o: ${SRC_DIR}/yah_thread_pool.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_core.o: ${SRC_DIR}/yah_core.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_pty.o: ${SRC_DIR}/yah_pty.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_exec.o: ${SRC_DIR}/yah_exec.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_airodump.o: ${SRC_DIR}/yah_airodump.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_mem.o: ${SRC_DIR}/yah_mem.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_string.o: ${SRC_DIR}/yah_string.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_lru.o: ${SRC_DIR}/yah_lru.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_sqlite3.o: ${SRC_DIR}/yah_sqlite3.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_http.o: ${SRC_DIR}/yah_http.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_json.o: ${SRC_DIR}/yah_json.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_base64.o: ${SRC_DIR}/yah_base64.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_jobs.o: ${SRC_DIR}/yah_jobs.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-${OBJ_DIR}/yah_customer.o: ${SRC_DIR}/yah_customer.c ${HEADER}
-	$(CC) $(CFLAG) -o $@ -c $<
-
-clean:
-	rm -rf **/*.o ${BIN_DIR}/yah **/*.test
-	cd ${CJSON_DIR} && ${MAKE} clean && cd -
-
-# test: test/sqlite3.test test/substring.test \
-# 	test/http.test
-test: test/json.test
-	@echo testing...
-	# @test/sqlite3.test > /dev/null
-	# @test/substring.test > /dev/null
-	# @test/http.test
-	@test/json.test
-	@echo \> build \& run all tests done. test pass.
-
-test/sqlite3.test: test/sqlite3.c ${HEADER}
-	$(CC) $(CFLAG) $(TEST) $< ${SRC_DIR}/*.c -o $@
-	@ echo \> test build: $@
-
-test/substring.test: test/substring.c ${HEADER}
-	$(CC) $(CFLAG) $(TEST) $< ${SRC_DIR}/*.c -o $@
-	@ echo \> test build: $@
-
-test/http.test: test/http.c ${HEADER} ${OBJS}
-	$(CC) $(CFLAG) $(TEST) $< ${SRC_DIR}/*.c -o $@
-	@ echo \> test build: $@
-
-test/json.test: test/json.c ${HEADER} ${OBJS}
-	$(CC) $(CFLAG) $(TEST) $< ${SRC_DIR}/*.c -o $@
-	@ echo \> test build: $@
+all: install
 
 install:
 ifneq ($(shell id -u), 0)
 	@echo "You must be root to perform this action."
 else
+	mkdir -p ./build
 	mkdir -p /data/yah
+	cd ${ROOT_DIR}/build && cmake ${ROOT_DIR} && make && cd -
+	cp ${ROOT_DIR}/build/yah /usr/bin/yah
+
 	systemctl daemon-reload
 	systemctl stop yah || true
 	systemctl disable yah || true
+
 	cp ${ROOT_DIR}/systemd/yah.service /usr/lib/systemd/system/yah.service
-	cp ${ROOT_DIR}/bin/yah /usr/bin/yah
 	cp ${ROOT_DIR}/yah.conf /etc/yah.conf
-	systemctl enable yah > /dev/null
+
+	systemctl enable yah
+
 	@echo
 	@echo "Install done. Binary file added to /usr/bin/yah."
 	@echo "Please run \"systemctl start yah\" to start the service."
