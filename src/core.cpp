@@ -2,6 +2,7 @@
 #include <string>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <cstdlib>
 
 #include "core.hpp"
 #include "global.hpp"
@@ -90,7 +91,11 @@ namespace yah {
           }
         }
       }
+      unsigned next_sleep_sec = rand() % (2 * config.sender_await);
+      log << ctime << "[Sender] Sleep for extra " << next_sleep_sec << " sec." << endl;
+      std::this_thread::sleep_for(std::chrono::seconds(next_sleep_sec));
     };
+
     sender = new AutoPool<AirodumpData>(config.num_sender, config.num_send_msg, func, config.sender_await);
   }
 
