@@ -23,7 +23,6 @@ int main(int argc, char** argv) {
     
     std::string config_file = argv[2];
     yah::config = yah::Config(config_file);
-    yah::Config::show(yah::config);
     
     if(yah::precheck() == false) {
       goto exit;
