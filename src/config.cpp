@@ -70,6 +70,8 @@ void Config::reload() {
   }
 
   pthread_mutex_unlock(&this->config_mutex);
+
+  Config::show(*this);
 }
 
 void Config::show(const Config& config) {

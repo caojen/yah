@@ -15,7 +15,7 @@ namespace yah {
     auto handlers = { sighup_handler };
     struct sigaction sa;
 
-    for(auto i = 0; i < handlers.size(); i++) {
+    for(unsigned i = 0; i < handlers.size(); i++) {
       sa.sa_sigaction = *(handlers.begin() + i);
       sa.sa_flags = SA_SIGINFO;
       sigemptyset(&sa.sa_mask);
