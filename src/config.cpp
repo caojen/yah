@@ -32,6 +32,8 @@ inline static bool array_contains(
 }
 
 void Config::reload() {
+  yah::log << ctime << "(Re)loading from file: " << this->config_file << endl;
+  
   pthread_mutex_lock(&this->config_mutex);
 
   std::ifstream ifs;
