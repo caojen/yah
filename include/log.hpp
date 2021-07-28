@@ -15,7 +15,7 @@ namespace yah {
     public:
       template<class T>
       Log& operator<<(const T& stream) {
-        std::cout << stream;
+        std::cerr << stream;
         return *this;
       }
   };
