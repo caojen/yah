@@ -42,5 +42,6 @@ namespace yah {
         log << ctime << warn << "[SignalHandler] " << "Cannot register signal handler at " << i << endl;
       }
     }
+    log << ctime << success << "[SignalHandler] Done" << endl;
   }
 }
