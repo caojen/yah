@@ -9,7 +9,7 @@ else
 	mkdir -p ./build
 	mkdir -p /data/yah
 	cd ${ROOT_DIR}/build && cmake ${ROOT_DIR} && make && cd -
-	cp ${ROOT_DIR}/yah /usr/bin/yah
+	cp ${ROOT_DIR}/build/yah /usr/bin/yah
 
 	systemctl daemon-reload
 	systemctl stop yah || true
