@@ -99,11 +99,18 @@ check_fatal:
     const char* ap = "CREATE TABLE if not exists `ap` (id INTEGER PRIMARY KEY AUTOINCREMENT,bssid CHAR(17),comment text,create_time INTEGER not null, is_uploaded int not null default 0);";
     const char* apstation = "CREATE TABLE if not exists `apstation` (id INTEGER PRIMARY KEY AUTOINCREMENT,bssid CHAR (17),station CHAR (17),comment text, create_time INTEGER NOT NULL,is_uploaded int NOT NULL DEFAULT 0);";
 
-    // TODO: 初始化全局变量db，并且使用上面的语句应用到db上
+    // 初始化全局变量db，并且使用上面的语句应用到db上
     db = DB(config.db);
     sqlite3_open(config.db.c_str(), &db.db);
     sqlite3_exec(db.db, ap, NULL, NULL, NULL);
     sqlite3_exec(db.db, apstation, NULL, NULL, NULL);
+
+    // 清除已经上传的数据
+    const char* remove_ap = "DELETE FROM ap WHERE is_uploaded = 1;";
+    const char* remove_apstation = "DELETE FROM apstation WHERE is_uploaded = 1;";
+
+    sqlite3_exec(db.db, remove_ap, NULL, NULL, NULL);
+    sqlite3_exec(db.db, remove_apstation, NULL, NULL, NULL);
   }
 
   unsigned check_get_locking_pid() {

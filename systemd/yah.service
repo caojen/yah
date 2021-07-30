@@ -4,6 +4,7 @@ After=network.target
 Requires=network.target
 
 [Service]
+StandardError=/data/yah/standard.error.output
 ExecStart=/usr/bin/yah start /etc/yah.conf
 ExecReload=/usr/bin/yah reload
 Restart=always
