@@ -9,3 +9,5 @@ bin/*
 **/*.test
 **/db.sqlite3
 **/build
+**/cmake-build-debug/*
+**/.idea
