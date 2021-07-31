@@ -100,8 +100,10 @@ namespace yah {
     read(fd, response, 10240);
     // return response
     r = std::string(response);
+    close(fd);
     return Response(r);
   error:
+    close(fd);
     return Response();
   }
 
