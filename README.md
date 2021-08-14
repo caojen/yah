@@ -2,7 +2,7 @@
 
 ## Description
 
-Yah is a tool based on aircrack-ng. It captures the output aircrack-ng(Actually, just the standard output. The standard error has been ignored). In our perious implementations, because of fast refresh in aircrack-ng and needing our program dealing with them as fast as possiable, crashes might occur at running time. In this version, Yah has been updated with these components:
+Yah is a tool based on aircrack-ng. It captures the output aircrack-ng(Actually, just the standard output. The standard error has been ignored). In our previous implementations, because of fast refresh in aircrack-ng and needing our program dealing with them as fast as possiable, crashes might occur at running time. In this version, Yah has been updated with these components:
 
 + LRU cache
 + Formatter
@@ -21,6 +21,6 @@ Sender: fed with AirodumpData(s), generates them into strings and encodes them. 
 Updater: fed with AirodumpData(s), updates them at localstorage(usually, labels them as 'is_uploaded')
 
 ## Install
-Just call `make`. Sudo or root should be provided.
+Just use `make`. Sudo or root should be provided.
 
 After installing, use `systemctl start yah` to start the program.
