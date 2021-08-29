@@ -4,6 +4,7 @@
 
 #include "airodump.hpp"
 #include "global.hpp"
+#include "white_list.hpp"
 
 namespace yah {
 
@@ -151,13 +152,16 @@ output:
 
   bool Ap::in_db() const {
     const std::string& specify = this->specify;
+    bool in_white_list = whiteList.has_data(specify);
+    unsigned timeout = in_white_list ? 5 : config.ap_cache_timeout;
+
     bool is_in = false;
     sqlite3* s = db.db;
 
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(s, "SELECT count(1) AS count FROM ap WHERE bssid = ? AND create_time > ?", -1, &stmt, NULL);
     sqlite3_bind_text(stmt, 1, specify.c_str(), specify.size(), SQLITE_STATIC);
-    sqlite3_bind_int64(stmt, 2, this->create_time - config.ap_cache_timeout);
+    sqlite3_bind_int64(stmt, 2, this->create_time - timeout);
     int ret = sqlite3_step(stmt);
     if(ret == SQLITE_ROW) {
         int count = sqlite3_column_int(stmt, 0);
@@ -227,13 +231,16 @@ output:
 
   bool ApStation::in_db() const {
     const std::string& specify = this->specify;
+    bool in_white_list = whiteList.has_data(specify);
+    unsigned timeout = in_white_list ? 5 : config.apstation_cache_timeout;
+
     bool is_in = false;
     sqlite3* s = db.db;
 
     sqlite3_stmt* stmt;
     sqlite3_prepare_v2(s, "SELECT count(1) AS count FROM apstation WHERE station = ? AND create_time > ?", -1, &stmt, NULL);
     sqlite3_bind_text(stmt, 1, specify.c_str(), specify.size(), SQLITE_STATIC);
-    sqlite3_bind_int64(stmt, 2, this->create_time - config.apstation_cache_timeout);
+    sqlite3_bind_int64(stmt, 2, this->create_time - timeout);
     int ret = sqlite3_step(stmt);
     if(ret == SQLITE_ROW) {
         int count = sqlite3_column_int(stmt, 0);

@@ -7,6 +7,8 @@
 #include <queue>
 #include <vector>
 
+#include "white_list.hpp"
+
 namespace yah {
   typedef unsigned long HashKey;
 
@@ -28,19 +30,21 @@ namespace yah {
     unsigned                            max = 0;
     unsigned                            cur = 0;
     unsigned                            timeout = 0;
+    unsigned                            white_list_timeout = 0;
     std::map<HashKey, std::list<Item>>  pool;
     
     public:
-      Cache(unsigned max = 0, unsigned timeout = 0);
+      Cache(unsigned max = 0, unsigned timeout = 0, unsigned white_list_timeout = 5);
       // 如果当前缓存中不存在data，那么插入这个值，然后返回true
       // 否则，返回false
       bool insert(const T& data);
   };
 
   template<class T>
-  Cache<T>::Cache(unsigned max, unsigned timeout) {
+  Cache<T>::Cache(unsigned max, unsigned timeout, unsigned white_list_timeout) {
     this->max = max;
     this->timeout = timeout;
+    this->white_list_timeout = white_list_timeout;
   }
 
   template<class T>
@@ -48,13 +52,17 @@ namespace yah {
     time_t now = time(NULL);
     HashKey hashKey = hash(data);
 
+    bool in_white_list = whiteList.has_data(data);
+
+    unsigned data_timeout = in_white_list ? this->white_list_timeout : this->timeout;
+
     auto iter = pool.find(hashKey);
     if(iter != pool.end()) {
       // HashKey存在，检查
       std::list<Item>& list = iter->second;
       auto it = list.begin();
       while(it != list.end()) {
-        if(now - it->create_time >= static_cast<long int>(this->timeout)) {
+        if(now - it->create_time >= static_cast<long int>(data_timeout)) {
           it = list.erase(it);
         } else if(it->data == data) {
           it->create_time = now;

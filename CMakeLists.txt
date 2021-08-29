@@ -6,6 +6,9 @@ set(CMAKE_CXX_STANDARD 11)
 
 AUX_SOURCE_DIRECTORY(src SRC_LIST)
 
+find_package(OpenSSL REQUIRED)
+include_directories(${OPENSSL_INCLUDE_DIR})
+
 include_directories(include)
 
 find_package(Threads)
@@ -16,3 +19,4 @@ add_executable(yah ${SRC_LIST})
 target_link_libraries(yah pthread)
 target_link_libraries(yah sqlite3)
 target_link_libraries(yah z)
+target_link_libraries(yah OpenSSL::SSL)
