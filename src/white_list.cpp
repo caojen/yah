@@ -4,6 +4,7 @@
 
 #include <thread>
 #include <boost/json/src.hpp>
+#include <boost/beast/core/string.hpp>
 
 yah::WhiteList::WhiteList() {
   std::thread thread([this] () {
@@ -42,9 +43,15 @@ yah::WhiteList::WhiteList() {
 }
 bool yah::WhiteList::has_data(const std::string& s) {
   std::lock_guard<std::mutex> lk(this->mutex);
-  auto iter = std::find(this->white_data.begin(), this->white_data.end(), s);
+  bool ret = false;
+  for(auto iter = this->white_data.begin(); iter != this->white_data.end(); ++iter) {
+    if(boost::beast::iequals(*iter, s)) {
+      ret = true;
+      break;
+    }
+  }
 
-  return iter != this->white_data.end();
+  return ret;
 }
 
 yah::WhiteList yah::whiteList;
