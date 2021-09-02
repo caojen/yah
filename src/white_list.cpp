@@ -16,23 +16,27 @@ yah::WhiteList::WhiteList() {
 
     auto body = request.get_response_body();
 
-    boost::beast::error_code ec;
-    boost::json::value jv = boost::json::parse(body, ec);
-    if(ec) {
-      yah::log << ctime << "white list error parsing response: " << ec << endl;
-    } else {
-      auto data = jv.as_object()["data"].as_array();
-      std::list<std::string> new_white_data;
-      for(unsigned i = 0; i < data.size(); ++i) {
-        auto item = data[i].as_object();
-        auto mac = std::string(item["mac"].as_string().c_str());
-        new_white_data.push_back(mac);
-        yah::log << ctime << "get white list result: " << mac << endl;
-      }
-      {
-        std::lock_guard<std::mutex> lk(this->mutex);
-        this->white_data.clear();
-        this->white_data = std::move(new_white_data);
+    if(!body.empty()) {
+
+      boost::beast::error_code ec;
+      boost::json::value jv = boost::json::parse(body, ec);
+      if (ec) {
+        yah::log << ctime << "white list error parsing response: " << ec
+                 << endl;
+      } else {
+        auto data = jv.as_object()["data"].as_array();
+        std::list<std::string> new_white_data;
+        for (unsigned i = 0; i < data.size(); ++i) {
+          auto item = data[i].as_object();
+          auto mac = std::string(item["mac"].as_string().c_str());
+          new_white_data.push_back(mac);
+          yah::log << ctime << "get white list result: " << mac << endl;
+        }
+        {
+          std::lock_guard<std::mutex> lk(this->mutex);
+          this->white_data.clear();
+          this->white_data = std::move(new_white_data);
+        }
       }
     }
 
