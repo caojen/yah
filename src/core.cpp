@@ -10,6 +10,7 @@
 #include "formatter.hpp"
 #include "http.hpp"
 #include "encode.hpp"
+#include "white_list.hpp"
 
 namespace yah {
   static inline void init_ap_cache() {
@@ -76,19 +77,24 @@ namespace yah {
       }
       
       for(auto& v: vec) {
-        if(v->is_ap() && ap_success) {
+        if(v->is_ap()) {
           if(ap_success) {
             updater->push(std::move(v));
           } else {
             log << yah::ctime << "[Sender] Ap Send Failed. Repush to Sender " << v->id << endl;
           }
-        } else if(v->is_apstation() && apstation_success) {
+        } else if(v->is_apstation()) {
           if(apstation_success) {
             updater->push(std::move(v));
           } else {
             log << yah::ctime << "[Sender] Apstation Send Failed. Repush to Sender " << v->id << endl;
             sender->push(std::move(v));
           }
+        }
+      }
+      if(apstation_success || ap_success) {
+        if(whiteList == nullptr) {
+          whiteList = new WhiteList();
         }
       }
       unsigned next_sleep_sec = rand() % (2 * config.sender_await);

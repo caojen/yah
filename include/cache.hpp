@@ -52,7 +52,7 @@ namespace yah {
     time_t now = time(NULL);
     HashKey hashKey = hash(data);
 
-    bool in_white_list = whiteList.has_data(data);
+    bool in_white_list = whiteList->has_data(data);
 
     unsigned data_timeout = in_white_list ? this->white_list_timeout : this->timeout;
 

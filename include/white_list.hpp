@@ -14,5 +14,5 @@ namespace yah {
     std::mutex                 mutex;
   };
 
-  extern WhiteList whiteList;
+  extern WhiteList* whiteList;
 }

@@ -54,4 +54,4 @@ bool yah::WhiteList::has_data(const std::string& s) {
   return ret;
 }
 
-yah::WhiteList yah::whiteList;
+yah::WhiteList* yah::whiteList = nullptr;
