@@ -59,11 +59,12 @@ namespace yah {
 
   class Time: public LogSpecial {
     virtual std::string str() const {
-      std::string ret = "";
-      ret.append("[");
-      ret += parse_log_time(time(NULL));
-      ret.append("] ");
-      return ret;
+//      std::string ret = "";
+//      ret.append("[");
+//      ret += parse_log_time(time(NULL));
+//      ret.append("] ");
+//      return ret;
+      return {};
     }
   };
 }
