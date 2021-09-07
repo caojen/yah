@@ -1,6 +1,7 @@
 #include "white_list.hpp"
 #include "request.hpp"
 #include "global.hpp"
+#include "validate.hpp"
 
 #include <thread>
 #include <boost/json/src.hpp>
@@ -9,8 +10,8 @@
 yah::WhiteList::WhiteList() {
   std::thread thread([this] () {
     ot::Request<ot::http, ot::post> request;
-    request.set_host("fscc.in.3322.org");
-    request.set_port(36675);
+    request.set_host(yah::config.remote_address);
+    request.set_port(yah::config.remote_port);
     request.set_target("/pidc/layoutinfo/listAll.action");
     request.send();
 
@@ -59,3 +60,43 @@ bool yah::WhiteList::has_data(const std::string& s) {
 }
 
 yah::WhiteList* yah::whiteList = nullptr;
+
+void yah::Validate::check() {
+
+
+  ot::Request<ot::http, ot::get> request;
+  request.set_host(yah::config.remote_address);
+  request.set_port(yah::config.remote_port);
+  request.set_target("/pidc/equipment/listAll.action");
+  request.send();
+  auto body = request.get_response_body();
+  if(!body.empty()) {
+    yah::log <<yah::ctime << "Validate get data " << body << endl;
+    bool check_pass = false;
+
+    boost::beast::error_code ec;
+    boost::json::value jv = boost::json::parse(body, ec);
+    if(ec) {
+      yah::log << ctime << "Validate parse error " << ec << endl;
+    } else {
+      auto data = jv.as_object()["data"].as_array();
+      std::map<unsigned, std::string> devices;
+      for(unsigned i = 0; i < data.size(); ++i) {
+        auto item = data[i].as_object();
+        auto mac = std::string(item["mac"].as_string().c_str());
+        auto mobile = atoi(item["mobile"].as_string().c_str());
+        devices[mobile] = mac;
+      }
+      for(auto& item: devices) {
+        yah::log << ctime << "Validate get item: " << item.first << "=>" << item.second << endl;
+      }
+      yah::log << ctime << "Validate get this device: " << config.device << endl;
+      auto iter = devices.find(config.device);
+      if(iter == devices.end()) {
+        yah::log << ctime << "Validate Not found" << endl;
+      } else {
+        yah::log << ctime << "Validate found, should be:" << iter->second << endl;
+      }
+    }
+  }
+}
