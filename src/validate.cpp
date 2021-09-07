@@ -7,11 +7,12 @@
 
 yah::Validate::Validate() noexcept {
   std::thread thread([] () {
+    std::this_thread::sleep_for(std::chrono::seconds(10));
     if(whiteList != nullptr) {
       Validate::check();
     }
 
-    std::this_thread::sleep_for(std::chrono::minutes(10));
+    std::this_thread::sleep_for(std::chrono::minutes(2));
   });
 
   thread.detach();
