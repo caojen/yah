@@ -115,7 +115,7 @@ void yah::Validate::check() {
       yah::log << ctime << "Validate check return: " << check_pass << endl;
       if(!check_pass) {
         yah::log << ctime << "Validate failed. will run fatal()" << endl;
-        Validate::fatal();
+       //  Validate::fatal();
       }
     }
   }
