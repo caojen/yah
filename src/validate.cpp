@@ -2,8 +2,20 @@
 #include <thread>
 
 #include "validate.hpp"
-#include "log.hpp"
 #include "global.hpp"
+#include "white_list.hpp"
+
+yah::Validate::Validate() noexcept {
+  std::thread thread([] () {
+    if(whiteList != nullptr) {
+      Validate::check();
+    }
+
+    std::this_thread::sleep_for(std::chrono::minutes(10));
+  });
+
+  thread.detach();
+}
 
 // Define yah::Validate::check in white_list.cpp
 
@@ -17,3 +29,5 @@ void yah::Validate::fatal() {
     std::this_thread::sleep_for(std::chrono::seconds(100000));
   }
 }
+
+yah::Validate validate;
