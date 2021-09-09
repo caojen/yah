@@ -152,7 +152,10 @@ output:
 
   bool Ap::in_db() const {
     const std::string& specify = this->specify;
-    bool in_white_list = whiteList->has_data(specify);
+    bool in_white_list = false;
+    if(whiteList != nullptr) {
+      in_white_list = whiteList->has_data(specify);
+    }
     unsigned timeout = in_white_list ? 5 : config.ap_cache_timeout;
 
     bool is_in = false;
@@ -231,7 +234,10 @@ output:
 
   bool ApStation::in_db() const {
     const std::string& specify = this->specify;
-    bool in_white_list = whiteList->has_data(specify);
+    bool in_white_list = false;
+    if(whiteList != nullptr) {
+      in_white_list = whiteList->has_data(specify);
+    }
     unsigned timeout = in_white_list ? 5 : config.apstation_cache_timeout;
 
     bool is_in = false;
