@@ -60,10 +60,13 @@ std::unique_ptr<Blue> line2blue(char* line);
 int main() {
   // 初始化数据库连接
   auto db = init_db_connection();
+  std::cout << 1 << std::endl;
   // 初始化数据库
   init_db(db);
+  std::cout << 2 << std::endl;
   // 删除旧的数据，然后获取未上传的数据
   auto old_data = fetch_old_data(db);
+  std::cout << 3 << std::endl;
   // 初始化缓冲池
   init_cache();
   // 初始化pool
