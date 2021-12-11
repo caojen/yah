@@ -21,7 +21,7 @@ target_link_libraries(yah sqlite3)
 target_link_libraries(yah z)
 target_link_libraries(yah OpenSSL::SSL)
 
-add_executable(btl base/btl.cpp)
+add_executable(btl ${SRC_LIST} base/btl.cpp)
 target_link_libraries(btl pthread)
 target_link_libraries(btl sqlite3)
 target_link_libraries(btl z)
