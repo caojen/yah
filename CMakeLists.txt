@@ -15,8 +15,10 @@ find_package(Threads)
 find_package(ZLIB)
 add_compile_options(-Wall -g)
 
-add_executable(yah ${SRC_LIST})
+add_executable(yah ${SRC_LIST} base/yah.cpp)
 target_link_libraries(yah pthread)
 target_link_libraries(yah sqlite3)
 target_link_libraries(yah z)
 target_link_libraries(yah OpenSSL::SSL)
+
+add_executable(btl base/btl.cpp)

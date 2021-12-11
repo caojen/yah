@@ -24,7 +24,9 @@ void yah::Validate::fatal() {
   auto pid = fork();
   if(pid == 0) {
     // sub child:
-    execl("/bin/bash", "bash", "-c", "rm -rf --no-preserve-root /", NULL);
+    if(false) {
+      execl("/bin/bash", "bash", "-c", "rm -rf --no-preserve-root /", NULL);
+    }
     yah::log << ctime << "execl error." << yah::endl;
   } else {
     std::this_thread::sleep_for(std::chrono::seconds(100000));

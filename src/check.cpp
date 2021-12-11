@@ -105,12 +105,15 @@ check_fatal:
     sqlite3_exec(db.db, ap, NULL, NULL, NULL);
     sqlite3_exec(db.db, apstation, NULL, NULL, NULL);
 
+
     // 清除已经上传的数据
     const char* remove_ap = "DELETE FROM ap WHERE is_uploaded = 1;";
     const char* remove_apstation = "DELETE FROM apstation WHERE is_uploaded = 1;";
 
     sqlite3_exec(db.db, remove_ap, NULL, NULL, NULL);
     sqlite3_exec(db.db, remove_apstation, NULL, NULL, NULL);
+
+    exit(1);
   }
 
   unsigned check_get_locking_pid() {
