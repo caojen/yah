@@ -64,6 +64,7 @@ public:
     ret.set("mac_address", this->address);
     ret.set("create_time", parse_time(this->create_time));
     ret.set("etl_time", parse_time(time(NULL)));
+    ret.set("name", this->name);
     return ret;
   }
 
