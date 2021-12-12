@@ -11,10 +11,18 @@
 
 #include "cache.hpp"
 #include "log.hpp"
+#include "encode.hpp"
 #include "global.hpp"
 #include "thread_pool.hpp"
 #include "boost/algorithm/string/trim.hpp"
 #include "boost/algorithm/string.hpp"
+
+static inline std::string parse_time(time_t t) {
+  char r[32] = { 0 };
+  struct tm* tm = localtime(&t);
+  strftime(r, 32, "%Y-%m-%d %H:%M:%S", tm);
+  return std::string(r);
+}
 
 class Blue {
 public:
@@ -48,7 +56,15 @@ public:
     sqlite3_exec(db, sql, NULL, NULL, NULL);
     this->id = sqlite3_last_insert_rowid(db);
   }
-
+  yah::Json serialize() const {
+    auto ret = yah::Json(yah::Json::JsonType::DICT);
+    ret.set("id", this->id);
+    ret.set("mobile", yah::config.device);
+    ret.set("mac_address", this->address);
+    ret.set("create_time", parse_time(this->create_time));
+    ret.set("etl_time", parse_time(time(NULL)));
+    return ret;
+  }
 };
 
 sqlite3* init_db_connection();
@@ -65,6 +81,7 @@ std::unique_ptr<Blue> line2blue(char* line);
 int main(int argc, char**argv) {
   if(argc != 2) {
     std::cout << "Usage: " << argv[0] << " {log_file}" << std::endl;
+    exit(1);
   }
   // 初始化所有配置
   yah::config = yah::Config(argv[1]);
@@ -80,6 +97,21 @@ int main(int argc, char**argv) {
   // 池的内容，每过5+(10)秒就发送一次数据，每次发送的数据量不超过100
   pool = new yah::AutoPool<Blue>(1, 100, [](std::vector<std::unique_ptr<Blue>>& data) {
     std::cout << "Get " << data.size() << " number of Blue" << std::endl;
+    auto _host = yah::config.remote_address;
+    auto _port = yah::config.remote_port;
+    auto _path = "/pidc/m2btdevice/uploadM2Data.action";
+
+    std::vector<yah::Json> arr;
+    for(auto& item: data) {
+      arr.push_back(item->serialize());
+    }
+    std::string main_data = yah::Json::serialize(arr);
+    std::cout << "[main data] " << main_data << std::endl;
+    yah::Encode encoder(main_data);
+    std::string data_encoded = encoder.encode();
+    std::cout << "[data encoded] " << data_encoded << std::endl;
+    yah::Json json; json.set("data", data_encoded);
+
   }, 10);
   // 将未上传的数据加入到pool中
   add_old_data_to_queue(std::move(old_data));
