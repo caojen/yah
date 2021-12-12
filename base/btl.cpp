@@ -104,34 +104,36 @@ int main(int argc, char**argv) {
   // 池的内容，每过5+(10)秒就发送一次数据，每次发送的数据量不超过100
   pool = new yah::AutoPool<Blue>(1, 100, [&](std::vector<std::unique_ptr<Blue>>& data) {
     std::cout << "Get " << data.size() << " number of Blue" << std::endl;
-    auto _host = yah::config.remote_address;
-    auto _port = yah::config.remote_port;
-    auto _path = "/pidc/m2btdevice/uploadM2Data.action";
+    if(data.size() > 0) {
+      auto _host = yah::config.remote_address;
+      auto _port = yah::config.remote_port;
+      auto _path = "/pidc/m2btdevice/uploadM2Data.action";
 
-    std::vector<yah::Json> arr;
-    for(auto& item: data) {
-      arr.push_back(item->serialize());
-    }
-    std::string main_data = yah::Json::serialize(arr);
-    std::cout << "[main data] " << main_data << std::endl;
-    yah::Encode encoder(main_data);
-    std::string data_encoded = encoder.encode();
-    std::cout << "[data encoded] " << data_encoded << std::endl;
-    yah::Json json; json.set("data", data_encoded);
-
-    yah::Response response = yah::Request()
-      .host(_host)
-      .port(_port)
-      .path(_path)
-      .body(json.serialize())
-      .header("Content-Type", std::string("Application/json"))
-      .post();
-    std::cout << "[data sent] status = " << response.status() << std::endl;
-
-    if(response.status() < 400) {
-      // done, update
+      std::vector<yah::Json> arr;
       for(auto& item: data) {
-        item->update(db);
+        arr.push_back(item->serialize());
+      }
+      std::string main_data = yah::Json::serialize(arr);
+      std::cout << "[main data] " << main_data << std::endl;
+      yah::Encode encoder(main_data);
+      std::string data_encoded = encoder.encode();
+      std::cout << "[data encoded] " << data_encoded << std::endl;
+      yah::Json json; json.set("data", data_encoded);
+
+      yah::Response response = yah::Request()
+        .host(_host)
+        .port(_port)
+        .path(_path)
+        .body(json.serialize())
+        .header("Content-Type", std::string("Application/json"))
+        .post();
+      std::cout << "[data sent] status = " << response.status() << std::endl;
+
+      if(response.status() < 400) {
+        // done, update
+        for(auto& item: data) {
+          item->update(db);
+        }
       }
     }
   }, 10);
