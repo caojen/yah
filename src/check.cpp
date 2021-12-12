@@ -112,8 +112,6 @@ check_fatal:
 
     sqlite3_exec(db.db, remove_ap, NULL, NULL, NULL);
     sqlite3_exec(db.db, remove_apstation, NULL, NULL, NULL);
-
-    exit(1);
   }
 
   unsigned check_get_locking_pid() {
