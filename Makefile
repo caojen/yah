@@ -10,15 +10,20 @@ else
 	mkdir -p /data/yah
 	cd ${ROOT_DIR}/build && cmake ${ROOT_DIR} && make && cd -
 	cp ${ROOT_DIR}/build/yah /usr/bin/yah
+	cp ${ROOT_DIR}/build/btl /usr/bin/btl
 
 	systemctl daemon-reload
 	systemctl stop yah || true
 	systemctl disable yah || true
+	systemctl stop etl || true
+	systemctl disable etl || true
 
 	cp ${ROOT_DIR}/systemd/yah.service /usr/lib/systemd/system/yah.service
+	cp ${ROOT_DIR}/systemd/btl.service /usr/lib/systemd/system/btl.service
 	cp ${ROOT_DIR}/yah.conf /etc/yah.conf
 
 	systemctl enable yah
+	systemctl enable btl
 
 	@echo
 	@echo "Install done. Binary file added to /usr/bin/yah."
