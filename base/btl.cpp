@@ -10,6 +10,8 @@
 #include <ctime>
 
 #include "cache.hpp"
+#include "log.hpp"
+#include "global.hpp"
 #include "thread_pool.hpp"
 #include "boost/algorithm/string/trim.hpp"
 #include "boost/algorithm/string.hpp"
@@ -60,7 +62,12 @@ void init_cache();
 void add_old_data_to_queue(std::vector<std::unique_ptr<Blue>>&&);
 std::unique_ptr<Blue> line2blue(char* line);
 
-int main() {
+int main(int argc, char**argv) {
+  if(argc != 2) {
+    std::cout << "Usage: " << argv[0] << " {log_file}" << std::endl;
+  }
+  // 初始化所有配置
+  yah::config = yah::Config(argv[1]);
   // 初始化数据库连接
   auto db = init_db_connection();
   // 初始化数据库
@@ -80,6 +87,7 @@ int main() {
   // 创建bluetoothctl进程，捕获输出，并格式化。
   // 如果格式化后的数据不在缓冲池中，那么判断是否在数据库中。如果不在数据库中，那么将这个数据加入到缓冲池和数据库中，再加入到池中
   while(true) {
+    std::cout << "[Running]" << std::endl;
     auto fp = popen("bluetoothctl --timeout 10 scan on", "r");
     char *buf;
     size_t len = 0;
@@ -103,7 +111,7 @@ int main() {
 
 sqlite3* init_db_connection() {
   sqlite3* db = NULL;
-  sqlite3_open("/data/yah/yah.sqlite3", &db);
+  sqlite3_open(yah::config.db.c_str(), &db);
   return db;
 }
 
