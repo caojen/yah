@@ -1,0 +1,14 @@
+[Unit]
+Description=btl
+After=network.target
+Requires=network.target
+
+[Service]
+StandardError=/data/btl/standard.error.output
+ExecStart=/usr/bin/btl /etc/yah.conf
+Restart=always
+RestartSec=5s
+KillMode=mixed
+
+[Install]
+WantedBy=graphical.target
