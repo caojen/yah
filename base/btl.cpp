@@ -7,9 +7,12 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
+#include <ctime>
 
 #include "cache.hpp"
 #include "thread_pool.hpp"
+#include "boost/algorithm/string/trim.hpp"
+#include "boost/algorithm/string.hpp"
 
 class Blue {
 public:
@@ -21,7 +24,7 @@ public:
   bool in_db(sqlite3* db) {
     auto address = this->address.c_str();
     sqlite3_stmt* stmt;
-    sqlite3_prepare_v2(db, "SELECT count(1) FROM blue WHERE address = ? AND create_time > ?", -1, &stmt, NULL);
+    sqlite3_prepare_v2(db, "SELECT count(1) FROM blue WHERE mac = ? AND create_time > ?", -1, &stmt, NULL);
     sqlite3_bind_text(stmt, 1, address, this->address.size(), SQLITE_STATIC);
     sqlite3_bind_int64(stmt, 2, this->create_time - 86400);
     int ret = sqlite3_step(stmt);
@@ -39,7 +42,7 @@ public:
     return is_in;
   }
   void sync(sqlite3* db) {
-    char* sql = sqlite3_mprintf("INSERT INTO blue(address, name, create_time) VALUES('%q', '%q', %d)", this->address.c_str(), this->name.c_str(), this->create_time);
+    char* sql = sqlite3_mprintf("INSERT INTO blue(mac, name, create_time) VALUES('%q', '%q', %d)", this->address.c_str(), this->name.c_str(), this->create_time);
     sqlite3_exec(db, sql, NULL, NULL, NULL);
     this->id = sqlite3_last_insert_rowid(db);
   }
@@ -60,13 +63,10 @@ std::unique_ptr<Blue> line2blue(char* line);
 int main() {
   // 初始化数据库连接
   auto db = init_db_connection();
-  std::cout << 1 << std::endl;
   // 初始化数据库
   init_db(db);
-  std::cout << 2 << std::endl;
   // 删除旧的数据，然后获取未上传的数据
   auto old_data = fetch_old_data(db);
-  std::cout << 3 << std::endl;
   // 初始化缓冲池
   init_cache();
   // 初始化pool
@@ -80,16 +80,19 @@ int main() {
   // 创建bluetoothctl进程，捕获输出，并格式化。
   // 如果格式化后的数据不在缓冲池中，那么判断是否在数据库中。如果不在数据库中，那么将这个数据加入到缓冲池和数据库中，再加入到池中
   while(true) {
-    auto fp = popen("bluetoothctl scan on", "r");
+    auto fp = popen("bluetoothctl --timeout 10 scan on", "r");
     char *buf;
     size_t len = 0;
 
     while(getline(&buf, &len, fp) != -1) {
       auto blue = line2blue(buf);
       if(blue != nullptr) {
-        if(cache->insert(blue->address) && !blue->in_db(db)) {
-          blue->sync(db);
-          pool->push(std::move(blue));
+        if(cache->insert(blue->address)) {
+          if(!blue->in_db(db)) {
+            std::cout << "[New-Store] " << blue->address << " " << blue->name << std::endl;
+            blue->sync(db);
+            pool->push(std::move(blue));
+          }
         }
       }
     }
@@ -116,7 +119,7 @@ std::vector<std::unique_ptr<Blue>> fetch_old_data(sqlite3* db) {
   std::vector<std::unique_ptr<Blue>> ret;
 
   sqlite3_stmt* stmt = nullptr;
-  sqlite3_prepare_v2(db, "SELECT id, address, name, create_time FROM `blue` WHERE id_uploaded = 0;", -1, &stmt, NULL);
+  sqlite3_prepare_v2(db, "SELECT id, mac, name, create_time FROM `blue` WHERE is_uploaded = 0;", -1, &stmt, NULL);
   while(sqlite3_step(stmt) != SQLITE_DONE) {
     auto ptr = new Blue();
     ptr->id  = sqlite3_column_int(stmt, 0);
@@ -144,6 +147,24 @@ void add_old_data_to_queue(std::vector<std::unique_ptr<Blue>>&& data) {
 }
 
 std::unique_ptr<Blue> line2blue(char* line) {
-  std::cout << line << std::endl;
+  std::string s = boost::trim_copy(std::string(line));
+  if(s.size() > 0) {
+    std::vector<std::string> splits;
+    boost::split(splits, s, boost::is_any_of(" "));
+    if(splits.size() >= 4) {
+      if(splits[1] == "Device") {
+        std::string mac = splits[2];
+        std::string name = "";
+        for(int i = 3; i < splits.size(); ++i) {
+          name += splits[i];
+        }
+        auto ret = new Blue();
+        ret->address = mac;
+        ret->name = name;
+        ret->create_time = time(NULL);
+        return std::unique_ptr<Blue>(ret);
+      }
+    }
+  }
   return nullptr;
 }
