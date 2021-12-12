@@ -13,6 +13,7 @@
 #include "log.hpp"
 #include "encode.hpp"
 #include "global.hpp"
+#include "http.hpp"
 #include "thread_pool.hpp"
 #include "boost/algorithm/string/trim.hpp"
 #include "boost/algorithm/string.hpp"
@@ -65,6 +66,11 @@ public:
     ret.set("etl_time", parse_time(time(NULL)));
     return ret;
   }
+
+  void update(sqlite3* db) const {
+    char* sql = sqlite3_mprintf("UPDATE blue SET is_uploaded = 1 WHERE id = %d", this->id);
+    sqlite3_exec(db, sql, NULL, NULL, NULL);
+  }
 };
 
 sqlite3* init_db_connection();
@@ -95,7 +101,7 @@ int main(int argc, char**argv) {
   init_cache();
   // 初始化pool
   // 池的内容，每过5+(10)秒就发送一次数据，每次发送的数据量不超过100
-  pool = new yah::AutoPool<Blue>(1, 100, [](std::vector<std::unique_ptr<Blue>>& data) {
+  pool = new yah::AutoPool<Blue>(1, 100, [&](std::vector<std::unique_ptr<Blue>>& data) {
     std::cout << "Get " << data.size() << " number of Blue" << std::endl;
     auto _host = yah::config.remote_address;
     auto _port = yah::config.remote_port;
@@ -112,6 +118,21 @@ int main(int argc, char**argv) {
     std::cout << "[data encoded] " << data_encoded << std::endl;
     yah::Json json; json.set("data", data_encoded);
 
+    yah::Response response = yah::Request()
+      .host(_host)
+      .port(_port)
+      .path(_path)
+      .body(json.serialize())
+      .header("Content-Type", std::string("Application/json"))
+      .post();
+    std::cout << "[data sent] status = " << response.status() << std::endl;
+
+    if(response.status() < 400) {
+      // done, update
+      for(auto& item: data) {
+        item->update(db);
+      }
+    }
   }, 10);
   // 将未上传的数据加入到pool中
   add_old_data_to_queue(std::move(old_data));
