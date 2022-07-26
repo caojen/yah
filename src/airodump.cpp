@@ -53,7 +53,11 @@ namespace yah {
   }
 
   static inline unsigned to_unsigned_int(const std::string& s) {
-    return std::stoul(s);
+    try {
+      return std::stoul(s);
+    } catch(...) {
+      return 0;
+    }
   }
 
   AirodumpData::AirodumpData(std::string& remote): remote(remote) {}
