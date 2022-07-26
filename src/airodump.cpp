@@ -2,6 +2,8 @@
 #include <time.h>
 #include <sqlite3.h>
 
+#include "boost/algorithm/string/trim.hpp"
+
 #include "airodump.hpp"
 #include "global.hpp"
 #include "white_list.hpp"
@@ -48,6 +50,10 @@ namespace yah {
     struct tm* tm = localtime(&t);
     strftime(r, 32, "%Y-%m-%d %H:%M:%S", tm);
     return std::string(r);
+  }
+
+  static inline unsigned to_unsigned_int(const std::string& s) {
+    return std::stoul(s);
   }
 
   AirodumpData::AirodumpData(std::string& remote): remote(remote) {}
@@ -187,6 +193,21 @@ output:
     db.unlock();
   }
 
+  unsigned int Ap::get_pwr() const {
+    // comment(17..23)
+    auto comment = boost::trim_copy(std::string(this->comment));
+    auto pwr = comment.substr(17, 6);
+    return to_unsigned_int(pwr);
+  }
+
+  time_t Ap::get_create_time() const {
+    return this->create_time;
+  }
+
+  void Ap::set_create_time(time_t t) {
+    this->create_time = t;
+  }
+
   Ap::~Ap() {
     // log << "[ApDeleted]" << endl;
   }
@@ -267,6 +288,21 @@ output:
     sqlite3_exec(db.db, sql, NULL, NULL, NULL);
     this->id = sqlite3_last_insert_rowid(db.db);
     db.unlock();
+  }
+
+  unsigned int ApStation::get_pwr() const {
+    // comment(37..43)
+    auto comment = boost::trim_copy(std::string(this->comment));
+    auto pwr = comment.substr(37, 6);
+    return to_unsigned_int(pwr);
+  }
+
+  time_t ApStation::get_create_time() const {
+    return this->create_time;
+  }
+
+  void ApStation::set_create_time(time_t t) {
+    this->create_time = t;
   }
 
   ApStation::~ApStation() {

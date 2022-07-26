@@ -25,6 +25,9 @@ namespace yah {
       virtual void sync_db() = 0;
       virtual bool is_ap() const = 0;
       virtual bool is_apstation() const = 0;
+      virtual unsigned int get_pwr() const = 0;
+      virtual time_t get_create_time() const = 0;
+      virtual void set_create_time(time_t time) = 0;
 
       AirodumpData(std::string& remote);
       virtual ~AirodumpData();
@@ -48,6 +51,9 @@ namespace yah {
       void sync_db();
       bool is_ap() const { return true; }
       bool is_apstation() const { return false; }
+      unsigned int get_pwr() const;
+      time_t get_create_time() const;
+      void set_create_time(time_t time);
 
       ~Ap();
   };
@@ -69,6 +75,9 @@ namespace yah {
       void sync_db();
       bool is_ap() const { return false; }
       bool is_apstation() const { return true; }
+      unsigned int get_pwr() const;
+      time_t get_create_time() const;
+      void set_create_time(time_t time);
 
       ~ApStation();
   };

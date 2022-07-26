@@ -31,6 +31,9 @@ namespace yah {
       unsigned      ap_cache_timeout    =     86400;      // ap缓存失效时间（秒）
       unsigned      apstation_cache_timeout = 600;        // apstatio缓存失效时间
 
+      unsigned      ap_pwr_limit         =     80;         // pwr限制，小于该值的ap将不会被保存
+      unsigned      ap_station_pwr_limit =     80;         // pwr限制，小于该值的apstation将不会被保存
+
       // 不在配置文件中能被配置的项目
       std::string   airodump_path       =     "/usr/bin/airodump-ng";
       std::string   airodump_name       =     "airodump-ng";
