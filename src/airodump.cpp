@@ -54,7 +54,7 @@ namespace yah {
 
   static inline unsigned to_unsigned_int(const std::string& s) {
     try {
-      return std::stoul(s);
+      return std::abs(static_cast<int>(std::stoul(s)));
     } catch(...) {
       return 0;
     }
