@@ -33,12 +33,9 @@ namespace yah {
       return;
     }
 
-    printf("this->ptr->get_pwr() is %d, where limit is %d\n", this->ptr->get_pwr(), limit);
-
     if (this->ptr->get_pwr() >= limit) {
       auto time = this->ptr->get_create_time();
       this->ptr->set_create_time(to_next_time(time));
-      printf("ok, pass to cache and db\n");
 
       if(!this->ptr->in_cache() && !this->ptr->in_db()) {
         this->ptr->sync_db();
